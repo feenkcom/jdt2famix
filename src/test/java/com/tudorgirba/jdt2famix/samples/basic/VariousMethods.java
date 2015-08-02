@@ -5,4 +5,9 @@ public class VariousMethods {
 	protected static void protectedStaticVoidWithNoParameters() {}
 	private static void privateStaticVoidWithNoParameters() {}
 	static void packageStaticVoidWithNoParameters() {}
+
+	public void publicVoidWithNoParameters() {}
+	protected void protectedVoidWithNoParameters() {}
+	private void privateVoidWithNoParameters() {}
+	void packageVoidWithNoParameters() {}
 }

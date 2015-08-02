@@ -16,10 +16,6 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class AstVisitor extends ASTVisitor {
-	public static String visitMethodDeclarationCallback = AstVisitor.class.getName() + "visit(MethodDeclaration)";
-	public static String endVisitMethodDeclarationCallback = AstVisitor.class.getName() + "endVisit(MethodDeclaration)";
-	public static String visitMethodInvocationCallback = AstVisitor.class.getName() + "visit(MethodInvocation)";
-	public static String endVisitMethodInvocationCallback = AstVisitor.class.getName() + "endVisit(MethodInvocation)";
 
 	public AstVisitor() {
 	}
@@ -131,6 +127,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////METHODS
 	
+	public static String visitMethodDeclarationCallback = AstVisitor.class.getName() + "visit(MethodDeclaration)";
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		try {
@@ -144,6 +141,7 @@ public class AstVisitor extends ASTVisitor {
 	/**
 	 * Needed for keeping track of the current scope
 	 */
+	public static String endVisitMethodDeclarationCallback = AstVisitor.class.getName() + "endVisit(MethodDeclaration)";
 	@Override
 	public void endVisit(MethodDeclaration node) {
 		try {
@@ -156,6 +154,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////INVOCATIONS
 	
+	public static String visitMethodInvocationCallback = AstVisitor.class.getName() + "visit(MethodInvocation)";
 	@Override
 	public boolean visit(MethodInvocation node) {
 		try {
