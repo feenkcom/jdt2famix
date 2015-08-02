@@ -8,10 +8,6 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 
 public class Importer {	
-	public static void main(String[] args) {
-		new Importer().run("/Users/girba/Work/Code/moose/src/java8-tutorial");
-	}
-	
 	public void run(String rootPath) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
