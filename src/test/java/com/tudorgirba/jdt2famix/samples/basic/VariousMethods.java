@@ -1,4 +1,4 @@
-package com.tudorgirba.famixjdt.basic;
+package com.tudorgirba.jdt2famix.samples.basic;
 
 public class VariousMethods {
 	public static void publicStaticVoidWithNoParameters() {}
