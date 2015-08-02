@@ -1,3 +1,3 @@
-This project is meant as a simple binding for the Pharo implementation.
+This project is meant as a simple binding for the Pharo implementation found at (http://www.smalltalkhub.com/#!/~Moose/Jdt2Famix). 
 
 It consists of only a few classes, the most important being the org.moosetechnology.jdt2famix.AstVisitor one. For each important visiting method calls the visitor raises an corresponding SmalltalkNotification that ultimately is being handled in the Pharo implementation.
