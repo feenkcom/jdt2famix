@@ -34,7 +34,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * Needed for keeping track of the current scope
+	 * Needed for keeping track of the current container
 	 */
 	public static String endVisitCompilationUnitCallback = AstVisitor.class.getName() + "endVisit(CompilationUnit)";
 	@Override
@@ -61,7 +61,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	/**
-	 * Needed for keeping track of the current scope
+	 * Needed for keeping track of the current container
 	 */
 	public static String endVisitTypeDeclarationCallback = AstVisitor.class.getName() + "endVisit(TypeDeclaration)";
 	@Override
@@ -139,7 +139,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * Needed for keeping track of the current scope
+	 * Needed for keeping track of the current container
 	 */
 	public static String endVisitMethodDeclarationCallback = AstVisitor.class.getName() + "endVisit(MethodDeclaration)";
 	@Override
