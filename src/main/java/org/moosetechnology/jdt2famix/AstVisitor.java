@@ -170,9 +170,14 @@ public class AstVisitor extends ASTVisitor {
 		//Not needed
 	}
 	
+	public static String visitSuperMethodInvocationCallback = AstVisitor.class.getName() + "visit(SuperMethodInvocation)";
 	@Override
 	public boolean visit(SuperMethodInvocation node) {
-		// TODO Auto-generated method stub
+		try {
+			new SmalltalkRequest(visitSuperMethodInvocationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		return super.visit(node);
 	}
 	
