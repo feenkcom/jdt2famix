@@ -8,14 +8,23 @@ import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 
 public class Importer {	
-	public void run(String rootPath) {
+	public void runDeep(String rootPath) {
+		String[] javaFiles = deepJavaFilesIn(new File(rootPath)).toArray(new String[0]);
+		runAll(javaFiles);
+	}
+	
+	public void runOne(String filePath) {
+		String[] javaFiles = new String[] {filePath};
+		runAll(javaFiles);
+	}
+	
+	public void runAll(String[] javaFilePaths) {
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setEnvironment(new String[] {"."}, new String[]{}, new String[]{}, true);
-		String[] javaFiles = deepJavaFilesIn(new File(rootPath)).toArray(new String[0]);
 		AstRequestor astRequestor = new AstRequestor(); 
-		parser.createASTs(javaFiles, null, new String[0], astRequestor, null);
+		parser.createASTs(javaFilePaths, null, new String[0], astRequestor, null);
 	}
 	
 	private Collection<String> deepJavaFilesIn(File root) {
