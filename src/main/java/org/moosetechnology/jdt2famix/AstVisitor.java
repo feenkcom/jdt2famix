@@ -9,9 +9,9 @@ import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.ParameterizedType;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -149,6 +149,20 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+	}
+
+	
+	////////ATTRIBUTES
+	
+	public static String visitFieldDeclarationCallback = AstVisitor.class.getName() + "visit(FieldDeclaration)";
+	@Override
+	public boolean visit(FieldDeclaration node) {
+		try {
+			new SmalltalkRequest(visitFieldDeclarationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return super.visit(node);
 	}
 	
 	
