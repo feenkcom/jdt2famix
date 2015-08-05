@@ -26,7 +26,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(CompilationUnit node) {
 		try {
-			new SmalltalkRequest(visitCompilationUnitCallback, this, node.getPackage()).value();
+			new SmalltalkRequest(visitCompilationUnitCallback, this, node).value();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}

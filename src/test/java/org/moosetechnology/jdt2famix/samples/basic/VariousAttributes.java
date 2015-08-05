@@ -2,12 +2,12 @@ package org.moosetechnology.jdt2famix.samples.basic;
 
 public class VariousAttributes {
 	public static int publicStaticIntAttribute;
-	protected static int protectedStaticIntAttribute;
-	private static int privateStaticIntAttribute;
-	static int packageStaticIntAttribute;
+	protected static float protectedStaticFloatAttribute;
+	private static char privateStaticCharAttribute;
+	static int[] packageStaticIntArrayAttribute;
 
 	public String publicStringAttribute;
-	protected int protectedIntAttribute;
-	private int privateIntAttribute;
+	protected VariousMethods protectedVariousMethodsAttribute;
+	private String[] privateStringArrayAttribute;
 	int packageIntAttribute;
 }
