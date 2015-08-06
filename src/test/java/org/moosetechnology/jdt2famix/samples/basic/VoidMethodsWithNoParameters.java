@@ -1,6 +1,6 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
-public class VariousMethods {	
+public class VoidMethodsWithNoParameters {	
 	public static void publicStaticVoidWithNoParameters() {}
 	protected static void protectedStaticVoidWithNoParameters() {}
 	private static void privateStaticVoidWithNoParameters() {}

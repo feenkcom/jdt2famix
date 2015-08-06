@@ -7,7 +7,7 @@ public class VariousAttributes {
 	static int[] packageStaticIntArrayAttribute;
 
 	public String publicStringAttribute;
-	protected VariousMethods protectedVariousMethodsAttribute;
+	protected VoidMethodsWithNoParameters protectedVariousMethodsAttribute;
 	private String[] privateStringArrayAttribute;
 	int packageIntAttribute;
 }
