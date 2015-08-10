@@ -18,7 +18,7 @@ public class JavaFiles {
 	public void oneJavaFile(String filePath) {
 		javaFilePaths.add(filePath);
 	}
-	
+
 	private Collection<String> deepJavaFilesIn(File root) {
 		Collection<String> all = new ArrayList<String>();
 		for (File child : root.listFiles()) {
