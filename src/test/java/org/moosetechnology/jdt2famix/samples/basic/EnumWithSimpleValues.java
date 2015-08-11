@@ -1,6 +1,6 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
-public enum EnumWithThreeSimpleValues {
+public enum EnumWithSimpleValues {
 	ONE,
 	TWO,
 	THREE
