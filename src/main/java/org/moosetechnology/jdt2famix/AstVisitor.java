@@ -85,16 +85,25 @@ public class AstVisitor extends ASTVisitor {
 		super.endVisit(node);
 	}
 	
+	public static String visitEnumDeclarationCallback = AstVisitor.class.getName() + "visit(EnumDeclaration)";
 	@Override
 	public boolean visit(EnumDeclaration node) {
-		// TODO Auto-generated method stub
+		try {
+			new SmalltalkRequest(visitEnumDeclarationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		return super.visit(node);
 	}
 	
+	public static String endVisitEnumDeclarationCallback = AstVisitor.class.getName() + "endVisit(EnumDeclaration)";
 	@Override
 	public void endVisit(EnumDeclaration node) {
-		// TODO Auto-generated method stub
-		super.endVisit(node);
+		try {
+			new SmalltalkRequest(endVisitEnumDeclarationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 	}
 	
 	
