@@ -73,15 +73,25 @@ public class AstVisitor extends ASTVisitor {
 		}
 	}
 
+	public static String visitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "visit(AnonymousClassDeclaration)";
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
-		// TODO Auto-generated method stub
+		try {
+			new SmalltalkRequest(visitAnonymousClassDeclarationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		return super.visit(node);
 	}
 	
+	public static String endVisitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "endVisit(AnonymousClassDeclaration)";
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
-		// TODO Auto-generated method stub
+		try {
+			new SmalltalkRequest(endVisitAnonymousClassDeclarationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
 		super.endVisit(node);
 	}
 	

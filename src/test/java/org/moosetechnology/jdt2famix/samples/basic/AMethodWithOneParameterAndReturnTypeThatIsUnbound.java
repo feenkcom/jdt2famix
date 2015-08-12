@@ -1,6 +1,6 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
-public class AMethodsWithOneParameterAndReturnTypeThatIsUnbound {
+public class AMethodWithOneParameterAndReturnTypeThatIsUnbound {
 	VariousConstructors withVariousAttributesParameterAndVariousConstructorsReturn(VariousAttributes a) {
 		return null;
 	}
