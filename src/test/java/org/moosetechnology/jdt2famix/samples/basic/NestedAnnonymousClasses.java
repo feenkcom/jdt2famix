@@ -1,12 +1,12 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
 public class NestedAnnonymousClasses {
-	public void method() {
+	public void topMethod() {
 		new Object() {
-			public void method() {
-				new Object() {
-				};
+			public void nestedMethod() {
+				new Object() {};
 			}
 		};
+		new Object() {};
 	}
 }
