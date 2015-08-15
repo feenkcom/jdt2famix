@@ -30,7 +30,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	/**
@@ -40,7 +40,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(CompilationUnit node) {
 		try {
-			new SmalltalkRequest(endVisitCompilationUnitCallback, this, node.getPackage()).value();
+			new SmalltalkRequest(endVisitCompilationUnitCallback, this, node).value();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -57,7 +57,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	/**
@@ -81,7 +81,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	public static String endVisitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "endVisit(AnonymousClassDeclaration)";
@@ -92,7 +92,6 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		super.endVisit(node);
 	}
 	
 	public static String visitEnumDeclarationCallback = AstVisitor.class.getName() + "visit(EnumDeclaration)";
@@ -103,7 +102,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	public static String endVisitEnumDeclarationCallback = AstVisitor.class.getName() + "endVisit(EnumDeclaration)";
@@ -154,7 +153,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 
 	/**
@@ -181,7 +180,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	
@@ -211,7 +210,7 @@ public class AstVisitor extends ASTVisitor {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		return super.visit(node);
+		return true;
 	}
 	
 	@Override
