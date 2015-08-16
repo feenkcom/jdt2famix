@@ -6,12 +6,15 @@ import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 
@@ -215,17 +218,67 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(SuperMethodInvocation node) {
+		//Not needed
 	}
 	
+	public static String visitConstructorInvocationCallback = AstVisitor.class.getName() + "visit(ConstructorInvocation)";
 	@Override
 	public boolean visit(ConstructorInvocation node) {
-		// TODO Auto-generated method stub
-		return super.visit(node);
+		try {
+			new SmalltalkRequest(visitConstructorInvocationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
 	@Override
 	public void endVisit(ConstructorInvocation node) {
+		//Not needed
+	}
+
+	public static String visitSuperConstructorInvocationCallback = AstVisitor.class.getName() + "visit(SuperConstructorInvocation)";
+	@Override
+	public boolean visit(SuperConstructorInvocation node) {
+		try {
+			new SmalltalkRequest(visitSuperConstructorInvocationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
+	////////ACCESSES
+	public static String visitFieldAccessCallback = AstVisitor.class.getName() + "visit(FieldAccess)";
+	@Override
+	public boolean visit(FieldAccess node) {
+		try {
+			new SmalltalkRequest(visitFieldAccessCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+
+	@Override
+	public void endVisit(FieldAccess node) {
+		//Not needed
+	}
+
+	public static String visitAssignmentCallback = AstVisitor.class.getName() + "visit(Assignment)";
+	@Override
+	public boolean visit(Assignment node) {
+		try {
+			new SmalltalkRequest(visitAssignmentCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
 	
+	@Override
+	public void endVisit(Assignment node) {
+		//Not needed
+	}
+
 }
