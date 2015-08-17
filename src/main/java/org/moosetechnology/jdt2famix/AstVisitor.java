@@ -7,6 +7,7 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
@@ -242,6 +243,17 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(SuperConstructorInvocation node) {
 		try {
 			new SmalltalkRequest(visitSuperConstructorInvocationCallback, this, node).value();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public static String visitClassInstanceCreationCallback = AstVisitor.class.getName() + "visit(ClassInstanceCreation)";
+	@Override
+	public boolean visit(ClassInstanceCreation node) {
+		try {
+			new SmalltalkRequest(visitClassInstanceCreationCallback, this, node).value();
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
