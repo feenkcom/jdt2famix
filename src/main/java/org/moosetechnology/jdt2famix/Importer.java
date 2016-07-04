@@ -1,16 +1,10 @@
 package org.moosetechnology.jdt2famix;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
+import org.eclipse.jdt.core.dom.FileASTRequestor;
 
-public class Importer {	
-
-	public Importer() {
-	}
+public abstract class Importer {	
 	
 	/**
 	 * Primary method to trigger the importer after having set the 
@@ -22,8 +16,7 @@ public class Importer {
 		parser.setResolveBindings(true);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
 		parser.setEnvironment(classpath.paths(), new String[]{}, new String[]{}, true);
-		AstRequestor astRequestor = new AstRequestor(); 
-		parser.createASTs(javaFiles.paths(), null, new String[0], astRequestor, null);
+		parser.createASTs(javaFiles.paths(), null, new String[0], getRequestor(), null);
 	}
 
 	public void runOne(String oneFilePath) {
@@ -31,5 +24,7 @@ public class Importer {
 		javaFiles.oneJavaFile(oneFilePath);
 		this.run(javaFiles, new Classpath());
 	}
-	
+
+	protected abstract FileASTRequestor getRequestor();
+
 }

@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix;
+package org.moosetechnology.jdt2famix.inpharo;
 
 import jniport.SmalltalkRequest;
 
