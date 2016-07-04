@@ -10,9 +10,9 @@ public abstract class BasicSampleTestCase {
 	@Before
 	public void setUp() {
 		importer = new InJavaImporter();
-		importer.runOne("src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + sampleFile());
+		importer.runOne("src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + sampleFileName() + ".java");
 	}
 	
-	protected abstract String sampleFile();
+	protected abstract String sampleFileName();
 	
 }

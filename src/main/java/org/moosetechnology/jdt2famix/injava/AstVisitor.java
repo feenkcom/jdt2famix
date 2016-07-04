@@ -18,8 +18,18 @@ import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
 
+/**
+ * Responsible for visiting the AST of one Java file.
+ * It works in close relationship with the {@link InJavaImporter} which
+ * - provides ensure and create methods, and
+ * - keeps track of the overall model.
+ *  
+ * @author girba
+ *
+ */
 public class AstVisitor extends ASTVisitor {
 
 	private InJavaImporter importer;
@@ -32,7 +42,9 @@ public class AstVisitor extends ASTVisitor {
 	public static String visitCompilationUnitCallback = AstVisitor.class.getName() + "visit(CompilationUnit)";
 	@Override
 	public boolean visit(CompilationUnit node) {
-		importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
+		Namespace namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
+		namespace.setIsStub(false);
+		importer.pushOnContainerStack(namespace);
 		return true;
 	}
 	
@@ -41,6 +53,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public void endVisit(CompilationUnit node) {
+		importer.popFromContainerStack();
 	}
 	
 	
@@ -49,7 +62,9 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		Type type = importer.ensureTypeFromTypeBinding(node.resolveBinding());
+		//TODO: rethink what happens with the container of nested classes
 		type.setIsStub(false);
+		importer.pushOnContainerStack(type);
 		return true;
 	}
 	
@@ -58,6 +73,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public void endVisit(TypeDeclaration node) {
+		importer.popFromContainerStack();
 	}
 
 //	public static String visitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "visit(AnonymousClassDeclaration)";
