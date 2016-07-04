@@ -30,12 +30,6 @@ public class SourcedEntity extends Entity {
         }
     }
     
-    @FameProperty(name = "numberOfLinesOfCodeWithMoreThanOneCharacter", derived = true)
-    public Number getNumberOfLinesOfCodeWithMoreThanOneCharacter() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<Comment> comments; 
 
     @FameProperty(name = "comments", opposite = "container", derived = true)
@@ -105,12 +99,6 @@ public class SourcedEntity extends Entity {
         this.declaredSourceLanguage = declaredSourceLanguage;
         if (declaredSourceLanguage == null) return;
         declaredSourceLanguage.getSourcedEntities().add(this);
-    }
-    
-    @FameProperty(name = "numberOfJavaNullChecks", derived = true)
-    public Number getNumberOfJavaNullChecks() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
 

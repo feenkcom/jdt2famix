@@ -24,7 +24,9 @@ public class SimpleInterfaceTestCase extends BasicSampleTestCase {
 		
 		Class type = (Class) importer.getTypes().get(SimpleInterface.class.getName());
 		Namespace namespace = (Namespace) importer.getNamespaces().get(SimpleInterface.class.getPackage().getName());
+		assertFalse(namespace.getIsStub());
 		assertTrue(type.getIsInterface());
 		assertEquals(namespace, type.getContainer());
+		assertFalse(type.getIsStub());
 	}
 }

@@ -14,12 +14,6 @@ public class Type extends ContainerEntity {
 
 
 
-    @FameProperty(name = "tightClassCohesion", derived = true)
-    public Number getTightClassCohesion() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private ContainerEntity container;
     
     @FameProperty(name = "container", opposite = "types")
@@ -35,24 +29,6 @@ public class Type extends ContainerEntity {
         this.container = container;
         if (container == null) return;
         container.getTypes().add(this);
-    }
-    
-    @FameProperty(name = "numberOfMethodProtocols", derived = true)
-    public Number getNumberOfMethodProtocols() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfAnnotationInstances", derived = true)
-    public Number getNumberOfAnnotationInstances() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfMethodsInherited", derived = true)
-    public Number getNumberOfMethodsInherited() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Collection<Reference> incomingReferences; 
@@ -109,12 +85,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "totalNumberOfChildren", derived = true)
-    public Number getTotalNumberOfChildren() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<StructuralEntity> structuresWithDeclaredType; 
 
     @FameProperty(name = "structuresWithDeclaredType", opposite = "declaredType", derived = true)
@@ -169,54 +139,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "numberOfAccessorMethods", derived = true)
-    public Number getNumberOfAccessorMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfAbstractMethods", derived = true)
-    public Number getNumberOfAbstractMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfPrivateAttributes", derived = true)
-    public Number getNumberOfPrivateAttributes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "fanOut", derived = true)
-    public Number getFanOut() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfAttributesInherited", derived = true)
-    public Number getNumberOfAttributesInherited() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfPrivateMethods", derived = true)
-    public Number getNumberOfPrivateMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "providerTypes", derived = true)
-    public Collection<Type> getProviderTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "numberOfMessageSends", derived = true)
-    public Number getNumberOfMessageSends() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<TypeAlias> typeAliases; 
 
     @FameProperty(name = "typeAliases", opposite = "aliasedType", derived = true)
@@ -271,42 +193,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "numberOfProtectedAttributes", derived = true)
-    public Number getNumberOfProtectedAttributes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfStatements", derived = true)
-    public Number getNumberOfStatements() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfChildren", derived = true)
-    public Number getNumberOfChildren() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfMethodsOverriden", derived = true)
-    public Number getNumberOfMethodsOverriden() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfConstructorMethods", derived = true)
-    public Number getNumberOfConstructorMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfDirectSubclasses", derived = true)
-    public Number getNumberOfDirectSubclasses() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<Inheritance> superInheritances; 
 
     @FameProperty(name = "superInheritances", opposite = "subclass", derived = true)
@@ -415,24 +301,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "numberOfAttributes", derived = true)
-    public Number getNumberOfAttributes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfProtectedMethods", derived = true)
-    public Number getNumberOfProtectedMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "hierarchyNestingLevel", derived = true)
-    public Number getHierarchyNestingLevel() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<BehaviouralEntity> behavioursWithDeclaredType; 
 
     @FameProperty(name = "behavioursWithDeclaredType", opposite = "declaredType", derived = true)
@@ -541,114 +409,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "numberOfParents", derived = true)
-    public Number getNumberOfParents() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfMethodsAdded", derived = true)
-    public Number getNumberOfMethodsAdded() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfComments", derived = true)
-    public Number getNumberOfComments() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "fanIn", derived = true)
-    public Number getFanIn() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfRevealedAttributes", derived = true)
-    public Number getNumberOfRevealedAttributes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "subclassHierarchyDepth", derived = true)
-    public Number getSubclassHierarchyDepth() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfPublicAttributes", derived = true)
-    public Number getNumberOfPublicAttributes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfDuplicatedLinesOfCodeInternally", derived = true)
-    public Number getNumberOfDuplicatedLinesOfCodeInternally() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "clientTypes", derived = true)
-    public Collection<Type> getClientTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "weightedMethodCount", derived = true)
-    public Number getWeightedMethodCount() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isAbstract", derived = true)
-    public Boolean getIsAbstract() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "weightOfAClass", derived = true)
-    public Number getWeightOfAClass() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfMethods", derived = true)
-    public Number getNumberOfMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfAccessesToForeignData", derived = true)
-    public Number getNumberOfAccessesToForeignData() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfPublicMethods", derived = true)
-    public Number getNumberOfPublicMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfLinesOfCode", derived = true)
-    public Number getNumberOfLinesOfCode() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isJUnit4TestCase", derived = true)
-    public Boolean getIsJUnit4TestCase() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isTestCase", derived = true)
-    public Boolean getIsTestCase() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<Attribute> attributes; 
 
     @FameProperty(name = "attributes", opposite = "parentType", derived = true)
@@ -756,18 +516,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    @FameProperty(name = "isInnerClass", derived = true)
-    public Boolean getIsInnerClass() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfMethodsInHierarchy", derived = true)
-    public Number getNumberOfMethodsInHierarchy() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
 
 
 }

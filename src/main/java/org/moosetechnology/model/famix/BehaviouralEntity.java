@@ -14,12 +14,6 @@ public class BehaviouralEntity extends ContainerEntity {
 
 
 
-    @FameProperty(name = "numberOfAccesses", derived = true)
-    public Number getNumberOfAccesses() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private String signature;
     
     @FameProperty(name = "signature")
@@ -57,18 +51,6 @@ public class BehaviouralEntity extends ContainerEntity {
         this.declaredType = declaredType;
         if (declaredType == null) return;
         declaredType.getBehavioursWithDeclaredType().add(this);
-    }
-    
-    @FameProperty(name = "providerBehaviours", derived = true)
-    public Collection<BehaviouralEntity> getProviderBehaviours() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "numberOfMessageSends", derived = true)
-    public Number getNumberOfMessageSends() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Number cyclomaticComplexity;
@@ -275,18 +257,6 @@ public class BehaviouralEntity extends ContainerEntity {
 
     public void setNumberOfLinesOfCode(Number numberOfLinesOfCode) {
         this.numberOfLinesOfCode = numberOfLinesOfCode;
-    }
-    
-    @FameProperty(name = "clientBehaviours", derived = true)
-    public Collection<BehaviouralEntity> getClientBehaviours() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "numberOfOutgoingInvocations", derived = true)
-    public Number getNumberOfOutgoingInvocations() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Collection<Invocation> outgoingInvocations; 

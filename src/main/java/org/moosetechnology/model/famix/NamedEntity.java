@@ -68,18 +68,6 @@ public class NamedEntity extends SourcedEntity {
     }
     
                 
-    @FameProperty(name = "isPackage", derived = true)
-    public Boolean getIsPackage() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isPrivate", derived = true)
-    public Boolean getIsPrivate() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<String> modifiers; 
 
     @FameProperty(name = "modifiers")
@@ -122,12 +110,6 @@ public class NamedEntity extends SourcedEntity {
     }
     
                 
-    @FameProperty(name = "isAbstract", derived = true)
-    public Boolean getIsAbstract() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Boolean isStub;
     
     @FameProperty(name = "isStub")
@@ -139,18 +121,6 @@ public class NamedEntity extends SourcedEntity {
         this.isStub = isStub;
     }
     
-    @FameProperty(name = "isProtected", derived = true)
-    public Boolean getIsProtected() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "nameLength", derived = true)
-    public Number getNameLength() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private String name;
     
     @FameProperty(name = "name")
@@ -160,18 +130,6 @@ public class NamedEntity extends SourcedEntity {
 
     public void setName(String name) {
         this.name = name;
-    }
-    
-    @FameProperty(name = "isPublic", derived = true)
-    public Boolean getIsPublic() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isFinal", derived = true)
-    public Boolean getIsFinal() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Collection<AnnotationInstance> annotationInstances; 

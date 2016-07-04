@@ -14,36 +14,6 @@ public class Method extends BehaviouralEntity {
 
 
 
-    @FameProperty(name = "isGetter", derived = true)
-    public Boolean getIsGetter() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isInternalImplementation", derived = true)
-    public Boolean getIsInternalImplementation() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "hierarchyNestingLevel", derived = true)
-    public Number getHierarchyNestingLevel() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "invokedMethods", derived = true)
-    public Collection<Method> getInvokedMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "clientTypes", derived = true)
-    public Collection<Type> getClientTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
     private String kind;
     
     @FameProperty(name = "kind")
@@ -55,18 +25,6 @@ public class Method extends BehaviouralEntity {
         this.kind = kind;
     }
     
-    @FameProperty(name = "providerTypes", derived = true)
-    public Collection<Type> getProviderTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "invokingMethods", derived = true)
-    public Collection<Method> getInvokingMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
     private Collection<ThrownException> thrownExceptions; 
 
     @FameProperty(name = "thrownExceptions", opposite = "definingMethod", derived = true)
@@ -121,12 +79,6 @@ public class Method extends BehaviouralEntity {
     }
     
                 
-    @FameProperty(name = "numberOfInvokedMethods", derived = true)
-    public Number getNumberOfInvokedMethods() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Collection<CaughtException> caughtExceptions; 
 
     @FameProperty(name = "caughtExceptions", opposite = "definingMethod", derived = true)
@@ -181,12 +133,6 @@ public class Method extends BehaviouralEntity {
     }
     
                 
-    @FameProperty(name = "numberOfAnnotationInstances", derived = true)
-    public Number getNumberOfAnnotationInstances() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Boolean hasClassScope;
     
     @FameProperty(name = "hasClassScope")
@@ -224,48 +170,6 @@ public class Method extends BehaviouralEntity {
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
-    }
-    
-    @FameProperty(name = "isJUnit4Test", derived = true)
-    public Boolean getIsJUnit4Test() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isOverriden", derived = true)
-    public Boolean getIsOverriden() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isConstant", derived = true)
-    public Boolean getIsConstant() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isImplementing", derived = true)
-    public Boolean getIsImplementing() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isConstructor", derived = true)
-    public Boolean getIsConstructor() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isSetter", derived = true)
-    public Boolean getIsSetter() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isOverriding", derived = true)
-    public Boolean getIsOverriding() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Collection<DeclaredException> declaredExceptions; 

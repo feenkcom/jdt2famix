@@ -68,12 +68,6 @@ public class ParameterizableClass extends Class {
     }
     
                 
-    @FameProperty(name = "parameters", derived = true)
-    public Collection<ParameterType> getParameters() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
 
 
 }

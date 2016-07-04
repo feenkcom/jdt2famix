@@ -1,5 +1,7 @@
 package org.moosetechnology.jdt2famix.injava;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
@@ -12,13 +14,17 @@ import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
 
+import ch.akuhn.fame.Repository;
+
 public class InJavaImporter extends Importer {
 
 	private Map<String,Namespace> namespaces = new HashMap<String, Namespace>();
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
-
+	
 	private Map<String, Type> types = new HashMap<String, Type>();
 	public Map<String, Type> getTypes() { return types; }
+	
+	Repository repository = new Repository(FAMIXModel.metamodel());
 	
 	/*
 	 * This is a structure that keeps track of the current stack of containers
@@ -40,6 +46,7 @@ public class InJavaImporter extends Importer {
 		else {
 			Namespace namespace = createNamespaceNamed(packageName);
 			namespaces.put(packageName, namespace);
+			repository.add(namespace);
 			return namespace;
 		}
 	}
@@ -68,7 +75,8 @@ public class InJavaImporter extends Importer {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, binding);
 		for (ITypeBinding interfaceBinding : binding.getInterfaces()) {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, interfaceBinding);
-		} 
+		}
+		repository.add(type);
 		return type;
 	}
 
@@ -86,6 +94,7 @@ public class InJavaImporter extends Importer {
 		Inheritance inheritance = new Inheritance();
 		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
 		inheritance.setSubclass(subType);
+		repository.add(inheritance);
 		return inheritance;
 	}
 	
@@ -99,4 +108,14 @@ public class InJavaImporter extends Importer {
 	public ContainerEntity topOfContainerStack() {
 		return this.containerStack.peek();
 	}
+	
+	//EXPORT
+	public void exportMSE(String fileName) {
+		try {
+			repository.exportMSE(new FileWriter(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

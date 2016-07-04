@@ -14,12 +14,6 @@ public class Package extends ScopingEntity {
 
 
 
-    @FameProperty(name = "efferentCoupling", derived = true)
-    public Number getEfferentCoupling() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Number numberOfClientPackages;
     
     @FameProperty(name = "numberOfClientPackages")
@@ -29,42 +23,6 @@ public class Package extends ScopingEntity {
 
     public void setNumberOfClientPackages(Number numberOfClientPackages) {
         this.numberOfClientPackages = numberOfClientPackages;
-    }
-    
-    @FameProperty(name = "relativeImportanceForSystem", derived = true)
-    public Number getRelativeImportanceForSystem() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "clientTypes", derived = true)
-    public Collection<Type> getClientTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "weightedMethodCount", derived = true)
-    public Number getWeightedMethodCount() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "distance", derived = true)
-    public Number getDistance() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "providerTypes", derived = true)
-    public Collection<Type> getProviderTypes() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-        
-    @FameProperty(name = "numberOfClasses", derived = true)
-    public Number getNumberOfClasses() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Collection<NamedEntity> childNamedEntities; 
@@ -121,18 +79,6 @@ public class Package extends ScopingEntity {
     }
     
                 
-    @FameProperty(name = "martinCohesion", derived = true)
-    public Number getMartinCohesion() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "bunchCohesion", derived = true)
-    public Number getBunchCohesion() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Number numberOfMethods;
     
     @FameProperty(name = "numberOfMethods")
@@ -142,30 +88,6 @@ public class Package extends ScopingEntity {
 
     public void setNumberOfMethods(Number numberOfMethods) {
         this.numberOfMethods = numberOfMethods;
-    }
-    
-    @FameProperty(name = "afferentCoupling", derived = true)
-    public Number getAfferentCoupling() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "numberOfLinesOfCode", derived = true)
-    public Number getNumberOfLinesOfCode() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "instability", derived = true)
-    public Number getInstability() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "abstractness", derived = true)
-    public Number getAbstractness() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
 

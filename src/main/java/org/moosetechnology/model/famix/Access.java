@@ -12,18 +12,6 @@ public class Access extends Association {
 
 
 
-    @FameProperty(name = "isReadWriteUnknown", derived = true)
-    public Boolean getIsReadWriteUnknown() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
-    @FameProperty(name = "isRead", derived = true)
-    public Boolean getIsRead() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private BehaviouralEntity accessor;
     
     @FameProperty(name = "accessor", opposite = "accesses")

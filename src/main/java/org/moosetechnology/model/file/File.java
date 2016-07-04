@@ -78,12 +78,6 @@ public class File extends AbstractFile {
         this.numberOfCharacters = numberOfCharacters;
     }
     
-    @FameProperty(name = "numberOfInternalDuplications", derived = true)
-    public Number getNumberOfInternalDuplications() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
-    }
-    
     private Number averageNumberOfCharactersPerLine;
     
     @FameProperty(name = "averageNumberOfCharactersPerLine")
@@ -126,12 +120,6 @@ public class File extends AbstractFile {
 
     public void setNumberOfInternalMultiplications(Number numberOfInternalMultiplications) {
         this.numberOfInternalMultiplications = numberOfInternalMultiplications;
-    }
-    
-    @FameProperty(name = "numberOfExternalDuplications", derived = true)
-    public Number getNumberOfExternalDuplications() {
-        // TODO: this is a derived property, implement this method manually.
-        throw new UnsupportedOperationException("Not yet implemented!");  
     }
     
     private Number numberOfBytes;
