@@ -1,0 +1,7 @@
+(
+	(FAMIX.Class (id: 1)
+		(name 'SimpleInterface')
+		(container (ref: 2))
+		(isInterface true))
+	(FAMIX.Namespace (id: 2)
+		(name 'org.moosetechnology.jdt2famix.samples.basic')))

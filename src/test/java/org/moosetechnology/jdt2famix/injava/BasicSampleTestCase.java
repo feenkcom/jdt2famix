@@ -1,4 +1,4 @@
-package com.tudorgirba.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava;
 
 import org.junit.Before;
 import org.moosetechnology.jdt2famix.injava.InJavaImporter;
