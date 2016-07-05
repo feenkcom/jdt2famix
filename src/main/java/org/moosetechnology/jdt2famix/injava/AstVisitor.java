@@ -12,6 +12,7 @@ import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -20,6 +21,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
+import org.moosetechnology.model.famix.Method;
 
 /**
  * Responsible for visiting the AST of one Java file.
@@ -146,18 +148,16 @@ public class AstVisitor extends ASTVisitor {
 //	}
 //	
 //	
-//	////////METHODS
-//	
-//	public static String visitMethodDeclarationCallback = AstVisitor.class.getName() + "visit(MethodDeclaration)";
-//	@Override
-//	public boolean visit(MethodDeclaration node) {
-//		try {
-//			new SmalltalkRequest(visitMethodDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
+	////////METHODS
+	
+	@Override
+	public boolean visit(MethodDeclaration node) {
+		IMethodBinding binding = node.resolveBinding();
+		Method method;
+		if (binding != null)
+			method = importer.ensureMethodFromMethodBinding(binding);
+		return true;
+	}
 //
 //	/**
 //	 * Needed for keeping track of the current container

@@ -3,11 +3,14 @@ package org.moosetechnology.jdt2famix.injava;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.moosetechnology.jdt2famix.Importer;
@@ -25,6 +28,9 @@ public class InJavaImporter extends Importer {
 	
 	private Map<String, Type> types;
 	public Map<String, Type> getTypes() { return types; }
+
+	private Map<String, Method> methods;
+	public Map<String, Method> getMethods() { return methods; }
 	
 	Repository repository;
 	public Repository getRepository() { return repository; }
@@ -44,6 +50,7 @@ public class InJavaImporter extends Importer {
 		 
 		 types = new HashMap<String, Type>();
 		 namespaces = new HashMap<String, Namespace>();
+		 methods = new HashMap<String, Method>();
 	}
 	
 	
@@ -129,6 +136,27 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
+		//FIXME: the parametersString contains a , too many 
+		String parametersString = Arrays
+				.stream(binding.getParameterTypes())
+				.map(p -> (String) p.getQualifiedName())
+				.reduce("", (l, r) -> l + ", " + r);
+		String methodName = binding.getName();
+		String signature = methodName + "(" + parametersString + ")";
+		String fullMethodName = binding.getDeclaringClass().getQualifiedName() + "." + signature;
+		if (methods.containsKey(fullMethodName)) 
+			return methods.get(fullMethodName);
+		Method method = new Method();
+		method.setName(methodName);
+		method.setSignature(signature);
+		method.setIsStub(true);
+		method.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+		if (binding.isConstructor()) 
+			method.setKind("constructor");
+		return method;
 	}
 	
 }

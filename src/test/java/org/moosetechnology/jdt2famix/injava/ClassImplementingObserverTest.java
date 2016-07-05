@@ -3,27 +3,51 @@ package org.moosetechnology.jdt2famix.injava;
 import static org.junit.Assert.*;
 
 import java.util.Observer;
+import java.util.Optional;
 
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.ClassImplementingObserver;
 import org.moosetechnology.model.famix.Class;
+import org.moosetechnology.model.famix.Method;
 
 public class ClassImplementingObserverTest extends BasicSampleTestCase {
 
 	@Override
-	protected String sampleFileName() {
-		return ClassImplementingObserver.class.getSimpleName();
+	protected java.lang.Class<?> sampleClass() {
+		return ClassImplementingObserver.class;
 	}
 
 	@Test
-	public void test() {
+	public void testModelSize() {
 		assertEquals(2, importer.getNamespaces().size());
 		assertEquals(2, importer.getTypes().size());
-		Class observable = (Class) importer.getTypes().get(Observer.class.getName());
-		assertTrue(observable.getIsInterface());
-		assertTrue(observable.getIsStub());
+	}
+	
+	@Test
+	public void testInterface() {	
+		Class observer = (Class) importer.getTypes().get(Observer.class.getName());
+		assertTrue(observer.getIsInterface());
+		assertTrue(observer.getIsStub());
 		assertEquals(
-					observable.getContainer(), 
+					observer.getContainer(), 
 					importer.getNamespaces().get(Observer.class.getPackage().getName()));
 	}
+	
+	@Test
+	public void testClass() {	
+		Class observerClass = (Class) type;
+		assertFalse(observerClass.getIsInterface());
+		assertFalse(observerClass.getIsStub());
+		assertEquals(
+				observerClass.getContainer(), 
+				importer.getNamespaces().get(ClassImplementingObserver.class.getPackage().getName()));
+	}
+	
+	@Test
+	public void testMethod() {
+		assertEquals(1, type.getMethods().size());
+		Method method = type.getMethods().stream().findAny().get();
+		assertEquals(2, method.getParameters().size());
+	}
+	
 }

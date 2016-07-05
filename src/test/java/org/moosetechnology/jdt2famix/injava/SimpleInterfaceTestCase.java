@@ -3,6 +3,7 @@ package org.moosetechnology.jdt2famix.injava;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.moosetechnology.jdt2famix.samples.basic.ClassImplementingObserver;
 import org.moosetechnology.jdt2famix.samples.basic.SimpleInterface;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
@@ -10,8 +11,8 @@ import org.moosetechnology.model.famix.Class;
 public class SimpleInterfaceTestCase extends BasicSampleTestCase {
 
 	@Override
-	protected String sampleFileName() {
-		return SimpleInterface.class.getSimpleName();
+	protected java.lang.Class<?> sampleClass() {
+		return SimpleInterface.class;
 	}
 
 	@Test
@@ -22,11 +23,11 @@ public class SimpleInterfaceTestCase extends BasicSampleTestCase {
 		assertEquals(1, importer.getTypes().size());
 		assertTrue(importer.getTypes().containsKey(SimpleInterface.class.getName()));
 		
-		Class type = (Class) importer.getTypes().get(SimpleInterface.class.getName());
+		Class clazz = (Class) type;
 		Namespace namespace = (Namespace) importer.getNamespaces().get(SimpleInterface.class.getPackage().getName());
 		assertFalse(namespace.getIsStub());
-		assertTrue(type.getIsInterface());
-		assertEquals(namespace, type.getContainer());
-		assertFalse(type.getIsStub());
+		assertTrue(clazz.getIsInterface());
+		assertEquals(namespace, clazz.getContainer());
+		assertFalse(clazz.getIsStub());
 	}
 }
