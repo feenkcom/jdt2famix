@@ -13,18 +13,21 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
+import org.moosetechnology.model.java.JavaModel;
 
+import ch.akuhn.fame.MetaRepository;
 import ch.akuhn.fame.Repository;
 
 public class InJavaImporter extends Importer {
 
-	private Map<String,Namespace> namespaces = new HashMap<String, Namespace>();
+	private Map<String,Namespace> namespaces;
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
 	
-	private Map<String, Type> types = new HashMap<String, Type>();
+	private Map<String, Type> types;
 	public Map<String, Type> getTypes() { return types; }
 	
-	Repository repository = new Repository(FAMIXModel.metamodel());
+	Repository repository;
+	public Repository getRepository() { return repository; }
 	
 	/*
 	 * This is a structure that keeps track of the current stack of containers
@@ -32,6 +35,16 @@ public class InJavaImporter extends Importer {
 	 */ 
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
 	public Deque<ContainerEntity> getContainerStack() { return containerStack; }
+	
+	public InJavaImporter() {
+		 MetaRepository metaRepository = new MetaRepository();
+		 FAMIXModel.importInto(metaRepository);
+		 JavaModel.importInto(metaRepository);
+		 repository = new Repository(metaRepository);
+		 
+		 types = new HashMap<String, Type>();
+		 namespaces = new HashMap<String, Namespace>();
+	}
 	
 	
 	@Override
