@@ -23,6 +23,7 @@ import ch.akuhn.fame.Repository;
 
 public class InJavaImporter extends Importer {
 
+	private Namespace unknownNamespace;
 	private Map<String,Namespace> namespaces;
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
 	
@@ -80,9 +81,19 @@ public class InJavaImporter extends Importer {
 	}
 	
 	private ContainerEntity ensureContainerEntityForTypeBinding(ITypeBinding binding) {
+		if (binding.getPackage() == null)
+			return unknownNamespace();
 		return ensureNamespaceFromPackageBinding(binding.getPackage());
 	}
 	
+	private Namespace unknownNamespace() {
+		if (unknownNamespace == null) {
+			unknownNamespace = new Namespace();
+			unknownNamespace.setName("__UNKNOWN__");
+		}
+		return unknownNamespace;
+	}
+
 	//TYPES
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
 		String qualifiedName = binding.getQualifiedName();
@@ -101,11 +112,17 @@ public class InJavaImporter extends Importer {
 	}
 
 	private Type createTypeFromTypeBinding(ITypeBinding binding) {
-		Class clazz = new Class();
-		clazz.setIsInterface(binding.isInterface());
-		clazz.setName(binding.getName());
-		clazz.setIsStub(true);
-		return clazz;
+		Type type;
+		if (binding.isPrimitive())
+			type = new PrimitiveType();
+		else {
+			Class clazz = new Class();
+			clazz.setIsInterface(binding.isInterface());
+			type = clazz;
+		}
+		type.setName(binding.getName());
+		type.setIsStub(true);
+		return type;
 	}
 
 	//INHERITANCE
@@ -156,6 +173,9 @@ public class InJavaImporter extends Importer {
 		method.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
 		if (binding.isConstructor()) 
 			method.setKind("constructor");
+		ITypeBinding returnType = binding.getReturnType();
+		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
+			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		return method;
 	}
 	
