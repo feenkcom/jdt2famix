@@ -13,6 +13,8 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
@@ -32,6 +34,9 @@ public class InJavaImporter extends Importer {
 
 	private Map<String, Method> methods;
 	public Map<String, Method> getMethods() { return methods; }
+
+	private Map<String, Parameter> parameters;
+	public Map<String, Parameter> getParameters() { return parameters; }
 	
 	Repository repository;
 	public Repository getRepository() { return repository; }
@@ -52,6 +57,7 @@ public class InJavaImporter extends Importer {
 		 types = new HashMap<String, Type>();
 		 namespaces = new HashMap<String, Namespace>();
 		 methods = new HashMap<String, Method>();
+		 parameters = new HashMap<String, Parameter>();
 	}
 	
 	
@@ -178,5 +184,18 @@ public class InJavaImporter extends Importer {
 			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		return method;
 	}
-	
+
+	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
+			Method method, IMethodBinding methodBinding) {
+		String name = variableDeclaration.getName().toString();
+		String fullName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
+		if (parameters.containsKey(fullName)) 
+			return parameters.get(fullName);
+		Parameter parameter = new Parameter();
+		parameter.setName(name);
+		parameter.setParentBehaviouralEntity(method);
+		parameter.setDeclaredType(ensureTypeFromTypeBinding(variableDeclaration.getType().resolveBinding()));
+		return parameter;
+	}
+
 }

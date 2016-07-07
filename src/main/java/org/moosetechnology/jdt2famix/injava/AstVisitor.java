@@ -16,6 +16,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
@@ -156,6 +157,13 @@ public class AstVisitor extends ASTVisitor {
 		Method method;
 		if (binding != null)
 			method = importer.ensureMethodFromMethodBinding(binding);
+		else
+			method = new Method();
+
+		node.parameters().
+			stream().
+			forEach(p -> 
+				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method, binding));
 		return true;
 	}
 //
