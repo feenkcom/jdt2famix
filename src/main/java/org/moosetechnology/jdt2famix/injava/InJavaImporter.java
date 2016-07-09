@@ -129,6 +129,7 @@ public class InJavaImporter extends Importer {
 		}
 		type.setName(binding.getName());
 		type.setIsStub(true);
+		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		return type;
 	}
 
