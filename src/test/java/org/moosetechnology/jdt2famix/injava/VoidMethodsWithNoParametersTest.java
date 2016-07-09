@@ -13,6 +13,11 @@ public class VoidMethodsWithNoParametersTest extends BasicSampleTestCase {
 	}
 
 	@Test
+	public void testMethodsAreNotStub() {
+		type.getMethods().stream().forEach(m -> assertFalse(m.getIsStub()));
+	}
+	
+	@Test
 	public void testMethodModifiers() {
 		assertEquals(8, type.getMethods().size());
 		Method publicStaticVoidWithNoParameters = type.getMethods().stream().filter(m-> m.getName().equals("publicStaticVoidWithNoParameters")).findAny().get();

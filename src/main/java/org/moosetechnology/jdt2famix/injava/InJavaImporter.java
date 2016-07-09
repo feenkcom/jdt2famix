@@ -13,9 +13,11 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
@@ -30,11 +32,15 @@ public class InJavaImporter extends Importer {
 	private Map<String,Namespace> namespaces;
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
 	
+	private Type unknownType;
 	private Map<String, Type> types;
 	public Map<String, Type> getTypes() { return types; }
 
 	private Map<String, Method> methods;
 	public Map<String, Method> getMethods() { return methods; }
+
+	private Map<String, Attribute> attributes;
+	public Map<String, Attribute> getAttributes() { return attributes; }
 
 	private Map<String, Parameter> parameters;
 	public Map<String, Parameter> getParameters() { return parameters; }
@@ -62,6 +68,7 @@ public class InJavaImporter extends Importer {
 		 types = new HashMap<String, Type>();
 		 namespaces = new HashMap<String, Namespace>();
 		 methods = new HashMap<String, Method>();
+		 attributes = new HashMap<String, Attribute>();
 		 parameters = new HashMap<String, Parameter>();
 	}
 	
@@ -138,6 +145,15 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 	
+	private Type unknownType() {
+		if (unknownType == null) {
+			unknownType = new Type();
+			unknownType.setName("__UNKNOWN__");
+			unknownType.setContainer(unknownNamespace());
+		}
+		return unknownType;
+	}
+	
 	//METHODS
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
 		//FIXME: the parametersString contains a , too many 
@@ -147,10 +163,11 @@ public class InJavaImporter extends Importer {
 				.reduce("", (l, r) -> l + ", " + r);
 		String methodName = binding.getName();
 		String signature = methodName + "(" + parametersString + ")";
-		String fullMethodName = binding.getDeclaringClass().getQualifiedName() + "." + signature;
-		if (methods.containsKey(fullMethodName)) 
-			return methods.get(fullMethodName);
+		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + "." + signature;
+		if (methods.containsKey(qualifiedName)) 
+			return methods.get(qualifiedName);
 		Method method = new Method();
+		methods.put(qualifiedName, method);
 		method.setName(methodName);
 		method.setSignature(signature);
 		method.setIsStub(true);
@@ -168,10 +185,11 @@ public class InJavaImporter extends Importer {
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method, IMethodBinding methodBinding) {
 		String name = variableDeclaration.getName().toString();
-		String fullName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
-		if (parameters.containsKey(fullName)) 
-			return parameters.get(fullName);
+		String qualifiedName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
+		if (parameters.containsKey(qualifiedName)) 
+			return parameters.get(qualifiedName);
 		Parameter parameter = new Parameter();
+		parameters.put(qualifiedName, parameter);
 		parameter.setName(name);
 		parameter.setParentBehaviouralEntity(method);
 		parameter.setDeclaredType(ensureTypeFromTypeBinding(variableDeclaration.getType().resolveBinding()));
@@ -186,6 +204,45 @@ public class InJavaImporter extends Importer {
 		inheritance.setSubclass(subType);
 		repository.add(inheritance);
 		return inheritance;
+	}
+		
+	//ATTRIBUTEs
+	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment) {
+		IVariableBinding binding = fragment.resolveBinding();
+		Attribute attribute;
+		if (binding == null)
+			attribute = ensureAttributeFromFragmentIntoParentType(fragment, (Type) this.topOfContainerStack());
+		else {
+			attribute = ensureAttributeForVariableBinding(binding);
+			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
+		}
+		attribute.setIsStub(true);
+		return attribute;
+	}
+	private Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
+		String name = binding.getName();
+		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + '.' + name;
+		if (attributes.containsKey(qualifiedName)) 
+			return attributes.get(qualifiedName);
+		Attribute attribute = new Attribute();
+		attributes.put(qualifiedName, attribute);
+		attribute.setName(name);
+		attribute.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));		
+		return attribute;
+	}
+	private Attribute ensureAttributeFromFragmentIntoParentType(
+			VariableDeclarationFragment fragment,
+			Type parentType) {
+		String name = fragment.getName().toString();
+		String qualifiedName = getQualifiedName(parentType);
+		if (attributes.containsKey(qualifiedName)) 
+			return attributes.get(qualifiedName);
+		Attribute attribute = new Attribute();
+		attribute.setName(name);
+		attribute.setParentType(parentType);
+		attribute.setDeclaredType(unknownType());
+		return attribute;
 	}
 	
 	//UTILS
@@ -216,8 +273,19 @@ public class InJavaImporter extends Importer {
 		if (Modifier.isStatic(modifiers))
 			entity.addModifiers("static");
 	}
+
+	private String getQualifiedName(Method method) {
+		return getQualifiedName(method.getParentType()) + "." + method.getSignature();
+	}
 	
-		
+	private String getQualifiedName(Type type) {
+		return getQualifiedName(type.getContainer()) + "." + type.getName();
+	}
+
+	private String getQualifiedName(ContainerEntity container) {
+		return container.getName();
+	}
+
 	//EXPORT
 	public void exportMSE(String fileName) {
 		try {
@@ -226,6 +294,5 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
-
 
 }

@@ -16,6 +16,7 @@ public class ClassWithSuperConstructorInvocationTest extends
 	@Test
 	public void test() {
 		assertEquals(1, type.getMethods().size());
+		assertFalse(type.getIsStub());
 		assertEquals("constructor", type.getMethods().stream().findAny().get().getKind());
 	}
 }

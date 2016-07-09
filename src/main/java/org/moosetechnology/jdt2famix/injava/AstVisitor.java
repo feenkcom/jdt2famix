@@ -1,6 +1,8 @@
 package org.moosetechnology.jdt2famix.injava;
 
 
+import java.util.List;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -20,6 +22,8 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Method;
@@ -159,7 +163,7 @@ public class AstVisitor extends ASTVisitor {
 			method = importer.ensureMethodFromMethodBinding(binding);
 		else
 			method = new Method();
-
+		method.setIsStub(false);
 		node.parameters().
 			stream().
 			forEach(p -> 
@@ -182,7 +186,13 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
+		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f));
 		return true;
+	}
+	
+	private void visitFragment(VariableDeclarationFragment fragment) {
+		Attribute attribute = importer.ensureAttributeForFragment(fragment);
+		attribute.setIsStub(false);
 	}
 	
 //	
