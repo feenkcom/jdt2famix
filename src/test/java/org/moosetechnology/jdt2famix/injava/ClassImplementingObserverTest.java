@@ -25,12 +25,11 @@ public class ClassImplementingObserverTest extends BasicSampleTestCase {
 	
 	@Test
 	public void testInterface() {	
-		Class observer = (Class) importer.getTypes().get(Observer.class.getName());
-		assertTrue(observer.getIsInterface());
-		assertTrue(observer.getIsStub());
-		assertEquals(
-					observer.getContainer(), 
-					importer.getNamespaces().get(Observer.class.getPackage().getName()));
+		Class observerClass = (Class) type;
+		assertTrue(observerClass.getIsInterface());
+		assertTrue(observerClass.getIsStub());
+		assertEquals(observerClass.getContainer(), 
+					 importer.getNamespaces().get(Observer.class.getPackage().getName()));
 	}
 	
 	@Test
@@ -38,9 +37,8 @@ public class ClassImplementingObserverTest extends BasicSampleTestCase {
 		Class observerClass = (Class) type;
 		assertFalse(observerClass.getIsInterface());
 		assertFalse(observerClass.getIsStub());
-		assertEquals(
-				observerClass.getContainer(), 
-				importer.getNamespaces().get(ClassImplementingObserver.class.getPackage().getName()));
+		assertEquals(observerClass.getContainer(), 
+				     importer.getNamespaces().get(ClassImplementingObserver.class.getPackage().getName()));
 	}
 	
 	@Test

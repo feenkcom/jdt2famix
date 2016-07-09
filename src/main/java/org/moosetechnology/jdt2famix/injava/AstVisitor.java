@@ -164,36 +164,27 @@ public class AstVisitor extends ASTVisitor {
 			stream().
 			forEach(p -> 
 				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method, binding));
+		
+		importer.pushOnContainerStack(method);
 		return true;
 	}
-//
-//	/**
-//	 * Needed for keeping track of the current container
-//	 */
-//	public static String endVisitMethodDeclarationCallback = AstVisitor.class.getName() + "endVisit(MethodDeclaration)";
-//	@Override
-//	public void endVisit(MethodDeclaration node) {
-//		try {
-//			new SmalltalkRequest(endVisitMethodDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	
-//	////////ATTRIBUTES
-//	
-//	public static String visitFieldDeclarationCallback = AstVisitor.class.getName() + "visit(FieldDeclaration)";
-//	@Override
-//	public boolean visit(FieldDeclaration node) {
-//		try {
-//			new SmalltalkRequest(visitFieldDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
+
+	/**
+	 * Needed for keeping track of the current container
+	 */
+	@Override
+	public void endVisit(MethodDeclaration node) {
+		importer.popFromContainerStack();
+	}
+
+	
+	////////ATTRIBUTES
+	
+	@Override
+	public boolean visit(FieldDeclaration node) {
+		return true;
+	}
+	
 //	
 //	////////INVOCATIONS
 //	

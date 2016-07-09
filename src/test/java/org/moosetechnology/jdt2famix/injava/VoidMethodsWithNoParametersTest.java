@@ -19,7 +19,8 @@ public class VoidMethodsWithNoParametersTest extends BasicSampleTestCase {
 		assertEquals(2, publicStaticVoidWithNoParameters.getModifiers().size());
 		assertTrue(publicStaticVoidWithNoParameters.getModifiers().stream().anyMatch(m -> m.equals("public")));
 		assertTrue(publicStaticVoidWithNoParameters.getModifiers().stream().anyMatch(m -> m.equals("static")));
-
+		assertNull(publicStaticVoidWithNoParameters.getDeclaredType());
+		
 		Method protectedStaticVoidWithNoParameters = type.getMethods().stream().filter(m-> m.getName().equals("protectedStaticVoidWithNoParameters")).findAny().get();
 		assertEquals(2, protectedStaticVoidWithNoParameters.getModifiers().size());
 		assertTrue(protectedStaticVoidWithNoParameters.getModifiers().stream().anyMatch(m -> m.equals("protected")));

@@ -48,6 +48,10 @@ public class InJavaImporter extends Importer {
 	 */ 
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
 	public Deque<ContainerEntity> getContainerStack() { return containerStack; }
+	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
+	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
+	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
+
 	
 	public InJavaImporter() {
 		 MetaRepository metaRepository = new MetaRepository();
@@ -67,6 +71,8 @@ public class InJavaImporter extends Importer {
 		return new AstRequestor(this);
 	}
 
+
+	//NAMESPACES
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
 		String packageName = binding.getName();
 		if (namespaces.containsKey(packageName)) 
@@ -79,7 +85,6 @@ public class InJavaImporter extends Importer {
 		}
 	}
 
-	//NAMESPACES
 	private Namespace createNamespaceNamed(String k) {
 		Namespace namespace = new Namespace();
 		namespace.setName(k);
@@ -132,37 +137,8 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		return type;
 	}
-
-	//INHERITANCE
-	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
-			ITypeBinding superBinding) {
-		Inheritance inheritance = new Inheritance();
-		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
-		inheritance.setSubclass(subType);
-		repository.add(inheritance);
-		return inheritance;
-	}
 	
-	//STACK
-	public void pushOnContainerStack(ContainerEntity namespace) {
-		this.containerStack.push(namespace);
-	}
-	public ContainerEntity popFromContainerStack() {
-		return this.containerStack.pop();
-	}
-	public ContainerEntity topOfContainerStack() {
-		return this.containerStack.peek();
-	}
-	
-	//EXPORT
-	public void exportMSE(String fileName) {
-		try {
-			repository.exportMSE(new FileWriter(fileName));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
+	//METHODS
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
 		//FIXME: the parametersString contains a , too many 
 		String parametersString = Arrays
@@ -183,11 +159,36 @@ public class InJavaImporter extends Importer {
 			method.setKind("constructor");
 		ITypeBinding returnType = binding.getReturnType();
 		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
+			//we do not want to set void as a return type
 			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		return method;
 	}
+	
+	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
+			Method method, IMethodBinding methodBinding) {
+		String name = variableDeclaration.getName().toString();
+		String fullName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
+		if (parameters.containsKey(fullName)) 
+			return parameters.get(fullName);
+		Parameter parameter = new Parameter();
+		parameter.setName(name);
+		parameter.setParentBehaviouralEntity(method);
+		parameter.setDeclaredType(ensureTypeFromTypeBinding(variableDeclaration.getType().resolveBinding()));
+		return parameter;
+	}
 
+	//INHERITANCE
+	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
+			ITypeBinding superBinding) {
+		Inheritance inheritance = new Inheritance();
+		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
+		inheritance.setSubclass(subType);
+		repository.add(inheritance);
+		return inheritance;
+	}
+	
+	//UTILS
 	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
 		Boolean publicModifier = Modifier.isPublic(modifiers);
 		Boolean protectedModifier = Modifier.isProtected(modifiers);
@@ -214,20 +215,17 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("volatile");
 		if (Modifier.isStatic(modifiers))
 			entity.addModifiers("static");
+	}
+	
 		
+	//EXPORT
+	public void exportMSE(String fileName) {
+		try {
+			repository.exportMSE(new FileWriter(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
-			Method method, IMethodBinding methodBinding) {
-		String name = variableDeclaration.getName().toString();
-		String fullName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
-		if (parameters.containsKey(fullName)) 
-			return parameters.get(fullName);
-		Parameter parameter = new Parameter();
-		parameter.setName(name);
-		parameter.setParentBehaviouralEntity(method);
-		parameter.setDeclaredType(ensureTypeFromTypeBinding(variableDeclaration.getType().resolveBinding()));
-		return parameter;
-	}
 
 }
