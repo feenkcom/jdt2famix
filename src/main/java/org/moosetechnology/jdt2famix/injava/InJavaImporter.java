@@ -105,7 +105,7 @@ public class InJavaImporter extends Importer {
 		return ensureNamespaceFromPackageBinding(binding.getPackage());
 	}
 	
-	private Namespace unknownNamespace() {
+	Namespace unknownNamespace() {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName("__UNKNOWN__");
@@ -145,7 +145,7 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 	
-	private Type unknownType() {
+	Type unknownType() {
 		if (unknownType == null) {
 			unknownType = new Type();
 			unknownType.setName("__UNKNOWN__");
