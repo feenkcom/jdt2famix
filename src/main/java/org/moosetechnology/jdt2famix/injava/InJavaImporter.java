@@ -13,6 +13,7 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.moosetechnology.jdt2famix.Importer;
@@ -182,7 +183,37 @@ public class InJavaImporter extends Importer {
 		ITypeBinding returnType = binding.getReturnType();
 		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
 			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
+		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		return method;
+	}
+
+	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
+		Boolean publicModifier = Modifier.isPublic(modifiers);
+		Boolean protectedModifier = Modifier.isProtected(modifiers);
+		Boolean privateModifier = Modifier.isPrivate(modifiers);
+		if (publicModifier )
+			entity.addModifiers("public");
+		if (protectedModifier)
+			entity.addModifiers("protected");
+		if (privateModifier)
+			entity.addModifiers("private");
+		if (!(publicModifier || protectedModifier || privateModifier))
+			entity.addModifiers("package");
+		if (Modifier.isFinal(modifiers))
+			entity.addModifiers("final");
+		if (Modifier.isAbstract(modifiers))
+			entity.addModifiers("abstract");
+		if (Modifier.isNative(modifiers))
+			entity.addModifiers("native");
+		if (Modifier.isSynchronized(modifiers))
+			entity.addModifiers("synchronized");
+		if (Modifier.isTransient(modifiers))
+			entity.addModifiers("transient");
+		if (Modifier.isVolatile(modifiers))
+			entity.addModifiers("volatile");
+		if (Modifier.isStatic(modifiers))
+			entity.addModifiers("static");
+		
 	}
 
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
