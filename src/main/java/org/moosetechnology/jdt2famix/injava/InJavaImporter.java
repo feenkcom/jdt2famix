@@ -14,8 +14,10 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.moosetechnology.jdt2famix.Importer;
@@ -115,6 +117,7 @@ public class InJavaImporter extends Importer {
 
 	//TYPES
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
+		if (binding == null) return unknownType();
 		String qualifiedName = binding.getQualifiedName();
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
@@ -182,10 +185,30 @@ public class InJavaImporter extends Importer {
 		return method;
 	}
 	
+	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
+		String parametersString = Arrays
+				.stream(node.parameters().toArray())
+				.map(p -> (String) ((SingleVariableDeclaration) p).getType().toString())
+				.reduce("", (l, r) -> l + ", " + r);
+		String methodName = node.getName().toString();
+		String signature = methodName + "(" + parametersString + ")";
+		String qualifiedName = getQualifiedName(topOfContainerStack()) + "." + signature;
+		if(methods.containsKey(qualifiedName))
+			return methods.get(qualifiedName);
+		Method method = new Method();
+		method.setName(methodName);
+		method.setSignature(signature);
+		method.setParentType((Type) topOfContainerStack());
+		method.setDeclaredType(unknownType());
+		method.setIsStub(true);
+		return method;
+	}
+
+	
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
-			Method method, IMethodBinding methodBinding) {
+			Method method) {
 		String name = variableDeclaration.getName().toString();
-		String qualifiedName = methodBinding.getDeclaringClass().getName() + "." + method.getSignature() + "." + name;
+		String qualifiedName = getQualifiedName(method) + "." + name;
 		if (parameters.containsKey(qualifiedName)) 
 			return parameters.get(qualifiedName);
 		Parameter parameter = new Parameter();

@@ -162,12 +162,12 @@ public class AstVisitor extends ASTVisitor {
 		if (binding != null)
 			method = importer.ensureMethodFromMethodBinding(binding);
 		else
-			method = new Method();
+			method = importer.ensureMethodFromMethodDeclaration(node);
 		method.setIsStub(false);
 		node.parameters().
 			stream().
 			forEach(p -> 
-				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method, binding));
+				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
 		
 		importer.pushOnContainerStack(method);
 		return true;
