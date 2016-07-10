@@ -25,7 +25,7 @@ public class ClassImplementingObserverTest extends BasicSampleTestCase {
 	
 	@Test
 	public void testInterface() {	
-		Class observerClass = (Class) type;
+		Class observerClass = (Class) importer.getTypes().get(Observer.class.getName());
 		assertTrue(observerClass.getIsInterface());
 		assertTrue(observerClass.getIsStub());
 		assertEquals(observerClass.getContainer(), 
