@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -16,7 +15,6 @@ import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
-import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -28,6 +26,18 @@ import org.moosetechnology.model.java.JavaModel;
 import ch.akuhn.fame.MetaRepository;
 import ch.akuhn.fame.Repository;
 
+/**
+ * The core class that holds the logic of creating the model
+ * It looks like a god class, but it is convenient to have most of the logic here
+ * 
+ * There are two main types of methods
+ * 1. ensure methods are those that always return the same instance of a named entity for the same qualified name.
+ *    These are important for creating the graph 
+ * 2. create methods create the instances both for named entities and for other types (such as associations)
+ * 
+ * @author girba
+ *
+ */
 public class InJavaImporter extends Importer {
 
 	private Namespace unknownNamespace;
@@ -111,6 +121,8 @@ public class InJavaImporter extends Importer {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName("__UNKNOWN__");
+			unknownNamespace.setIsStub(true);
+			namespaces.put(getQualifiedName(unknownNamespace), unknownNamespace);
 		}
 		return unknownNamespace;
 	}
@@ -147,16 +159,40 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		return type;
 	}
+
+	/**
+	 * We need this for the case in which a declared type cannot be resolved
+	 */
+	private Type ensureTypeFromDomType(org.eclipse.jdt.core.dom.Type domType) {
+		if (domType.isSimpleType())
+			return typeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
+		return unknownType();
+	}
 	
+	/**
+	 * This is the type we used as a null object whenever we need to reference a type  
+	 */
 	Type unknownType() {
 		if (unknownType == null) {
-			unknownType = new Type();
-			unknownType.setName("__UNKNOWN__");
-			unknownType.setContainer(unknownNamespace());
+			unknownType = typeNamedInUnknownNamespace("__UNKNOWN__");
 		}
 		return unknownType;
 	}
 	
+	private Type typeNamedInUnknownNamespace(String name) {
+		Type type = new Type();
+		type.setName(name);
+		type.setContainer(unknownNamespace());
+		type.setIsStub(true);
+		String qualifiedName = getQualifiedName(type);
+		if (types.containsKey(qualifiedName))
+			return types.get(qualifiedName);
+		else {
+			types.put(getQualifiedName(type), type);
+			return type;
+		}
+	}
+
 	//METHODS
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
 		//FIXME: the parametersString contains a , too many 
@@ -199,12 +235,12 @@ public class InJavaImporter extends Importer {
 		method.setName(methodName);
 		method.setSignature(signature);
 		method.setParentType((Type) topOfContainerStack());
-		method.setDeclaredType(unknownType());
+		method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 		method.setIsStub(true);
 		return method;
 	}
 
-	
+
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
