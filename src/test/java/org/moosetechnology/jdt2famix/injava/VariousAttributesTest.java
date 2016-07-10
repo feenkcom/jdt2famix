@@ -42,7 +42,8 @@ public class VariousAttributesTest extends BasicSampleTestCase {
 		assertEquals(org.moosetechnology.model.famix.Class.class, publicStringAttribute.getDeclaredType().getClass());
 
 		Attribute protectedVariousMethodsAttribute = attributeNamed("protectedVariousMethodsAttribute");
-		assertEquals(importer.unknownType(), protectedVariousMethodsAttribute.getDeclaredType());
+		assertNotEquals(importer.unknownType(), protectedVariousMethodsAttribute.getDeclaredType());
+		assertEquals(importer.unknownNamespace(), protectedVariousMethodsAttribute.getDeclaredType().getContainer());
 
 	}
 }

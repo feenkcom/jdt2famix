@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
@@ -265,12 +266,17 @@ public class InJavaImporter extends Importer {
 		return inheritance;
 	}
 		
-	//ATTRIBUTEs
-	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment) {
+	//ATTRIBUTES
+	
+	/**
+	 * We pass both the fragment and the field because we might need the field type when the binding cannot be resolved
+	 * @return
+	 */
+	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		IVariableBinding binding = fragment.resolveBinding();
 		Attribute attribute;
 		if (binding == null)
-			attribute = ensureAttributeFromFragmentIntoParentType(fragment, (Type) this.topOfContainerStack());
+			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, (Type) this.topOfContainerStack());
 		else {
 			attribute = ensureAttributeForVariableBinding(binding);
 			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
@@ -292,6 +298,7 @@ public class InJavaImporter extends Importer {
 	}
 	private Attribute ensureAttributeFromFragmentIntoParentType(
 			VariableDeclarationFragment fragment,
+			FieldDeclaration field,
 			Type parentType) {
 		String name = fragment.getName().toString();
 		String qualifiedName = getQualifiedName(parentType);
@@ -300,7 +307,7 @@ public class InJavaImporter extends Importer {
 		Attribute attribute = new Attribute();
 		attribute.setName(name);
 		attribute.setParentType(parentType);
-		attribute.setDeclaredType(unknownType());
+		attribute.setDeclaredType(ensureTypeFromDomType(field.getType()));
 		return attribute;
 	}
 	

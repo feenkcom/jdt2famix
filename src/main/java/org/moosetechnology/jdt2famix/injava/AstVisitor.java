@@ -186,12 +186,12 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
-		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f));
+		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f, node));
 		return true;
 	}
 	
-	private void visitFragment(VariableDeclarationFragment fragment) {
-		Attribute attribute = importer.ensureAttributeForFragment(fragment);
+	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
+		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
 		attribute.setIsStub(false);
 	}
 	
