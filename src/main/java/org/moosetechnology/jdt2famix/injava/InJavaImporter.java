@@ -162,9 +162,16 @@ public class InJavaImporter extends Importer {
 	}
 
 	/**
-	 * We need this for the case in which a declared type cannot be resolved
+	 * All types should be ensured first via this method.
+	 * We first check to see if the binding is resolvable (not null)
+	 * If it is not null we ensure the type from the binding (the happy case)
+	 * If the type is null we recover what we know (for example, the name of a simple type)
+	 * In the worst case we return the {@link #unknownType()} 
 	 */
 	private Type ensureTypeFromDomType(org.eclipse.jdt.core.dom.Type domType) {
+		ITypeBinding binding = domType.resolveBinding();
+		if (binding != null)
+			return ensureTypeFromTypeBinding(binding);
 		if (domType.isSimpleType())
 			return typeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
 		return unknownType();
@@ -241,7 +248,6 @@ public class InJavaImporter extends Importer {
 		return method;
 	}
 
-
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
@@ -252,7 +258,7 @@ public class InJavaImporter extends Importer {
 		parameters.put(qualifiedName, parameter);
 		parameter.setName(name);
 		parameter.setParentBehaviouralEntity(method);
-		parameter.setDeclaredType(ensureTypeFromTypeBinding(variableDeclaration.getType().resolveBinding()));
+		parameter.setDeclaredType(ensureTypeFromDomType(variableDeclaration.getType()));
 		return parameter;
 	}
 

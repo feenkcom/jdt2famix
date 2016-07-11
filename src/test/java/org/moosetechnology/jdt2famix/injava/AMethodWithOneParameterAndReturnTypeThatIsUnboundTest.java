@@ -22,4 +22,12 @@ public class AMethodWithOneParameterAndReturnTypeThatIsUnboundTest extends
 		assertEquals(importer.unknownNamespace(), method.getDeclaredType().getContainer());
 	}
 	
+	@Test
+	public void testParameter() {
+		Method method = methodNamed("withVariousAttributesParameterAndVariousConstructorsReturn");
+		assertEquals(1, method.getParameters().size());
+		assertNotEquals(importer.unknownType(), method.getParameters().stream().findAny().get().getDeclaredType());
+		assertEquals("VariousAttributes", method.getParameters().stream().findAny().get().getDeclaredType().getName());
+	}
+	
 }
