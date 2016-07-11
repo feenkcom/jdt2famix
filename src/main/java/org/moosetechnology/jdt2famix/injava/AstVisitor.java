@@ -22,7 +22,9 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
@@ -83,6 +85,8 @@ public class AstVisitor extends ASTVisitor {
 		importer.popFromContainerStack();
 	}
 
+	
+	
 //	public static String visitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "visit(AnonymousClassDeclaration)";
 //	@Override
 //	public boolean visit(AnonymousClassDeclaration node) {
@@ -168,7 +172,6 @@ public class AstVisitor extends ASTVisitor {
 			stream().
 			forEach(p -> 
 				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
-		
 		importer.pushOnContainerStack(method);
 		return true;
 	}
@@ -180,7 +183,7 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(MethodDeclaration node) {
 		importer.popFromContainerStack();
 	}
-
+	
 	
 	////////ATTRIBUTES
 	
@@ -193,6 +196,23 @@ public class AstVisitor extends ASTVisitor {
 	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
 		attribute.setIsStub(false);
+	}
+	
+	
+	////////LOCAL VARIABLES
+	
+//  I do not know when this one is triggered
+//	public boolean visit(VariableDeclarationExpression node) {
+//		node.fragments().stream().forEach(
+//				fragment -> 
+//				importer.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
+//		return true;
+//	}
+	public boolean visit(VariableDeclarationStatement node) {
+		node.fragments().stream().forEach(
+				fragment -> 
+				importer.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
+		return true;
 	}
 	
 //	

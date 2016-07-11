@@ -18,6 +18,7 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
@@ -365,6 +366,22 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	
+	/*
+	 * We pass the dom type here because of the funny types of JDT 
+	 */
+	public LocalVariable ensureLocalVariableFromFragment(
+			VariableDeclarationFragment fragment,
+			org.eclipse.jdt.core.dom.Type type) {
+		LocalVariable localVariable = new LocalVariable();
+		localVariable.setName(fragment.getName().toString());
+		localVariable.setDeclaredType(ensureTypeFromDomType(type));
+		//CHECK: We might want to recover the modifiers (final) 
+		localVariable.setIsStub(true);
+		((Method) topOfContainerStack()).addLocalVariables(localVariable);
+		return localVariable;
 	}
 
 }
