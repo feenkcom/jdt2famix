@@ -86,12 +86,10 @@ public class InJavaImporter extends Importer {
 		 parameters = new HashMap<String, Parameter>();
 	}
 	
-	
 	@Override
 	protected FileASTRequestor getRequestor() {
 		return new AstRequestor(this);
 	}
-
 
 	//NAMESPACES
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
@@ -202,6 +200,35 @@ public class InJavaImporter extends Importer {
 		}
 	}
 
+	//INHERITANCE
+	
+	/*
+	 * We use this one when we have the super type binding
+	 */
+	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
+			ITypeBinding superBinding) {
+		Inheritance inheritance = new Inheritance();
+		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
+		inheritance.setSubclass(subType);
+		repository.add(inheritance);
+		return inheritance;
+	}
+
+	/*
+	 * When we cannot resolve the binding of the superclass of a class declaration,
+	 * we still want to create a {@link Type} with the best available information
+	 * from {@link org.eclipse.jdt.core.dom.Type}  
+	 */
+	public Inheritance createInheritanceFromSubtypeToSuperDomType(Type subType,
+			org.eclipse.jdt.core.dom.Type type) {
+		Inheritance inheritance = new Inheritance();
+		inheritance.setSuperclass(ensureTypeFromDomType(type)); 
+		inheritance.setSubclass(subType);
+		repository.add(inheritance);
+		return inheritance;
+	}
+		
+
 	//METHODS
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
 		//FIXME: the parametersString contains a , too many 
@@ -263,20 +290,10 @@ public class InJavaImporter extends Importer {
 		return parameter;
 	}
 
-	//INHERITANCE
-	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
-			ITypeBinding superBinding) {
-		Inheritance inheritance = new Inheritance();
-		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
-		inheritance.setSubclass(subType);
-		repository.add(inheritance);
-		return inheritance;
-	}
-		
 	//ATTRIBUTES
 	
 	/**
-	 * We pass both the fragment and the field because we might need the field type when the binding cannot be resolved
+	 * We pass both the fragment and the field because we need the field type when the binding cannot be resolved
 	 * @return
 	 */
 	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {

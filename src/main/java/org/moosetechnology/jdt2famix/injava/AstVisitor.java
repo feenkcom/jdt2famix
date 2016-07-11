@@ -1,6 +1,7 @@
 package org.moosetechnology.jdt2famix.injava;
 
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -56,7 +57,6 @@ public class AstVisitor extends ASTVisitor {
 		importer.pushOnContainerStack(namespace);
 		return true;
 	}
-	
 	/**
 	 * Needed for keeping track of the current container
 	 */
@@ -70,7 +70,16 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(TypeDeclaration node) {
-		Type type = importer.ensureTypeFromTypeBinding(node.resolveBinding());
+		ITypeBinding binding = node.resolveBinding();
+		Type type = importer.ensureTypeFromTypeBinding(binding);
+		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
+		/* This is an ugly patch. When the binding to the superclass or super interfaces cannot be resolved,
+		 * we try to recover as much info as possible
+		 * We do it here because it is hard to pass around the dom type */
+		if (binding.getSuperclass() == null && superclassType != null)
+			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
+		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
+			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		//TODO: rethink what happens with the container of nested classes
 		type.setIsStub(false);
 		importer.pushOnContainerStack(type);
