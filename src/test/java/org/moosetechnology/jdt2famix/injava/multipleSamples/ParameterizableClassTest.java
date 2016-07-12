@@ -3,11 +3,13 @@ package org.moosetechnology.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
+import org.moosetechnology.jdt2famix.Famix;
 import org.moosetechnology.jdt2famix.JavaFiles;
 import org.moosetechnology.jdt2famix.samples.basic.SimpleParameterizableClass;
 import org.moosetechnology.jdt2famix.samples.basic.SimpleSubclassOfParameterizedType;
 import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.ParameterizableClass;
+import org.moosetechnology.model.famix.ParameterizedType;
 
 public class ParameterizableClassTest extends MultipleSamplesTestCase {
 
@@ -22,7 +24,7 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 		assertEquals(4, importer.getTypes().size());
 		assertTrue(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName()) instanceof Class);
 		assertTrue(importer.getTypes().get(SimpleParameterizableClass.class.getName()) instanceof ParameterizableClass);
-		
+		assertTrue(Famix.superclassOf(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName())) instanceof ParameterizedType);		
 	}
 
 }
