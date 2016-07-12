@@ -10,8 +10,14 @@ import org.moosetechnology.jdt2famix.samples.basic.SimpleSubclassOfParameterized
 import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.ParameterizableClass;
 import org.moosetechnology.model.famix.ParameterizedType;
+import org.moosetechnology.model.famix.Type;
 
 public class ParameterizableClassTest extends MultipleSamplesTestCase {
+
+	private Type parameterizableClass;
+	private Type parameterizedType;
+	private Type subclass;
+
 
 	@Override
 	protected void sampleClassesIn(JavaFiles javaFiles) {
@@ -19,12 +25,26 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 		javaFiles.oneJavaFile(fileNameFor(SimpleSubclassOfParameterizedType.class));
 	}
 	
+	@Override
+	protected void setUp() {
+		parameterizableClass = importer.getTypes().get(SimpleParameterizableClass.class.getName());
+		parameterizedType = Famix.superclassOf(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName()));
+		subclass = importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName());
+	}
+	
+	
 	@Test
-	public void test2Types() {
+	public void types() {
 		assertEquals(4, importer.getTypes().size());
-		assertTrue(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName()) instanceof Class);
-		assertTrue(importer.getTypes().get(SimpleParameterizableClass.class.getName()) instanceof ParameterizableClass);
-		assertTrue(Famix.superclassOf(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName())) instanceof ParameterizedType);		
+		assertTrue(subclass instanceof Class);
+		assertTrue(parameterizableClass instanceof ParameterizableClass);
+		assertTrue(parameterizedType instanceof ParameterizedType);
 	}
 
+	@Test
+	public void connections() {
+		assertEquals(parameterizableClass, ((ParameterizedType) parameterizedType).getParameterizableClass());
+		assertEquals(parameterizedType, ((ParameterizableClass) parameterizableClass).getParameterizedTypes().stream().findAny().get());
+	}
+	
 }

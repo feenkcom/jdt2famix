@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
@@ -159,6 +160,7 @@ public class InJavaImporter extends Importer {
 		if (binding.isGenericType()) {
 			ParameterizableClass parameterizableClass = new ParameterizableClass();
 			parameterizableClass.setIsInterface(binding.isInterface());
+			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 			return parameterizableClass;
 		}
 		if (binding.isEnum())
@@ -166,6 +168,13 @@ public class InJavaImporter extends Importer {
 		Class clazz = new Class();
 		clazz.setIsInterface(binding.isInterface());
 		return clazz;
+	}
+	
+	private ParameterType createParameterType(String name, Type container) {
+		ParameterType parameterType = new ParameterType();
+		parameterType.setName(name);
+		parameterType.setContainer(container);
+		return parameterType;
 	}
 
 	/**
