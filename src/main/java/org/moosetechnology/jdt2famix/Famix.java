@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.moosetechnology.model.famix.ContainerEntity;
 import org.moosetechnology.model.famix.Inheritance;
+import org.moosetechnology.model.famix.Method;
 import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Class;
 
@@ -32,5 +34,16 @@ public class Famix {
 				(i.getSuperclass() instanceof Class) && 
 				((Class) i.getSuperclass()).getIsInterface())
 				.map(i -> i.getSuperclass());
+	}
+	
+	
+	public static String qualifiedNameOf(Method method) {
+		return qualifiedNameOf(method.getParentType()) + "." + method.getSignature();
+	}
+	public static String qualifiedNameOf(Type type) {
+		return qualifiedNameOf(type.getContainer()) + "." + type.getName();
+	}
+	public static String qualifiedNameOf(ContainerEntity container) {
+		return container.getName();
 	}
 }

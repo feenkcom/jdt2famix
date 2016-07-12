@@ -21,8 +21,8 @@ import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+import org.moosetechnology.jdt2famix.Famix;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
@@ -126,14 +126,14 @@ public class InJavaImporter extends Importer {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName("__UNKNOWN__");
 			unknownNamespace.setIsStub(true);
-			namespaces.put(getQualifiedName(unknownNamespace), unknownNamespace);
+			namespaces.put(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
 		}
 		return unknownNamespace;
 	}
 
 	//TYPES
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
-		if (binding == null) return unknownType();
+//		if (binding == null) return unknownType();
 		String qualifiedName = binding.getQualifiedName();
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
@@ -163,7 +163,7 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	private Type createTypeFromTypeBinding(ITypeBinding binding) {
+	Type createTypeFromTypeBinding(ITypeBinding binding) {
 		if (binding.isPrimitive())
 			return new PrimitiveType();
 		if (binding.isParameterizedType())
@@ -218,11 +218,11 @@ public class InJavaImporter extends Importer {
 		type.setName(name);
 		type.setContainer(unknownNamespace());
 		type.setIsStub(true);
-		String qualifiedName = getQualifiedName(type);
+		String qualifiedName = Famix.qualifiedNameOf(type);
 		if (types.containsKey(qualifiedName))
 			return types.get(qualifiedName);
 		else {
-			types.put(getQualifiedName(type), type);
+			types.put(Famix.qualifiedNameOf(type), type);
 			return type;
 		}
 	}
@@ -291,7 +291,7 @@ public class InJavaImporter extends Importer {
 				.reduce("", (l, r) -> l + ", " + r);
 		String methodName = node.getName().toString();
 		String signature = methodName + "(" + parametersString + ")";
-		String qualifiedName = getQualifiedName(topOfContainerStack()) + "." + signature;
+		String qualifiedName = Famix.qualifiedNameOf(topOfContainerStack()) + "." + signature;
 		if(methods.containsKey(qualifiedName))
 			return methods.get(qualifiedName);
 		Method method = new Method();
@@ -306,7 +306,7 @@ public class InJavaImporter extends Importer {
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
-		String qualifiedName = getQualifiedName(method) + "." + name;
+		String qualifiedName = Famix.qualifiedNameOf(method) + "." + name;
 		if (parameters.containsKey(qualifiedName)) 
 			return parameters.get(qualifiedName);
 		Parameter parameter = new Parameter();
@@ -352,7 +352,7 @@ public class InJavaImporter extends Importer {
 			FieldDeclaration field,
 			Type parentType) {
 		String name = fragment.getName().toString();
-		String qualifiedName = getQualifiedName(parentType);
+		String qualifiedName = Famix.qualifiedNameOf(parentType);
 		if (attributes.containsKey(qualifiedName)) 
 			return attributes.get(qualifiedName);
 		Attribute attribute = new Attribute();
@@ -391,17 +391,6 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("static");
 	}
 
-	private String getQualifiedName(Method method) {
-		return getQualifiedName(method.getParentType()) + "." + method.getSignature();
-	}
-	
-	private String getQualifiedName(Type type) {
-		return getQualifiedName(type.getContainer()) + "." + type.getName();
-	}
-
-	private String getQualifiedName(ContainerEntity container) {
-		return container.getName();
-	}
 
 	//EXPORT
 	public void exportMSE(String fileName) {

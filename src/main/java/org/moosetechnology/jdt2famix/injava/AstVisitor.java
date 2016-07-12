@@ -81,7 +81,6 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
-		//TODO: rethink what happens with the container of nested classes
 		type.setIsStub(false);
 		importer.pushOnContainerStack(type);
 		return true;
@@ -97,10 +96,13 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
-		Class clazz = new Class();
-		clazz.setContainer(importer.topOfContainerStack());
-		clazz.setName("$" + importer.topOfContainerStack().getTypes().size());
-		importer.pushOnContainerStack(clazz);
+		ITypeBinding binding = node.resolveBinding();
+		Type type = importer.createTypeFromTypeBinding(binding);
+		type.setContainer(importer.topOfContainerStack());
+		type.setName("$" + importer.topOfContainerStack().getTypes().size());
+		importer.createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		type.setIsStub(false);
+		importer.pushOnContainerStack(type);
 		return true;
 	}
 	
@@ -108,7 +110,8 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(AnonymousClassDeclaration node) {
 		importer.popFromContainerStack();
 	}
-//	
+
+	
 //	public static String visitEnumDeclarationCallback = AstVisitor.class.getName() + "visit(EnumDeclaration)";
 //	@Override
 //	public boolean visit(EnumDeclaration node) {
