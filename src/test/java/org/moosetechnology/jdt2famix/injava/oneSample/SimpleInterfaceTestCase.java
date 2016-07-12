@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
@@ -8,7 +8,7 @@ import org.moosetechnology.jdt2famix.samples.basic.SimpleInterface;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
 
-public class SimpleInterfaceTestCase extends BasicSampleTestCase {
+public class SimpleInterfaceTestCase extends OneSampleTestCase {
 
 	@Override
 	protected java.lang.Class<?> sampleClass() {

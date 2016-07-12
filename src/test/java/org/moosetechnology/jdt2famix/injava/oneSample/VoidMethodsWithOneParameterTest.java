@@ -1,11 +1,11 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.VoidMethodsWithOneParameter;
 
-public class VoidMethodsWithOneParameterTest extends BasicSampleTestCase {
+public class VoidMethodsWithOneParameterTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {

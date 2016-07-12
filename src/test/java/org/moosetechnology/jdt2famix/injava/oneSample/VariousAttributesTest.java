@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,7 @@ import org.moosetechnology.jdt2famix.samples.basic.VariousAttributes;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.PrimitiveType;
 
-public class VariousAttributesTest extends BasicSampleTestCase {
+public class VariousAttributesTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {

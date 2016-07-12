@@ -1,11 +1,11 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.VariousLocalVariables;
 
-public class VariousLocalVariablesTest extends BasicSampleTestCase {
+public class VariousLocalVariablesTest extends OneSampleTestCase {
 	
 	@Override
 	protected Class<?> sampleClass() {

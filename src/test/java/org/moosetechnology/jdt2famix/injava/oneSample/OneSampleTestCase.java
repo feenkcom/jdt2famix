@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import org.junit.Before;
 import org.moosetechnology.jdt2famix.injava.InJavaImporter;
@@ -6,7 +6,7 @@ import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Method;
 import org.moosetechnology.model.famix.Type;
 
-public abstract class BasicSampleTestCase {
+public abstract class OneSampleTestCase {
 	
 	protected InJavaImporter importer;
 	protected Type type;

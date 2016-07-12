@@ -19,6 +19,10 @@ public abstract class Importer {
 		parser.createASTs(javaFiles.paths(), null, new String[0], getRequestor(), null);
 	}
 
+	public void run(JavaFiles javaFiles) {
+		this.run(javaFiles, new Classpath());
+	}
+
 	public void runOne(String oneFilePath) {
 		JavaFiles javaFiles = new JavaFiles();
 		javaFiles.oneJavaFile(oneFilePath);

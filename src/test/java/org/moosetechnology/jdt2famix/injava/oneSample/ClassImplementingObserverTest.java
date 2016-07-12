@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
@@ -10,7 +10,7 @@ import org.moosetechnology.jdt2famix.samples.basic.ClassImplementingObserver;
 import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.Method;
 
-public class ClassImplementingObserverTest extends BasicSampleTestCase {
+public class ClassImplementingObserverTest extends OneSampleTestCase {
 
 	@Override
 	protected java.lang.Class<?> sampleClass() {

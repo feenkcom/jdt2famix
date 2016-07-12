@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
@@ -7,7 +7,7 @@ import org.moosetechnology.jdt2famix.samples.basic.AMethodWithOneParameterAndRet
 import org.moosetechnology.model.famix.Method;
 
 public class AMethodWithOneParameterAndReturnTypeThatIsUnboundTest extends
-		BasicSampleTestCase {
+		OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {

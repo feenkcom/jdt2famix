@@ -23,6 +23,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.moosetechnology.jdt2famix.Importer;
 import org.moosetechnology.model.famix.*;
 import org.moosetechnology.model.famix.Class;
+import org.moosetechnology.model.famix.Enum;
 import org.moosetechnology.model.java.JavaModel;
 
 import ch.akuhn.fame.MetaRepository;
@@ -117,7 +118,7 @@ public class InJavaImporter extends Importer {
 		return ensureNamespaceFromPackageBinding(binding.getPackage());
 	}
 	
-	Namespace unknownNamespace() {
+	public Namespace unknownNamespace() {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName("__UNKNOWN__");
@@ -133,31 +134,38 @@ public class InJavaImporter extends Importer {
 		String qualifiedName = binding.getQualifiedName();
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
-		types.put(qualifiedName, type);
 		type.setName(binding.getName());
+		type.setIsStub(true);
+		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		type.setContainer(ensureContainerEntityForTypeBinding(binding));
 		if (binding.getSuperclass() != null) 
-			createInheritanceFromSubtypeToSuperTypeBinding(type, binding);
+			createInheritanceFromSubtypeToSuperTypeBinding(type, binding.getSuperclass());
 		for (ITypeBinding interfaceBinding : binding.getInterfaces()) {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, interfaceBinding);
 		}
+		types.put(qualifiedName, type);
 		repository.add(type);
 		return type;
 	}
 
 	private Type createTypeFromTypeBinding(ITypeBinding binding) {
-		Type type;
 		if (binding.isPrimitive())
-			type = new PrimitiveType();
-		else {
-			Class clazz = new Class();
-			clazz.setIsInterface(binding.isInterface());
-			type = clazz;
+			return new PrimitiveType();
+		if (binding.isParameterizedType()) {
+			ParameterizedType type = new ParameterizedType();
+			type.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
+			return type;
 		}
-		type.setName(binding.getName());
-		type.setIsStub(true);
-		extractBasicModifiersFromBinding(binding.getModifiers(), type);
-		return type;
+		if (binding.isGenericType()) {
+			ParameterizableClass parameterizableClass = new ParameterizableClass();
+			parameterizableClass.setIsInterface(binding.isInterface());
+			return parameterizableClass;
+		}
+		if (binding.isEnum())
+			return new Enum();
+		Class clazz = new Class();
+		clazz.setIsInterface(binding.isInterface());
+		return clazz;
 	}
 
 	/**
@@ -179,7 +187,7 @@ public class InJavaImporter extends Importer {
 	/**
 	 * This is the type we used as a null object whenever we need to reference a type  
 	 */
-	Type unknownType() {
+	public Type unknownType() {
 		if (unknownType == null) {
 			unknownType = typeNamedInUnknownNamespace("__UNKNOWN__");
 		}

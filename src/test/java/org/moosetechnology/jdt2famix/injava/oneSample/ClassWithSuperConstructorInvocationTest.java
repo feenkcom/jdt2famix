@@ -1,4 +1,4 @@
-package org.moosetechnology.jdt2famix.injava;
+package org.moosetechnology.jdt2famix.injava.oneSample;
 
 import static org.junit.Assert.*;
 
@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.ClassWithSuperConstructorInvocation;
 
 public class ClassWithSuperConstructorInvocationTest extends
-		BasicSampleTestCase {
+		OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {
