@@ -133,7 +133,6 @@ public class InJavaImporter extends Importer {
 
 	//TYPES
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
-//		if (binding == null) return unknownType();
 		String qualifiedName = binding.getQualifiedName();
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
@@ -200,6 +199,8 @@ public class InJavaImporter extends Importer {
 			return ensureTypeFromTypeBinding(binding);
 		if (domType.isSimpleType())
 			return typeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
+		if (domType.isParameterizedType())
+			return typeNamedInUnknownNamespace(((org.eclipse.jdt.core.dom.ParameterizedType) domType).getType().toString());
 		return unknownType();
 	}
 	
