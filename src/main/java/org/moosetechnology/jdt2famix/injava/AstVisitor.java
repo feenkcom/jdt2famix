@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
+import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.Method;
 
 /**
@@ -94,28 +95,19 @@ public class AstVisitor extends ASTVisitor {
 		importer.popFromContainerStack();
 	}
 
+	@Override
+	public boolean visit(AnonymousClassDeclaration node) {
+		Class clazz = new Class();
+		clazz.setContainer(importer.topOfContainerStack());
+		clazz.setName("$" + importer.topOfContainerStack().getTypes().size());
+		importer.pushOnContainerStack(clazz);
+		return true;
+	}
 	
-	
-//	public static String visitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "visit(AnonymousClassDeclaration)";
-//	@Override
-//	public boolean visit(AnonymousClassDeclaration node) {
-//		try {
-//			new SmalltalkRequest(visitAnonymousClassDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
-//	public static String endVisitAnonymousClassDeclarationCallback = AstVisitor.class.getName() + "endVisit(AnonymousClassDeclaration)";
-//)	@Override
-//	public void endVisit(AnonymousClassDeclaration node) {
-//		try {
-//			new SmalltalkRequest(endVisitAnonymousClassDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//	}
+	@Override
+	public void endVisit(AnonymousClassDeclaration node) {
+		importer.popFromContainerStack();
+	}
 //	
 //	public static String visitEnumDeclarationCallback = AstVisitor.class.getName() + "visit(EnumDeclaration)";
 //	@Override

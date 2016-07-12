@@ -6,7 +6,9 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -136,6 +138,7 @@ public class InJavaImporter extends Importer {
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
 		type.setName(binding.getName());
+		types.put(qualifiedName, type);
 		type.setIsStub(true);
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		type.setContainer(ensureContainerEntityForTypeBinding(binding));
@@ -144,7 +147,18 @@ public class InJavaImporter extends Importer {
 		for (ITypeBinding interfaceBinding : binding.getInterfaces()) {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, interfaceBinding);
 		}
-		types.put(qualifiedName, type);
+		if (binding.isParameterizedType()) {
+			//This if duplicates the condition from the create method because we want to break possible infinite loops induced by the below ensure calls
+			//This is achieved by having this condition after the addition of the type in the types map
+			ParameterizedType parameterizedType = ((ParameterizedType) type);
+			parameterizedType.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
+			List<Type> arguments = Stream.of(binding.getTypeArguments()).map(arg -> ensureTypeFromTypeBinding(arg)).collect(Collectors.toList());
+			parameterizedType.setArguments(arguments);
+		}
+		if (binding.isGenericType()) {
+			ParameterizableClass parameterizableClass = (ParameterizableClass) type;
+			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
+		}
 		repository.add(type);
 		return type;
 	}
@@ -152,15 +166,11 @@ public class InJavaImporter extends Importer {
 	private Type createTypeFromTypeBinding(ITypeBinding binding) {
 		if (binding.isPrimitive())
 			return new PrimitiveType();
-		if (binding.isParameterizedType()) {
-			ParameterizedType type = new ParameterizedType();
-			type.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
-			return type;
-		}
+		if (binding.isParameterizedType())
+			return new ParameterizedType();
 		if (binding.isGenericType()) {
 			ParameterizableClass parameterizableClass = new ParameterizableClass();
 			parameterizableClass.setIsInterface(binding.isInterface());
-			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 			return parameterizableClass;
 		}
 		if (binding.isEnum())

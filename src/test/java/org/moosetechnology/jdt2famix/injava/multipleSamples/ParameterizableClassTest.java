@@ -32,10 +32,9 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 		subclass = importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName());
 	}
 	
-	
 	@Test
 	public void types() {
-		assertEquals(4, importer.getTypes().size());
+		assertEquals(9, importer.getTypes().size());
 		assertTrue(subclass instanceof Class);
 		assertTrue(parameterizableClass instanceof ParameterizableClass);
 		assertTrue(parameterizedType instanceof ParameterizedType);
@@ -45,6 +44,17 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 	public void connections() {
 		assertEquals(parameterizableClass, ((ParameterizedType) parameterizedType).getParameterizableClass());
 		assertEquals(parameterizedType, ((ParameterizableClass) parameterizableClass).getParameterizedTypes().stream().findAny().get());
+	}
+
+	@Test
+	public void parameterizableClassParameters() {
+		assertEquals(1, ((ParameterizableClass) parameterizableClass).getTypes().size());
+		assertEquals("T", ((ParameterizableClass) parameterizableClass).getTypes().stream().findAny().get().getName());
+	}
+
+	@Test
+	public void parameterizedTypeArguments() {
+		assertEquals(1, ((ParameterizedType) parameterizedType).getArguments().size());
 	}
 	
 }
