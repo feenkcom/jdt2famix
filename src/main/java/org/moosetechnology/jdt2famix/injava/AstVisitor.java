@@ -240,16 +240,11 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
-//	public static String visitClassInstanceCreationCallback = AstVisitor.class.getName() + "visit(ClassInstanceCreation)";
-//	@Override
-//	public boolean visit(ClassInstanceCreation node) {
-//		try {
-//			new SmalltalkRequest(visitClassInstanceCreationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
+	@Override
+	public boolean visit(ClassInstanceCreation node) {
+		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		return true;
+	}
 //	
 //	////////ACCESSES
 //	public static String visitFieldAccessCallback = AstVisitor.class.getName() + "visit(FieldAccess)";
