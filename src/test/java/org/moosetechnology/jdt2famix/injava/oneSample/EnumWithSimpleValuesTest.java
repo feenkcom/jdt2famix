@@ -14,7 +14,7 @@ public class EnumWithSimpleValuesTest extends OneSampleTestCase {
 	}
 
 	@Test
-	public void test() {
+	public void testEnumType() {
 		assertNotNull(type);
 		assertEquals(Enum.class, type.getClass());
 	}

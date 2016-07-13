@@ -250,6 +250,26 @@ public class InJavaImporter extends Importer {
 		}
 	}
 
+	public Type ensureTypeFromAnonymousDeclaration(
+			AnonymousClassDeclaration node) {
+		ITypeBinding binding = node.resolveBinding();
+		Type type = createTypeFromTypeBinding(binding);
+		type.setContainer(topOfContainerStack());
+		type.setName("$" + topOfContainerStack().getTypes().size());
+		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		this.addType(Famix.qualifiedNameOf(type), type);
+		return type;
+	}
+	
+	//ENUM
+	
+	public Enum ensureEnumFromDeclaration(EnumDeclaration node) {
+		ITypeBinding binding = node.resolveBinding();
+		Enum famixEnum = (Enum) ensureTypeFromTypeBinding(binding);
+		return famixEnum;
+	}
+
+	
 	//INHERITANCE
 	
 	/**
@@ -431,16 +451,6 @@ public class InJavaImporter extends Importer {
 	}
 
 
-	//EXPORT
-	public void exportMSE(String fileName) {
-		try {
-			repository.exportMSE(new FileWriter(fileName));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	
 	/**
 	 * We pass the dom type here because of the funny types of JDT 
 	 */
@@ -456,20 +466,30 @@ public class InJavaImporter extends Importer {
 		repository.add(localVariable);
 		return localVariable;
 	}
-	public Type ensureTypeFromAnonymousDeclaration(
-			AnonymousClassDeclaration node) {
-		ITypeBinding binding = node.resolveBinding();
-		Type type = createTypeFromTypeBinding(binding);
-		type.setContainer(topOfContainerStack());
-		type.setName("$" + topOfContainerStack().getTypes().size());
-		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
-		this.addType(Famix.qualifiedNameOf(type), type);
-		return type;
-	}
+	
 
-	public Enum ensureEnumFromDeclaration(EnumDeclaration node) {
-		Enum famixEnum = (Enum) createTypeFromTypeBinding(node.resolveBinding());
-		return famixEnum;
+	/**
+	 * We pass the signature because we want to get it from the node,
+	 * but there can be different types of nodes (funny JDT).
+	 */
+	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
+			String signature) {
+		Invocation invocation = new Invocation();
+		invocation.setSender((Method) topOfContainerStack()); 
+		invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
+		invocation.setSignature(signature);
+		repository.add(invocation);
+		return invocation;
+	}
+	
+	
+	//EXPORT
+	public void exportMSE(String fileName) {
+		try {
+			repository.exportMSE(new FileWriter(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

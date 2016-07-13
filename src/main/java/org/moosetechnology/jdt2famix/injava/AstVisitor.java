@@ -168,9 +168,6 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
-	/**
-	 * Needed for keeping track of the current container
-	 */
 	@Override
 	public void endVisit(MethodDeclaration node) {
 		importer.popFromContainerStack();
@@ -212,62 +209,37 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MethodInvocation node) {
-		IMethodBinding binding = node.resolveMethodBinding();
-		Invocation invocation = new Invocation();
-		invocation.setSender((Method) importer.topOfContainerStack()); 
-		invocation.addCandidates(importer.ensureMethodFromMethodBinding(binding));  
-		invocation.setSignature(node.toString());
+		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
 		return true;
 	}
 
 	@Override
-	public void endVisit(MethodInvocation node) {
-		//Not needed
+	public void endVisit(MethodInvocation node) { /*not needed*/ }
+
+	@Override
+	public boolean visit(SuperMethodInvocation node) {
+		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(SuperMethodInvocation node) { /*not needed*/ }
+
+	@Override
+	public boolean visit(ConstructorInvocation node) {
+		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(ConstructorInvocation node) { /*not needed*/ }
+
+	@Override
+	public boolean visit(SuperConstructorInvocation node) {
+		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		return true;
 	}
 
-//	public static String visitSuperMethodInvocationCallback = AstVisitor.class.getName() + "visit(SuperMethodInvocation)";
-//	@Override
-//	public boolean visit(SuperMethodInvocation node) {
-//		try {
-//			new SmalltalkRequest(visitSuperMethodInvocationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
-//	@Override
-//	public void endVisit(SuperMethodInvocation node) {
-//		//Not needed
-//	}
-//	
-//	public static String visitConstructorInvocationCallback = AstVisitor.class.getName() + "visit(ConstructorInvocation)";
-//	@Override
-//	public boolean visit(ConstructorInvocation node) {
-//		try {
-//			new SmalltalkRequest(visitConstructorInvocationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
-//	@Override
-//	public void endVisit(ConstructorInvocation node) {
-//		//Not needed
-//	}
-//
-//	public static String visitSuperConstructorInvocationCallback = AstVisitor.class.getName() + "visit(SuperConstructorInvocation)";
-//	@Override
-//	public boolean visit(SuperConstructorInvocation node) {
-//		try {
-//			new SmalltalkRequest(visitSuperConstructorInvocationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
 //	public static String visitClassInstanceCreationCallback = AstVisitor.class.getName() + "visit(ClassInstanceCreation)";
 //	@Override
 //	public boolean visit(ClassInstanceCreation node) {

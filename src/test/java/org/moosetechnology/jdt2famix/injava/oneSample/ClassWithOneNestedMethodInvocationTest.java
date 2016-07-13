@@ -16,6 +16,10 @@ public class ClassWithOneNestedMethodInvocationTest extends OneSampleTestCase {
 	@Test
 	public void testMethods() {
 		assertEquals(2, type.getMethods().size());
+	}
+	
+	@Test
+	public void testInvocation() {
 		assertEquals(1, methodNamed("invokingMethod").getOutgoingInvocations().size());
 		Invocation invocation = methodNamed("invokingMethod").getOutgoingInvocations().stream().findAny().get();
 		assertEquals(methodNamed("invokedMethod"), invocation.getCandidates().stream().findAny().get());
