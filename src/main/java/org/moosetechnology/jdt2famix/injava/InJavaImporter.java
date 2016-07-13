@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SimpleType;
@@ -49,6 +50,9 @@ import ch.akuhn.fame.Repository;
  */
 public class InJavaImporter extends Importer {
 
+	public static final String INITIALIZER = "__initializer__";
+	public static final String UNKNOWN = "__UNKNOWN__";
+	
 	private Namespace unknownNamespace;
 	private Map<String,Namespace> namespaces;
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
@@ -357,6 +361,17 @@ public class InJavaImporter extends Importer {
 		method.setParentType((Type) topOfContainerStack());
 		method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 		method.setIsStub(true);
+		return method;
+	}
+	
+	public Method ensureMethodFromInitializer(Initializer node) {
+		Method method = new Method();
+		method.setName(INITIALIZER);
+		method.setSignature(method.getName());
+		method.setIsStub(false);
+		method.setKind("initializer");
+		method.setParentType((Type) topOfContainerStack());
+		this.addMethod(Famix.qualifiedNameOf(method), method);
 		return method;
 	}
 

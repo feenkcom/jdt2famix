@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -163,6 +164,20 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(MethodDeclaration node) {
 		importer.popFromContainerStack();
 	}
+	
+	@Override
+	public boolean visit(Initializer node) {
+		Method method = importer.ensureMethodFromInitializer(node);
+		importer.pushOnContainerStack(method);
+		return true;
+	}
+
+	@Override
+	public void endVisit(Initializer node) {
+		importer.popFromContainerStack();
+	}
+	
+	
 	
 	
 	////////ATTRIBUTES
