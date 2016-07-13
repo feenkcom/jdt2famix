@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -49,24 +51,44 @@ public class InJavaImporter extends Importer {
 	private Namespace unknownNamespace;
 	private Map<String,Namespace> namespaces;
 	public Map<String,Namespace> getNamespaces() { return namespaces; }
+	private void addNamespace(String packageName, Namespace namespace) {
+		namespaces.put(packageName, namespace);
+		repository.add(namespace);
+	}
 	
 	private Type unknownType;
 	private Map<String, Type> types;
 	public Map<String, Type> getTypes() { return types; }
+	private void addType(String qualifiedName, Type type) {
+		types.put(qualifiedName, type);
+		repository.add(type);
+	}
 
 	private Map<String, Method> methods;
 	public Map<String, Method> getMethods() { return methods; }
+	private void addMethod(String qualifiedName, Method method) {
+		methods.put(qualifiedName, method);
+		repository.add(method);
+	}
 
 	private Map<String, Attribute> attributes;
 	public Map<String, Attribute> getAttributes() { return attributes; }
+	private void addAttribute(String qualifiedName, Attribute attribute) {
+		attributes.put(qualifiedName, attribute);
+		repository.add(attribute);
+	}
 
 	private Map<String, Parameter> parameters;
 	public Map<String, Parameter> getParameters() { return parameters; }
+	private void addParameter(String qualifiedName, Parameter parameter) {
+		parameters.put(qualifiedName, parameter);
+		repository.add(parameter);
+	}
 	
 	Repository repository;
 	public Repository getRepository() { return repository; }
 	
-	/*
+	/**
 	 * This is a structure that keeps track of the current stack of containers
 	 * It is particularly useful when we deal with inner or anonymous classes
 	 */ 
@@ -102,11 +124,11 @@ public class InJavaImporter extends Importer {
 			return namespaces.get(packageName);
 		else {
 			Namespace namespace = createNamespaceNamed(packageName);
-			namespaces.put(packageName, namespace);
-			repository.add(namespace);
+			this.addNamespace(packageName, namespace);
 			return namespace;
 		}
 	}
+	
 
 	private Namespace createNamespaceNamed(String k) {
 		Namespace namespace = new Namespace();
@@ -126,7 +148,7 @@ public class InJavaImporter extends Importer {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName("__UNKNOWN__");
 			unknownNamespace.setIsStub(true);
-			namespaces.put(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
+			this.addNamespace(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
 		}
 		return unknownNamespace;
 	}
@@ -137,7 +159,7 @@ public class InJavaImporter extends Importer {
 		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
 		type.setName(binding.getName());
-		types.put(qualifiedName, type);
+		this.addType(qualifiedName, type);
 		type.setIsStub(true);
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		type.setContainer(ensureContainerEntityForTypeBinding(binding));
@@ -158,7 +180,6 @@ public class InJavaImporter extends Importer {
 			ParameterizableClass parameterizableClass = (ParameterizableClass) type;
 			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
-		repository.add(type);
 		return type;
 	}
 
@@ -223,14 +244,14 @@ public class InJavaImporter extends Importer {
 		if (types.containsKey(qualifiedName))
 			return types.get(qualifiedName);
 		else {
-			types.put(Famix.qualifiedNameOf(type), type);
+			this.addType(Famix.qualifiedNameOf(type), type);
 			return type;
 		}
 	}
 
 	//INHERITANCE
 	
-	/*
+	/**
 	 * We use this one when we have the super type binding
 	 */
 	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
@@ -242,7 +263,7 @@ public class InJavaImporter extends Importer {
 		return inheritance;
 	}
 
-	/*
+	/**
 	 * When we cannot resolve the binding of the superclass of a class declaration,
 	 * we still want to create a {@link Type} with the best available information
 	 * from {@link org.eclipse.jdt.core.dom.Type}  
@@ -258,7 +279,20 @@ public class InJavaImporter extends Importer {
 		
 
 	//METHODS
+	
+	/**
+	 * We use this one when we know that we are aiming for the top of the container stack
+	 * This is important in the case of anonymous classes which have empty names in JDT
+	 */
+	public Method ensureMethodFromMethodBindingToCurrentContainer(IMethodBinding binding) {
+		return ensureMethodFromMethodBinding(binding, (Type) topOfContainerStack());
+	}
+	
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
+		return ensureMethodFromMethodBinding(binding, ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+	}
+
+	public Method ensureMethodFromMethodBinding(IMethodBinding binding, Type parentType) {
 		//FIXME: the parametersString contains a , too many 
 		String parametersString = Arrays
 				.stream(binding.getParameterTypes())
@@ -266,15 +300,15 @@ public class InJavaImporter extends Importer {
 				.reduce("", (l, r) -> l + ", " + r);
 		String methodName = binding.getName();
 		String signature = methodName + "(" + parametersString + ")";
-		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + "." + signature;
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + "." + signature;
 		if (methods.containsKey(qualifiedName)) 
 			return methods.get(qualifiedName);
 		Method method = new Method();
-		methods.put(qualifiedName, method);
+		this.addMethod(qualifiedName, method);
 		method.setName(methodName);
 		method.setSignature(signature);
 		method.setIsStub(true);
-		method.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+		method.setParentType(parentType);
 		if (binding.isConstructor()) 
 			method.setKind("constructor");
 		ITypeBinding returnType = binding.getReturnType();
@@ -297,6 +331,7 @@ public class InJavaImporter extends Importer {
 			return methods.get(qualifiedName);
 		Method method = new Method();
 		method.setName(methodName);
+		this.addMethod(qualifiedName, method);
 		method.setSignature(signature);
 		method.setParentType((Type) topOfContainerStack());
 		method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
@@ -311,18 +346,18 @@ public class InJavaImporter extends Importer {
 		if (parameters.containsKey(qualifiedName)) 
 			return parameters.get(qualifiedName);
 		Parameter parameter = new Parameter();
-		parameters.put(qualifiedName, parameter);
+		this.addParameter(qualifiedName, parameter);
 		parameter.setName(name);
 		parameter.setParentBehaviouralEntity(method);
 		parameter.setDeclaredType(ensureTypeFromDomType(variableDeclaration.getType()));
 		return parameter;
 	}
 
+
 	//ATTRIBUTES
 	
 	/**
 	 * We pass both the fragment and the field because we need the field type when the binding cannot be resolved
-	 * @return
 	 */
 	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		IVariableBinding binding = fragment.resolveBinding();
@@ -342,12 +377,13 @@ public class InJavaImporter extends Importer {
 		if (attributes.containsKey(qualifiedName)) 
 			return attributes.get(qualifiedName);
 		Attribute attribute = new Attribute();
-		attributes.put(qualifiedName, attribute);
+		this.addAttribute(qualifiedName, attribute);
 		attribute.setName(name);
 		attribute.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
 		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));		
 		return attribute;
 	}
+
 	private Attribute ensureAttributeFromFragmentIntoParentType(
 			VariableDeclarationFragment fragment,
 			FieldDeclaration field,
@@ -357,6 +393,7 @@ public class InJavaImporter extends Importer {
 		if (attributes.containsKey(qualifiedName)) 
 			return attributes.get(qualifiedName);
 		Attribute attribute = new Attribute();
+		this.addAttribute(qualifiedName, attribute);
 		attribute.setName(name);
 		attribute.setParentType(parentType);
 		attribute.setDeclaredType(ensureTypeFromDomType(field.getType()));
@@ -403,7 +440,7 @@ public class InJavaImporter extends Importer {
 	}
 	
 	
-	/*
+	/**
 	 * We pass the dom type here because of the funny types of JDT 
 	 */
 	public LocalVariable ensureLocalVariableFromFragment(
@@ -415,7 +452,18 @@ public class InJavaImporter extends Importer {
 		//CHECK: We might want to recover the modifiers (final) 
 		localVariable.setIsStub(true);
 		((Method) topOfContainerStack()).addLocalVariables(localVariable);
+		repository.add(localVariable);
 		return localVariable;
+	}
+	public Type ensureTypeFromAnonymousDeclaration(
+			AnonymousClassDeclaration node) {
+		ITypeBinding binding = node.resolveBinding();
+		Type type = createTypeFromTypeBinding(binding);
+		type.setContainer(topOfContainerStack());
+		type.setName("$" + topOfContainerStack().getTypes().size());
+		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		this.addType(Famix.qualifiedNameOf(type), type);
+		return type;
 	}
 
 }

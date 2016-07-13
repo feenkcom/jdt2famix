@@ -8,11 +8,10 @@ public class InJavaTestCase {
 
 	protected Method methodNamed(String name) {
 		return importer
-				.getTypes()
+				.getMethods()
 				.entrySet()
 				.stream()
-				.map(p -> p.getValue().getMethods())
-				.flatMap(l -> l.stream())
+				.map(p -> p.getValue())
 	            .filter(m -> m.getName().equals(name))
 	            .findAny()
 	            .get();

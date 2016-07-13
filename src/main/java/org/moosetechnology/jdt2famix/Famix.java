@@ -5,8 +5,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.moosetechnology.model.famix.ContainerEntity;
+import org.moosetechnology.model.famix.Function;
 import org.moosetechnology.model.famix.Inheritance;
 import org.moosetechnology.model.famix.Method;
+import org.moosetechnology.model.famix.Namespace;
+import org.moosetechnology.model.famix.ScopingEntity;
 import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Class;
 
@@ -41,7 +44,12 @@ public class Famix {
 		return qualifiedNameOf(method.getParentType()) + "." + method.getSignature();
 	}
 	public static String qualifiedNameOf(Type type) {
+		if (type.getContainer() instanceof Method)
+			return qualifiedNameOf((Method) type.getContainer()) + "." + type.getName();		
+		if (type.getContainer() instanceof Type)
+			return qualifiedNameOf((Type) type.getContainer()) + "." + type.getName();
 		return qualifiedNameOf(type.getContainer()) + "." + type.getName();
+		
 	}
 	public static String qualifiedNameOf(ContainerEntity container) {
 		return container.getName();

@@ -96,11 +96,7 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
-		ITypeBinding binding = node.resolveBinding();
-		Type type = importer.createTypeFromTypeBinding(binding);
-		type.setContainer(importer.topOfContainerStack());
-		type.setName("$" + importer.topOfContainerStack().getTypes().size());
-		importer.createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		Type type = importer.ensureTypeFromAnonymousDeclaration(node);
 		type.setIsStub(false);
 		importer.pushOnContainerStack(type);
 		return true;
@@ -168,7 +164,7 @@ public class AstVisitor extends ASTVisitor {
 		IMethodBinding binding = node.resolveBinding();
 		Method method;
 		if (binding != null)
-			method = importer.ensureMethodFromMethodBinding(binding);
+			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
 		else
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		method.setIsStub(false);
