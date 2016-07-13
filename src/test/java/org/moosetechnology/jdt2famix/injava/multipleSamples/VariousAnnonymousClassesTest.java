@@ -1,19 +1,22 @@
-package org.moosetechnology.jdt2famix.injava.oneSample;
+package org.moosetechnology.jdt2famix.injava.multipleSamples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.Famix;
+import org.moosetechnology.jdt2famix.JavaFiles;
 import org.moosetechnology.jdt2famix.samples.basic.EmptyClass;
 import org.moosetechnology.jdt2famix.samples.basic.SimpleParameterizableClass;
 import org.moosetechnology.jdt2famix.samples.basic.VariousAnnonymousClasses;
 import org.moosetechnology.model.famix.Type;
 
-public class VariousAnnonymousClassesTest extends OneSampleTestCase {
+public class VariousAnnonymousClassesTest extends MultipleSamplesTestCase {
 
 	@Override
-	protected Class<?> sampleClass() {
-		return VariousAnnonymousClasses.class;
+	protected void sampleClassesIn(JavaFiles javaFiles) {
+		javaFiles.oneJavaFile(fileNameFor(VariousAnnonymousClasses.class));
+		javaFiles.oneJavaFile(fileNameFor(SimpleParameterizableClass.class));
+		javaFiles.oneJavaFile(fileNameFor(EmptyClass.class));
 	}
 
 	@Test
@@ -21,15 +24,16 @@ public class VariousAnnonymousClassesTest extends OneSampleTestCase {
 		assertEquals(1, methodNamed("methodWithEmptyClass").getTypes().size());
 		Type annonymous = methodNamed("methodWithEmptyClass").getTypes().stream().findAny().get();
 		assertEquals("$1", annonymous.getName());
-		assertEquals(EmptyClass.class.getSimpleName(), Famix.superclassOf(annonymous).getName());
+		assertEquals(EmptyClass.class.getName(), Famix.qualifiedNameOf(Famix.superclassOf(annonymous)));
 	}
-	
+
 	@Test
 	public void testMethodWithParameterizedType() {
 		assertEquals(1, methodNamed("methodWithParameterizedType").getTypes().size());
 		Type annonymous = methodNamed("methodWithParameterizedType").getTypes().stream().findAny().get();
 		assertEquals("$1", annonymous.getName());
-		assertEquals(SimpleParameterizableClass.class.getSimpleName(), Famix.superclassOf(annonymous).getName());
+		assertEquals(SimpleParameterizableClass.class.getSimpleName() + "<String>", Famix.superclassOf(annonymous).getName());
+		assertEquals(SimpleParameterizableClass.class.getName() + "<String>", Famix.qualifiedNameOf(Famix.superclassOf(annonymous)));
 	}
 	
 }

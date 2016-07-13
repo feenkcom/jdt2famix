@@ -39,6 +39,16 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 		assertTrue(parameterizableClass instanceof ParameterizableClass);
 		assertTrue(parameterizedType instanceof ParameterizedType);
 	}
+	
+	@Test
+	public void parameterizedTypeName() {
+		assertEquals(SimpleParameterizableClass.class.getSimpleName() + "<String>", parameterizedType.getName());
+	}
+
+	@Test
+	public void parameterizableClassName() {
+		assertEquals(SimpleParameterizableClass.class.getSimpleName(), parameterizableClass.getName());
+	}
 
 	@Test
 	public void connections() {
