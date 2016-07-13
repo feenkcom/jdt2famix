@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.moosetechnology.jdt2famix.Famix;
 import org.moosetechnology.jdt2famix.samples.basic.NestedAnnonymousClasses;
 import org.moosetechnology.model.famix.Method;
 import org.moosetechnology.model.famix.Type;
@@ -35,6 +36,6 @@ public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 		assertTrue(typeInNestedMethod.getContainer() instanceof Method);
 		assertEquals(nestedMethod, (typeInNestedMethod.getContainer()));
 		assertEquals("$1", nestedMethod.getParentType().getName());
-//		assertEquals(NestedAnnonymousClasses.class.getName() + ".topMethod().$1.nestedMethod().$1", Famix.qualifiedNameOf(typeInNestedMethod));
+		assertEquals(NestedAnnonymousClasses.class.getName() + ".topMethod().$1.nestedMethod().$1", Famix.qualifiedNameOf(typeInNestedMethod));
 	}
 }

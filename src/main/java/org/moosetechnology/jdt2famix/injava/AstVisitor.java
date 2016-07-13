@@ -31,13 +31,18 @@ import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.Method;
+import org.moosetechnology.model.famix.Enum;
+
 
 /**
  * Responsible for visiting the AST of one Java file.
  * It works in close relationship with the {@link InJavaImporter} which
  * - provides ensure and create methods, and
  * - keeps track of the overall model.
- *  
+ * 
+ * Each method that visits a container entity (e.g., Type, Method ...), 
+ * - we push the resulting Famix entity in the importer stack, and
+ * - we pop it in a corresponding endVisit method   
  * @author girba
  *
  */
@@ -50,7 +55,6 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////PACKAGES
 	
-	public static String visitCompilationUnitCallback = AstVisitor.class.getName() + "visit(CompilationUnit)";
 	@Override
 	public boolean visit(CompilationUnit node) {
 		Namespace namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
@@ -86,9 +90,6 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
-	/**
-	 * Needed for keeping track of the current container
-	 */
 	@Override
 	public void endVisit(TypeDeclaration node) {
 		importer.popFromContainerStack();
@@ -108,51 +109,41 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	
-//	public static String visitEnumDeclarationCallback = AstVisitor.class.getName() + "visit(EnumDeclaration)";
-//	@Override
-//	public boolean visit(EnumDeclaration node) {
-//		try {
-//			new SmalltalkRequest(visitEnumDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
-//	public static String endVisitEnumDeclarationCallback = AstVisitor.class.getName() + "endVisit(EnumDeclaration)";
-//	@Override
-//	public void endVisit(EnumDeclaration node) {
-//		try {
-//			new SmalltalkRequest(endVisitEnumDeclarationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//	}
-//	
-//	
-//	////////ANNOTATIONS
-//	
-//	@Override
-//	public boolean visit(AnnotationTypeDeclaration node) {
-//		// TODO Auto-generated method stub
-//		return super.visit(node);
-//	}
-//	
-//	@Override
-//	public void endVisit(AnnotationTypeDeclaration node) {
-//		// TODO Auto-generated method stub
-//		super.endVisit(node);
-//	}
-//	
+	@Override
+	public boolean visit(EnumDeclaration node) {
+		Enum famixEnum = importer.ensureEnumFromDeclaration(node);
+		famixEnum.setIsStub(false);
+		importer.pushOnContainerStack(famixEnum);
+		return true;
+	}
+	
+	@Override
+	public void endVisit(EnumDeclaration node) {
+		importer.popFromContainerStack();
+	}
+
+	
+	////////ANNOTATIONS
+	
+	@Override
+	public boolean visit(AnnotationTypeDeclaration node) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+	
+	@Override
+	public void endVisit(AnnotationTypeDeclaration node) {
+		// TODO Auto-generated method stub
+		super.endVisit(node);
+	}
+	
 //	@Override
 //	public boolean visit(AnnotationTypeMemberDeclaration node) {
-//		// TODO Auto-generated method stub
 //		return super.visit(node);
 //	}
 //	
 //	@Override
 //	public void endVisit(AnnotationTypeMemberDeclaration node) {
-//		// TODO Auto-generated method stub
 //		super.endVisit(node);
 //	}
 //	

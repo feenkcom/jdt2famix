@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IMethodBinding;
@@ -464,6 +465,11 @@ public class InJavaImporter extends Importer {
 		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
 		this.addType(Famix.qualifiedNameOf(type), type);
 		return type;
+	}
+
+	public Enum ensureEnumFromDeclaration(EnumDeclaration node) {
+		Enum famixEnum = (Enum) createTypeFromTypeBinding(node.resolveBinding());
+		return famixEnum;
 	}
 
 }
