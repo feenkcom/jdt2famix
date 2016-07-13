@@ -151,7 +151,7 @@ public class InJavaImporter extends Importer {
 	public Namespace unknownNamespace() {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
-			unknownNamespace.setName("__UNKNOWN__");
+			unknownNamespace.setName(UNKNOWN);
 			unknownNamespace.setIsStub(true);
 			this.addNamespace(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
 		}
@@ -235,7 +235,7 @@ public class InJavaImporter extends Importer {
 	 */
 	public Type unknownType() {
 		if (unknownType == null) {
-			unknownType = typeNamedInUnknownNamespace("__UNKNOWN__");
+			unknownType = typeNamedInUnknownNamespace(UNKNOWN);
 		}
 		return unknownType;
 	}
@@ -407,7 +407,7 @@ public class InJavaImporter extends Importer {
 		attribute.setIsStub(true);
 		return attribute;
 	}
-	private Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
+	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
 		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + '.' + name;
 		if (attributes.containsKey(qualifiedName)) 

@@ -8,9 +8,11 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
+import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
@@ -20,6 +22,7 @@ import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.moosetechnology.model.famix.Access;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Enum;
 import org.moosetechnology.model.famix.Method;
@@ -178,8 +181,6 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	
-	
-	
 	////////ATTRIBUTES
 	
 	@Override
@@ -247,28 +248,33 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	@Override
+	public void endVisit(SuperConstructorInvocation node) { /*not needed*/ }
+	
+	@Override
 	public boolean visit(ClassInstanceCreation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
 		return true;
 	}
-//	
-//	////////ACCESSES
-//	public static String visitFieldAccessCallback = AstVisitor.class.getName() + "visit(FieldAccess)";
-//	@Override
-//	public boolean visit(FieldAccess node) {
-//		try {
-//			new SmalltalkRequest(visitFieldAccessCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//
-//	@Override
-//	public void endVisit(FieldAccess node) {
-//		//Not needed
-//	}
-//
+
+	@Override
+	public void endVisit(ClassInstanceCreation node) { /*not needed*/ }
+
+	////////ACCESSES
+	@Override
+	public boolean visit(FieldAccess node) {
+		IVariableBinding binding = node.resolveFieldBinding();
+		Access access = new Access();
+		access.setAccessor((Method) importer.topOfContainerStack());
+		access.setIsWrite(false);
+		if (binding.isField())
+			access.setVariable(importer.ensureAttributeForVariableBinding(binding.getVariableDeclaration()));
+		return true;
+	}
+
+	@Override
+	public void endVisit(FieldAccess node) { /*not needed*/ }
+
+	
 //	public static String visitAssignmentCallback = AstVisitor.class.getName() + "visit(Assignment)";
 //	@Override
 //	public boolean visit(Assignment node) {
