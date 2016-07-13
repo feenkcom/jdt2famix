@@ -27,6 +27,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.moosetechnology.model.famix.Attribute;
+import org.moosetechnology.model.famix.Invocation;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Class;
@@ -206,25 +207,24 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
-//	
-//	////////INVOCATIONS
-//	
-//	public static String visitMethodInvocationCallback = AstVisitor.class.getName() + "visit(MethodInvocation)";
-//	@Override
-//	public boolean visit(MethodInvocation node) {
-//		try {
-//			new SmalltalkRequest(visitMethodInvocationCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return super.visit(node);
-//	}
-//
-//	@Override
-//	public void endVisit(MethodInvocation node) {
-//		//Not needed
-//	}
-//	
+	
+	////////INVOCATIONS
+	
+	@Override
+	public boolean visit(MethodInvocation node) {
+		IMethodBinding binding = node.resolveMethodBinding();
+		Invocation invocation = new Invocation();
+		invocation.setSender((Method) importer.topOfContainerStack()); 
+		invocation.addCandidates(importer.ensureMethodFromMethodBinding(binding));  
+		invocation.setSignature(node.toString());
+		return true;
+	}
+
+	@Override
+	public void endVisit(MethodInvocation node) {
+		//Not needed
+	}
+
 //	public static String visitSuperMethodInvocationCallback = AstVisitor.class.getName() + "visit(SuperMethodInvocation)";
 //	@Override
 //	public boolean visit(SuperMethodInvocation node) {

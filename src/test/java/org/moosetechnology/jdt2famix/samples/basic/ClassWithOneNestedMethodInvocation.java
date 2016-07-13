@@ -1,10 +1,10 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
 public class ClassWithOneNestedMethodInvocation {
-	public void topMethod() {
-		nestedMethod();
+	public void invokingMethod() {
+		invokedMethod("test");
 	}
 
-	private void nestedMethod() {
+	private void invokedMethod(String name) {
 	}
 }
