@@ -1,9 +1,10 @@
 package org.moosetechnology.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Observer;
-import java.util.Optional;
 
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.ClassImplementingObserver;

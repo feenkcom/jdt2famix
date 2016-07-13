@@ -1,17 +1,11 @@
 package org.moosetechnology.jdt2famix;
 
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.moosetechnology.model.famix.ContainerEntity;
-import org.moosetechnology.model.famix.Function;
-import org.moosetechnology.model.famix.Inheritance;
-import org.moosetechnology.model.famix.Method;
-import org.moosetechnology.model.famix.Namespace;
-import org.moosetechnology.model.famix.ScopingEntity;
-import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.famix.Class;
+import org.moosetechnology.model.famix.ContainerEntity;
+import org.moosetechnology.model.famix.Method;
+import org.moosetechnology.model.famix.Type;
 
 /*
  * This is a utility class for helping us navigate through FAMIX models
