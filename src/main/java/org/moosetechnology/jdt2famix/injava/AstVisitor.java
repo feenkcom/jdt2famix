@@ -19,6 +19,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
@@ -298,5 +299,11 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(Assignment node) { /*not needed*/ }
+	
+	@Override
+	public boolean visit(ReturnStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());
+		return true;
+	}
 
 }

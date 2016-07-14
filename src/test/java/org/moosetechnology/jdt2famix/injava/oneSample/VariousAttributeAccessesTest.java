@@ -48,5 +48,8 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 		assertTrue(methodNamed("writeAccessThroughAssignment").getAccesses().stream().anyMatch(a -> !a.getIsWrite()));
 	}
 
-	
+	@Test
+	public void testReadAccessThroughReturn() {
+		assertEquals(1, methodNamed("readAccessThroughReturn").getAccesses().size());
+	}
 }
