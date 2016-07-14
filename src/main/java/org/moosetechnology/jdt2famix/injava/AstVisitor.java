@@ -265,7 +265,9 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
-		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		IMethodBinding binding = node.resolveConstructorBinding();
+		if (binding != null)
+			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
