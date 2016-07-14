@@ -1,24 +1,28 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
-public class VariousAccesses {
+public class VariousAttributeAccesses {
 	
 	String attribute;
 	String initializedAttribute = "initializedAttribute";
-
-	public VariousAccesses() {
-		attribute = "atttribute";
-	}
 	
-	public void readAccessThroughInvocation() {
-		attribute.toString();
+	public VariousAttributeAccesses(String attribute) {
+		this.attribute = attribute;
 	}
 
 	public void readAccessThroughAssignment() {
 		String localVariable = attribute;
 	}
 
-	public void readAccessThroughArgument() {
+	public void readAccessThroughMethodInvocationReceiver() {
+		attribute.toString();
+	}
+	
+	public void readAccessThroughArgumentInConstructorInvocation() {
 		new String(attribute);
+	}
+
+	public void readAccessThroughArgumentInMethodInvocation() {
+		"attribute".equals(attribute);
 	}
 	
 	public void writeAccessThroughAssignment() {
@@ -31,8 +35,7 @@ public class VariousAccesses {
 	}
 
 	public void readAccessThroughSwitch() {
-		if (attribute == "attribute")
-			return;
+		//TODO
 	}
 
 	public void readAccessThroughFor() {
@@ -48,7 +51,7 @@ public class VariousAccesses {
 	}
 
 	
-	public String returnAccess() {
+	public String readAccessThroughReturn() {
 		return attribute;
 	}
 	

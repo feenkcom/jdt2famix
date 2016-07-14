@@ -14,8 +14,10 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -23,6 +25,7 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
@@ -505,6 +508,26 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public Access createAccessFromVariableBinding(IVariableBinding binding) {
+		Access access = new Access();
+		access.setAccessor((Method) topOfContainerStack());
+		access.setIsWrite(false);
+		if (binding.isField())
+			access.setVariable(ensureAttributeForVariableBinding(binding.getVariableDeclaration()));
+		return access;
+	}
+	
+	public Access createAccessFromExpression(Expression expression) {
+		if (expression instanceof SimpleName) {
+			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
+			if (simpleNameBinding instanceof IVariableBinding) {
+				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
+				if (variableBinding.isField()) 
+					return createAccessFromVariableBinding(variableBinding);
+			}
+		}
+		return new Access();
 	}
 
 }

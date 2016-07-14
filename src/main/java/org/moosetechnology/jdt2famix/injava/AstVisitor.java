@@ -8,14 +8,17 @@ import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
+import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
@@ -217,6 +220,8 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		importer.createAccessFromExpression(node.getExpression());
+		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
@@ -244,6 +249,9 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		node.arguments().stream().forEach(
+				arg -> 
+				importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
@@ -253,6 +261,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
@@ -260,16 +269,15 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(ClassInstanceCreation node) { /*not needed*/ }
 
 	////////ACCESSES
+	
+	/**
+	 * I do not know in which situation this is invoked. Funny, no?
+	 */
 	@Override
 	public boolean visit(FieldAccess node) {
-		IVariableBinding binding = node.resolveFieldBinding();
-		Access access = new Access();
-		access.setAccessor((Method) importer.topOfContainerStack());
-		access.setIsWrite(false);
-		if (binding.isField())
-			access.setVariable(importer.ensureAttributeForVariableBinding(binding.getVariableDeclaration()));
 		return true;
 	}
+
 
 	@Override
 	public void endVisit(FieldAccess node) { /*not needed*/ }
