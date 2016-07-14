@@ -8,6 +8,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -53,8 +55,9 @@ import ch.akuhn.fame.Repository;
  */
 public class InJavaImporter extends Importer {
 
-	public static final String INITIALIZER = "__initializer__";
-	public static final String UNKNOWN = "__UNKNOWN__";
+	public static final String INITIALIZER_NAME = "__initializer__";
+	public static final String UNKNOWN_NAME = "__UNKNOWN__";
+	public static final String CONSTRUCTOR_KIND = "constructor";
 	
 	private Namespace unknownNamespace;
 	private Map<String,Namespace> namespaces;
@@ -154,7 +157,7 @@ public class InJavaImporter extends Importer {
 	public Namespace unknownNamespace() {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
-			unknownNamespace.setName(UNKNOWN);
+			unknownNamespace.setName(UNKNOWN_NAME);
 			unknownNamespace.setIsStub(true);
 			this.addNamespace(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
 		}
@@ -238,7 +241,7 @@ public class InJavaImporter extends Importer {
 	 */
 	public Type unknownType() {
 		if (unknownType == null) {
-			unknownType = typeNamedInUnknownNamespace(UNKNOWN);
+			unknownType = typeNamedInUnknownNamespace(UNKNOWN_NAME);
 		}
 		return unknownType;
 	}
@@ -338,7 +341,7 @@ public class InJavaImporter extends Importer {
 		method.setIsStub(true);
 		method.setParentType(parentType);
 		if (binding.isConstructor()) 
-			method.setKind("constructor");
+			method.setKind(CONSTRUCTOR_KIND);
 		ITypeBinding returnType = binding.getReturnType();
 		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
 			//we do not want to set void as a return type
@@ -369,7 +372,7 @@ public class InJavaImporter extends Importer {
 	
 	public Method ensureMethodFromInitializer(Initializer node) {
 		Method method = new Method();
-		method.setName(INITIALIZER);
+		method.setName(INITIALIZER_NAME);
 		method.setSignature(method.getName());
 		method.setIsStub(false);
 		method.setKind("initializer");
@@ -392,7 +395,18 @@ public class InJavaImporter extends Importer {
 		return parameter;
 	}
 
+	public Parameter ensureParameterWithinCurrentMethodFromVariableBinding(IVariableBinding binding) {
+		Method method = (Method) topOfContainerStack();
+		Optional<Parameter> possibleParameter = method.getParameters()
+			.stream()
+			.filter(p -> p.getName().equals(binding.getName()))
+			.findAny();
+		if (possibleParameter.isPresent())
+			return possibleParameter.get();
+		return null;
+	}
 
+	
 	//ATTRIBUTES
 	
 	/**
@@ -514,7 +528,9 @@ public class InJavaImporter extends Importer {
 		access.setAccessor((Method) topOfContainerStack());
 		access.setIsWrite(false);
 		if (binding.isField())
-			access.setVariable(ensureAttributeForVariableBinding(binding.getVariableDeclaration()));
+			access.setVariable(ensureAttributeForVariableBinding(binding));		
+		if (binding.isParameter())
+			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));		
 		return access;
 	}
 	
@@ -523,8 +539,7 @@ public class InJavaImporter extends Importer {
 			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				if (variableBinding.isField()) 
-					return createAccessFromVariableBinding(variableBinding);
+				return createAccessFromVariableBinding(variableBinding);
 			}
 		}
 		return new Access();

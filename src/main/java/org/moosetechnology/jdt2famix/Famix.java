@@ -33,6 +33,9 @@ public class Famix {
 				.map(i -> i.getSuperclass());
 	}
 	
+	public static Stream<Method> constructorsIn(Type type) {
+		return type.getMethods().stream().filter(m -> m.getKind() == "constructor");
+	}
 	
 	public static String qualifiedNameOf(Method method) {
 		return qualifiedNameOf(method.getParentType()) + "." + method.getSignature();

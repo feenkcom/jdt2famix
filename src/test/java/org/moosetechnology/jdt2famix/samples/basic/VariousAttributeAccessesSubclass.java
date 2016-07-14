@@ -5,5 +5,7 @@ public class VariousAttributeAccessesSubclass extends VariousAttributeAccesses {
 	public VariousAttributeAccessesSubclass(String name) {
 		super(name);
 	}
+	
+	
 
 }

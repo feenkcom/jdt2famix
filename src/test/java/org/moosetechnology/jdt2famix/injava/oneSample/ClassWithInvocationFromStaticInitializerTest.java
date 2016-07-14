@@ -17,11 +17,11 @@ public class ClassWithInvocationFromStaticInitializerTest extends
 	@Test
 	public void testMethods() {
 		assertEquals(2, type.getMethods().size());
-		assertFalse(methodNamed(InJavaImporter.INITIALIZER).getIsStub());
+		assertFalse(methodNamed(InJavaImporter.INITIALIZER_NAME).getIsStub());
 	}
 	
 	@Test
 	public void testInvocation() {
-		assertEquals(1, methodNamed(InJavaImporter.INITIALIZER).getOutgoingInvocations().size());
+		assertEquals(1, methodNamed(InJavaImporter.INITIALIZER_NAME).getOutgoingInvocations().size());
 	}
 }

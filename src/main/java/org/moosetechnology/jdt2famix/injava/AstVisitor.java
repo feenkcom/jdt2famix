@@ -158,14 +158,14 @@ public class AstVisitor extends ASTVisitor {
 		else
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		method.setIsStub(false);
+		importer.pushOnContainerStack(method);
 		node.parameters().
 			stream().
 			forEach(p -> 
 				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
-		importer.pushOnContainerStack(method);
 		return true;
 	}
-
+	
 	@Override
 	public void endVisit(MethodDeclaration node) {
 		importer.popFromContainerStack();
@@ -240,6 +240,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 	
@@ -249,9 +250,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
-		node.arguments().stream().forEach(
-				arg -> 
-				importer.createAccessFromExpression((Expression) arg));
+		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
@@ -268,6 +267,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public void endVisit(ClassInstanceCreation node) { /*not needed*/ }
 
+	
 	////////ACCESSES
 	
 	/**

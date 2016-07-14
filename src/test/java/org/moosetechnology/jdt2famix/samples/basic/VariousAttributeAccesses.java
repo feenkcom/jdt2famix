@@ -6,14 +6,17 @@ public class VariousAttributeAccesses {
 	String initializedAttribute = "initializedAttribute";
 	
 	public VariousAttributeAccesses(String attribute) {
-		this.attribute = attribute;
+		this(attribute, "somethingElse");
+	}
+
+	public VariousAttributeAccesses(String attribute, String somethingElse) {
 	}
 
 	public void readAccessThroughAssignment() {
 		String localVariable = attribute;
 	}
 
-	public void readAccessThroughMethodInvocationReceiver() {
+	public void readAccessThroughReceiverOfMethodInvocation() {
 		attribute.toString();
 	}
 	
@@ -29,8 +32,13 @@ public class VariousAttributeAccesses {
 		attribute = "attribute";
 	}
 	
-	public void readAccessThroughIf() {
+	public void readAccessThroughIfLeftCondition() {
 		if (attribute == "attribute")
+			return;
+	}
+
+	public void readAccessThroughIfRightCondition() {
+		if ("attribute" == attribute)
 			return;
 	}
 
