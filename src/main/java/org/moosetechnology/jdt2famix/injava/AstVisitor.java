@@ -29,6 +29,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.moosetechnology.model.famix.Access;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Enum;
+import org.moosetechnology.model.famix.Invocation;
 import org.moosetechnology.model.famix.Method;
 import org.moosetechnology.model.famix.Namespace;
 import org.moosetechnology.model.famix.Type;
@@ -49,6 +50,7 @@ import org.moosetechnology.model.famix.Type;
 public class AstVisitor extends ASTVisitor {
 
 	private InJavaImporter importer;
+	
 	public AstVisitor(InJavaImporter importer) {
 		this.importer = importer;
 	}
@@ -220,8 +222,9 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(MethodInvocation node) {
-		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
 		importer.createAccessFromExpression(node.getExpression());
+		invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}

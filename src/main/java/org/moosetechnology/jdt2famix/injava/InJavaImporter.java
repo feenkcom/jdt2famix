@@ -453,6 +453,77 @@ public class InJavaImporter extends Importer {
 		attribute.setDeclaredType(ensureTypeFromDomType(field.getType()));
 		return attribute;
 	}
+
+	/**
+	 * We pass the dom type here because of the funny types of JDT 
+	 */
+	public LocalVariable ensureLocalVariableFromFragment(
+			VariableDeclarationFragment fragment,
+			org.eclipse.jdt.core.dom.Type type) {
+		LocalVariable localVariable = new LocalVariable();
+		localVariable.setName(fragment.getName().toString());
+		localVariable.setDeclaredType(ensureTypeFromDomType(type));
+		//CHECK: We might want to recover the modifiers (final) 
+		localVariable.setIsStub(true);
+		((Method) topOfContainerStack()).addLocalVariables(localVariable);
+		repository.add(localVariable);
+		return localVariable;
+	}
+	
+	//INVOCATION
+	
+	/**
+	 * We pass the signature because we want to get it from the node,
+	 * but there can be different types of nodes (funny JDT).
+	 */
+	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
+			String signature) {
+		Invocation invocation = new Invocation();
+		invocation.setSender((Method) topOfContainerStack()); 
+		invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
+		invocation.setSignature(signature);
+		repository.add(invocation);
+		return invocation;
+	}
+	
+	//ACCESS
+	
+	public Access createAccessFromVariableBinding(IVariableBinding binding) {
+		Access access = new Access();
+		access.setAccessor((Method) topOfContainerStack());
+		access.setIsWrite(false);
+		if (binding.isField())
+			access.setVariable(ensureAttributeForVariableBinding(binding));		
+		if (binding.isParameter())
+			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));		
+		return access;
+	}
+	
+	public Access createAccessFromExpression(Expression expression) {
+		if (expression instanceof SimpleName) {
+			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
+			if (simpleNameBinding instanceof IVariableBinding) {
+				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
+				return createAccessFromVariableBinding(variableBinding);
+			}
+		}
+		return new Access();
+	}
+	
+	public StructuralEntity ensureStructuralEntityFromExpression(
+			Expression expression) {
+		if (expression instanceof SimpleName) {
+			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
+			if (simpleNameBinding instanceof IVariableBinding) {
+				IVariableBinding binding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
+				if (binding.isField())
+					return ensureAttributeForVariableBinding(binding);
+				if (binding.isParameter())
+					return ensureParameterWithinCurrentMethodFromVariableBinding(binding);		
+			}
+		}
+		return null;
+	}
 	
 	//UTILS
 	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
@@ -483,67 +554,16 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("static");
 	}
 
-
-	/**
-	 * We pass the dom type here because of the funny types of JDT 
-	 */
-	public LocalVariable ensureLocalVariableFromFragment(
-			VariableDeclarationFragment fragment,
-			org.eclipse.jdt.core.dom.Type type) {
-		LocalVariable localVariable = new LocalVariable();
-		localVariable.setName(fragment.getName().toString());
-		localVariable.setDeclaredType(ensureTypeFromDomType(type));
-		//CHECK: We might want to recover the modifiers (final) 
-		localVariable.setIsStub(true);
-		((Method) topOfContainerStack()).addLocalVariables(localVariable);
-		repository.add(localVariable);
-		return localVariable;
-	}
-	
-
-	/**
-	 * We pass the signature because we want to get it from the node,
-	 * but there can be different types of nodes (funny JDT).
-	 */
-	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
-			String signature) {
-		Invocation invocation = new Invocation();
-		invocation.setSender((Method) topOfContainerStack()); 
-		invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
-		invocation.setSignature(signature);
-		repository.add(invocation);
-		return invocation;
-	}
-	
 	
 	//EXPORT
+	
 	public void exportMSE(String fileName) {
 		try {
 			repository.exportMSE(new FileWriter(fileName));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	public Access createAccessFromVariableBinding(IVariableBinding binding) {
-		Access access = new Access();
-		access.setAccessor((Method) topOfContainerStack());
-		access.setIsWrite(false);
-		if (binding.isField())
-			access.setVariable(ensureAttributeForVariableBinding(binding));		
-		if (binding.isParameter())
-			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));		
-		return access;
-	}
-	
-	public Access createAccessFromExpression(Expression expression) {
-		if (expression instanceof SimpleName) {
-			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
-			if (simpleNameBinding instanceof IVariableBinding) {
-				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				return createAccessFromVariableBinding(variableBinding);
-			}
-		}
-		return new Access();
-	}
+	}	
+
 
 }

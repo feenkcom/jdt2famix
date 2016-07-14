@@ -24,7 +24,7 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 	
 	@Test
 	public void testReadAccessThroughArgumentInMethodInvocation() {
-		assertEquals(1, methodNamed("readAccessThroughArgumentInMethodInvocation").getAccesses().size());		
+		assertEquals(1, methodNamed("readAccessThroughArgumentInMethodInvocation").getAccesses().size());
 	}
 	
 	@Test
