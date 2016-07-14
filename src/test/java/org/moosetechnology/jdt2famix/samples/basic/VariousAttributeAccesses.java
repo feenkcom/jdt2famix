@@ -20,7 +20,7 @@ public class VariousAttributeAccesses {
 		attribute.toString();
 	}
 	
-	public void readAccessThroughArgumentInConstructorInvocation() {
+	public void readAccessThroughArgumentInClassInitialization() {
 		new String(attribute);
 	}
 
@@ -28,8 +28,8 @@ public class VariousAttributeAccesses {
 		"attribute".equals(attribute);
 	}
 	
-	public void writeAccessThroughAssignment() {
-		attribute = "attribute";
+	public void writeAccessThroughAssignment(String argument) {
+		attribute = argument;
 	}
 	
 	public void readAccessThroughIfLeftCondition() {

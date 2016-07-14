@@ -37,7 +37,15 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 
 	@Test
 	public void testReadAccessThroughArgumentInConstructorInvocation() {
-		assertEquals(1, methodNamed("readAccessThroughArgumentInConstructorInvocation").getAccesses().size());		
+		assertEquals(1, methodNamed("readAccessThroughArgumentInClassInitialization").getAccesses().size());		
+		assertFalse(methodNamed("readAccessThroughArgumentInClassInitialization").getAccesses().stream().anyMatch(a -> a.getIsWrite()));
+	}
+
+	@Test
+	public void testWriteAccessThroughAssignment() {
+		assertEquals(2, methodNamed("writeAccessThroughAssignment").getAccesses().size());
+		assertTrue(methodNamed("writeAccessThroughAssignment").getAccesses().stream().anyMatch(a -> a.getIsWrite()));
+		assertTrue(methodNamed("writeAccessThroughAssignment").getAccesses().stream().anyMatch(a -> !a.getIsWrite()));
 	}
 
 	

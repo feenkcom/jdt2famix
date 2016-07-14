@@ -4,6 +4,7 @@ package org.moosetechnology.jdt2famix.injava;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
@@ -231,6 +232,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(SuperMethodInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 	
@@ -283,20 +285,15 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(FieldAccess node) { /*not needed*/ }
 
 	
-//	public static String visitAssignmentCallback = AstVisitor.class.getName() + "visit(Assignment)";
-//	@Override
-//	public boolean visit(Assignment node) {
-//		try {
-//			new SmalltalkRequest(visitAssignmentCallback, this, node).value();
-//		} catch (Throwable e) {
-//			e.printStackTrace();
-//		}
-//		return true;
-//	}
-//	
-//	@Override
-//	public void endVisit(Assignment node) {
-//		//Not needed
-//	}
+	@Override
+	public boolean visit(Assignment node) {
+		Access writeAccess = importer.createAccessFromExpression((Expression) node.getLeftHandSide());
+		writeAccess.setIsWrite(true);
+		importer.createAccessFromExpression((Expression) node.getRightHandSide());
+		return true;
+	}
+	
+	@Override
+	public void endVisit(Assignment node) { /*not needed*/ }
 
 }

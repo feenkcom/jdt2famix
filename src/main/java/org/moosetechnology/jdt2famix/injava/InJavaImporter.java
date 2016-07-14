@@ -424,6 +424,7 @@ public class InJavaImporter extends Importer {
 		attribute.setIsStub(true);
 		return attribute;
 	}
+	
 	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
 		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + '.' + name;

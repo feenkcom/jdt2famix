@@ -6,6 +6,8 @@ public class VariousAttributeAccessesSubclass extends VariousAttributeAccesses {
 		super(name);
 	}
 	
-	
+	public void readAccessThroughArgumentInSuperInvocation() {
+		super.writeAccessThroughAssignment(attribute);
+	}
 
 }

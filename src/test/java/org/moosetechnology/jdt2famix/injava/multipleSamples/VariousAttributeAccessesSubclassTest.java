@@ -20,5 +20,10 @@ public class VariousAttributeAccessesSubclassTest extends
 	public void testAttributeReadAccessThroughParameterInSuperConstructorInvocation() {
 		assertEquals(1, methodNamed("VariousAttributeAccessesSubclass").getAccesses().size());
 	}
+
+	@Test
+	public void testAttributeReadAccessThroughArgumentInSuperInvocation() {
+		assertEquals(1, methodNamed("readAccessThroughArgumentInSuperInvocation").getAccesses().size());
+	}
 	
 }
