@@ -7,26 +7,36 @@ import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
+import org.eclipse.jdt.core.dom.DoStatement;
+import org.eclipse.jdt.core.dom.EnhancedForStatement;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.ExpressionStatement;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
+import org.eclipse.jdt.core.dom.ForStatement;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
+import org.eclipse.jdt.core.dom.IfStatement;
+import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
+import org.eclipse.jdt.core.dom.WhileStatement;
 import org.moosetechnology.model.famix.Access;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Enum;
@@ -231,18 +241,12 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	@Override
-	public void endVisit(MethodInvocation node) { /*not needed*/ }
-
-	@Override
 	public boolean visit(SuperMethodInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 	
-	@Override
-	public void endVisit(SuperMethodInvocation node) { /*not needed*/ }
-
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
@@ -251,18 +255,12 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	@Override
-	public void endVisit(ConstructorInvocation node) { /*not needed*/ }
-
-	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
-	@Override
-	public void endVisit(SuperConstructorInvocation node) { /*not needed*/ }
-	
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
 		IMethodBinding binding = node.resolveConstructorBinding();
@@ -272,10 +270,6 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
-	@Override
-	public void endVisit(ClassInstanceCreation node) { /*not needed*/ }
-
-	
 	////////ACCESSES
 	
 	/**
@@ -288,10 +282,6 @@ public class AstVisitor extends ASTVisitor {
 
 
 	@Override
-	public void endVisit(FieldAccess node) { /*not needed*/ }
-
-	
-	@Override
 	public boolean visit(Assignment node) {
 		Access writeAccess = importer.createAccessFromExpression((Expression) node.getLeftHandSide());
 		writeAccess.setIsWrite(true);
@@ -300,12 +290,96 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	@Override
-	public void endVisit(Assignment node) { /*not needed*/ }
-	
-	@Override
 	public boolean visit(ReturnStatement node) {
 		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
 
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(WhileStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+	
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(DoStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+	
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(IfStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(SwitchStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(ForStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(EnhancedForStatement node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+
+	/**
+	 * We create this access explicitly to catch a boolean variable used in condition.
+	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 */
+	@Override
+	public boolean visit(ConditionalExpression node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+
+	/**
+	 * This one also takes care of expanded expressions like 
+	 * 		true || (41 == 42) && booleanAttribute
+	 */
+	@Override
+	public boolean visit(InfixExpression node) {
+		importer.createAccessFromExpression((Expression) node.getLeftOperand());
+		importer.createAccessFromExpression((Expression) node.getRightOperand());
+		return true;
+	}
+	
+	@Override
+	public boolean visit(ParenthesizedExpression node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+	
 }

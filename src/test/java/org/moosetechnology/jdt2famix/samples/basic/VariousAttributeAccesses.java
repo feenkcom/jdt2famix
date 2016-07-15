@@ -1,9 +1,15 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
+import java.util.Iterator;
+import java.util.List;
+
 public class VariousAttributeAccesses {
 	
 	String attribute;
 	String initializedAttribute = "initializedAttribute";
+	boolean booleanAttribute = true;
+	int intAttribute = 42;
+	List<String> listAttribute;
 	
 	public VariousAttributeAccesses(String attribute) {
 		this(attribute, "somethingElse");
@@ -42,22 +48,54 @@ public class VariousAttributeAccesses {
 			return;
 	}
 
-	public void readAccessThroughSwitch() {
-		//TODO
+	public void readAccessThroughIfPlainCondition() {
+		if (booleanAttribute)
+			return;
 	}
 
-	public void readAccessThroughFor() {
-		//TODO
+	public void readAccessThroughForInit() {
+		for (int i = intAttribute; i < 42; i++) {}
 	}
 
-	public void readAccessThroughDo() {
-		//TODO
+	public void readAccessThroughForCondition() {
+		for (int i = 0; booleanAttribute ; i++) {}
 	}
 
-	public void readAccessThroughWhile() {
-		//TODO
+	public void readAccessThroughExpandedForCondition() {
+		for (String x : listAttribute) {}
 	}
 
+	public void readAccessThroughWhileLeftCondition() {
+		while (attribute == "attribute") {}
+	}
+
+	public void readAccessThroughWhileRightCondition() {
+		while ("attribute" == attribute) {}
+	}
+
+	public void readAccessThroughDoWhileLeftCondition() {
+		do {} while (attribute == "attribute");
+	}
+
+	public void readAccessThroughDoWhileRightCondition() {
+		do {} while ("attribute" == attribute);
+	}
+
+	public void readAccessThroughDoWhilePlainCondition() {
+		do {} while (booleanAttribute);
+	}
+
+	public void readAccessThroughDoWhileExpandedCondition() {
+		do {} while (true || (41 == 42) && booleanAttribute);
+	}
+	
+	public void readAccessThroughSwitchVariable() {
+		switch (intAttribute) {}
+	}
+
+	public void readAccessThroughConditionalOperatorCondition() {
+		int x = (booleanAttribute) ? 42 : 42;
+	}
 	
 	public String readAccessThroughReturn() {
 		return attribute;

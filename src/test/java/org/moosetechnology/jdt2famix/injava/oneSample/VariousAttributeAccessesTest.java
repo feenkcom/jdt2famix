@@ -52,4 +52,64 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 	public void testReadAccessThroughReturn() {
 		assertEquals(1, methodNamed("readAccessThroughReturn").getAccesses().size());
 	}
+	
+	@Test 
+	public void readAccessThroughDoWhileLeftCondition() {
+		assertEquals(1, methodNamed("readAccessThroughDoWhileLeftCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughDoWhileRightCondition() {
+		assertEquals(1, methodNamed("readAccessThroughDoWhileRightCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughDoWhilePlainCondition() {
+		assertEquals(1, methodNamed("readAccessThroughDoWhilePlainCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughDoWhileExpandedCondition() {
+		assertEquals(1, methodNamed("readAccessThroughDoWhileExpandedCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughIfRightCondition() {
+		assertEquals(1, methodNamed("readAccessThroughIfRightCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughIfLeftCondition() {
+		assertEquals(1, methodNamed("readAccessThroughIfLeftCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughIfPlainCondition() {
+		assertEquals(1, methodNamed("readAccessThroughIfPlainCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughSwitchVariable() {
+		assertEquals(1, methodNamed("readAccessThroughSwitchVariable").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughForInit() {
+		assertEquals(1, methodNamed("readAccessThroughForInit").getAccesses().size());
+	}
+	
+	@Test 
+	public void readAccessThroughForCondition() {
+		assertEquals(1, methodNamed("readAccessThroughForCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughExpandedForCondition() {
+		assertEquals(1, methodNamed("readAccessThroughExpandedForCondition").getAccesses().size());
+	}
+
+	@Test 
+	public void readAccessThroughConditionalOperatorCondition() {
+		assertEquals(1, methodNamed("readAccessThroughConditionalOperatorCondition").getAccesses().size());
+	}
 }
