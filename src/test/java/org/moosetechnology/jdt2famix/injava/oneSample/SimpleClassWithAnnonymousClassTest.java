@@ -15,8 +15,12 @@ public class SimpleClassWithAnnonymousClassTest extends OneSampleTestCase {
 	}
 
 	@Test
-	public void test() {
+	public void testAnonymousClass() {
 		assertEquals(1, methodNamed("method").getTypes().size());
+	}
+	
+	@Test
+	public void testSuperclassOfAnonymousClass() {
 		Type superclass = Famix.superclassOf(methodNamed("method").getTypes().stream().findAny().get());
 		assertEquals("java.lang.Object", Famix.qualifiedNameOf(superclass));
 	}

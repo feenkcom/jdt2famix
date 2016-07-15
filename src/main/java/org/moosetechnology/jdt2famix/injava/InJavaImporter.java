@@ -55,6 +55,7 @@ import ch.akuhn.fame.Repository;
  */
 public class InJavaImporter extends Importer {
 
+	private static final char NAME_SEPARATOR = '.';
 	public static final String INITIALIZER_NAME = "__initializer__";
 	public static final String UNKNOWN_NAME = "__UNKNOWN__";
 	public static final String CONSTRUCTOR_KIND = "constructor";
@@ -427,7 +428,7 @@ public class InJavaImporter extends Importer {
 	
 	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
-		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + '.' + name;
+		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + NAME_SEPARATOR + name;
 		if (attributes.containsKey(qualifiedName)) 
 			return attributes.get(qualifiedName);
 		Attribute attribute = new Attribute();

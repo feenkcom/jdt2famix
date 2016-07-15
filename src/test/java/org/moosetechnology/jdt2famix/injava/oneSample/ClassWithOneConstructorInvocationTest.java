@@ -14,7 +14,7 @@ public class ClassWithOneConstructorInvocationTest extends OneSampleTestCase {
 	}
 
 	@Test
-	public void test() {
+	public void testConstructorInvocation() {
 		Method defaultConstructor = type.getMethods().stream().filter(m -> m.getParameters().isEmpty()).findAny().get();
 		assertEquals(1, defaultConstructor.getOutgoingInvocations().size());
 		assertEquals("this(\"test\");", defaultConstructor.getOutgoingInvocations().stream().findAny().get().getSignature());

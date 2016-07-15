@@ -14,18 +14,28 @@ public class ReturningMethodsWithNoParametersTest extends OneSampleTestCase {
 	}
 	
 	@Test
-	public void testDeclaredType() {
+	public void testMethods() {
 		assertEquals(4, type.getMethods().size());
+	}
+	
+	@Test
+	public void testDeclaredType() {
 		type.getMethods().stream().forEach(m -> assertNotNull(m.getDeclaredType()));
-
-		Method publicString = type.getMethods().stream().filter(m-> m.getName().equals("publicString")).findAny().get();
+	}
+	
+	
+	@Test
+	public void testPublicString() {
+		Method publicString = methodNamed("publicString");
 		assertNotNull(publicString.getDeclaredType());
 		assertEquals("String", publicString.getDeclaredType().getName());
-
-		Method publicInt = type.getMethods().stream().filter(m-> m.getName().equals("publicInt")).findAny().get();
+	}
+		
+	@Test
+	public void testPublicInt() {
+		Method publicInt = methodNamed("publicInt");
 		assertNotNull(publicInt.getDeclaredType());
 		assertEquals("int", publicInt.getDeclaredType().getName());
 	}
-
 
 }
