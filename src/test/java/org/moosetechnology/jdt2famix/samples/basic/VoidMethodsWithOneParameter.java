@@ -5,5 +5,5 @@ public class VoidMethodsWithOneParameter {
 	protected static void protectedStaticVoidWithIntParameter(int i) {}
 	static void packageStaticVoidWithStringArrayParameter(String[] s) {}
 
-	public void publicVoidWithIntArrayParameter(int[] s) {}
+	public void publicVoidWithIntArrayParameter(int[] i) {}
 }

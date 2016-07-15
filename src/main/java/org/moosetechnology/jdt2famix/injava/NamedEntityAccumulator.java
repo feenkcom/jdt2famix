@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import ch.akuhn.fame.Repository;
 
 
-public class EntityAccumulator<T> {
+public class NamedEntityAccumulator<T> {
 	
 	/**
 	 * We keep a reference to the shared Fame repository because we want to forward an entity to the repository
@@ -18,7 +18,7 @@ public class EntityAccumulator<T> {
 
 	private Map<String,T> entities;
 	
-	public EntityAccumulator(Repository repository) {
+	public NamedEntityAccumulator(Repository repository) {
 		this.repository = repository;
 		entities = new HashMap<String,T>();
 	}

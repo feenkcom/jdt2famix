@@ -1,3 +1,6 @@
-This project is meant as a simple binding for the Pharo implementation found at (http://www.smalltalkhub.com/#!/~Moose/Jdt2Famix). 
+This project offers the mechanism for producing MSE files out of Java code. It is based on [JDT Core](https://projects.eclipse.org/projects/eclipse.jdt.core) and [Fame for Java](https://github.com/girba/FameJava), and it requires Java 8.
 
-It consists of only a few classes, the most important being the org.moosetechnology.jdt2famix.AstVisitor one. For each important visiting method calls the visitor raises an corresponding SmalltalkNotification that ultimately is being handled in the Pharo implementation.
+#License
+* The main code of the jdt2famix is released under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
+* JDT Core is used as an external binary library available under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
+* Fame is used as an external binary library available under [GNU LESSER GENERAL PUBLIC LICENSE, Version 3, 29 June 2007](https://www.gnu.org/licenses/lgpl-3.0.en.html). 

@@ -79,20 +79,20 @@ public class InJavaImporter extends Importer {
 	private Repository repository;
 	public Repository repository() { return repository; }
 	
-	private EntityAccumulator<Namespace> namespaces;
-	public EntityAccumulator<Namespace> namespaces() {return namespaces;}
+	private NamedEntityAccumulator<Namespace> namespaces;
+	public NamedEntityAccumulator<Namespace> namespaces() {return namespaces;}
 
-	private EntityAccumulator<Type> types; 
-	public EntityAccumulator<Type> types() {return types;}
+	private NamedEntityAccumulator<Type> types; 
+	public NamedEntityAccumulator<Type> types() {return types;}
 
-	private EntityAccumulator<Method> methods;
-	public EntityAccumulator<Method> methods() {return methods;}
+	private NamedEntityAccumulator<Method> methods;
+	public NamedEntityAccumulator<Method> methods() {return methods;}
 
-	private EntityAccumulator<Attribute> attributes;
-	public EntityAccumulator<Attribute> attributes() {return attributes;}
+	private NamedEntityAccumulator<Attribute> attributes;
+	public NamedEntityAccumulator<Attribute> attributes() {return attributes;}
 
-	private EntityAccumulator<Parameter> parameters;
-	public EntityAccumulator<Parameter> parameters() {return parameters;}
+	private NamedEntityAccumulator<Parameter> parameters;
+	public NamedEntityAccumulator<Parameter> parameters() {return parameters;}
 	
 	/**
 	 * This is a structure that keeps track of the current stack of containers
@@ -111,11 +111,11 @@ public class InJavaImporter extends Importer {
 		JavaModel.importInto(metaRepository);
 		repository = new Repository(metaRepository);
 		
-		 namespaces = new EntityAccumulator<Namespace>(repository);
-		 types = new EntityAccumulator<Type>(repository);
-		 methods = new EntityAccumulator<Method>(repository);
-		 attributes = new EntityAccumulator<Attribute>(repository);
-		 parameters = new EntityAccumulator<Parameter>(repository);
+		 namespaces = new NamedEntityAccumulator<Namespace>(repository);
+		 types = new NamedEntityAccumulator<Type>(repository);
+		 methods = new NamedEntityAccumulator<Method>(repository);
+		 attributes = new NamedEntityAccumulator<Attribute>(repository);
+		 parameters = new NamedEntityAccumulator<Parameter>(repository);
 	}
 	
 	@Override
