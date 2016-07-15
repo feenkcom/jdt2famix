@@ -10,7 +10,7 @@ public class InJavaImporterTest {
 	@Test
 	public void test() {
 		InJavaImporter importer = new InJavaImporter();
-		assertNotNull(importer.getRepository().getMetamodel().getDescription(Namespace.class));
+		assertNotNull(importer.repository().getMetamodel().getDescription(Namespace.class));
 	}
 
 }

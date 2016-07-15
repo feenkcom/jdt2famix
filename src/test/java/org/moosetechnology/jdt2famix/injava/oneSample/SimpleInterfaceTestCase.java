@@ -17,19 +17,19 @@ public class SimpleInterfaceTestCase extends OneSampleTestCase {
 
 	@Test
 	public void testNamespaces() {
-		assertEquals(1, importer.getNamespaces().size());
-		assertTrue(importer.getNamespaces().containsKey(SimpleInterface.class.getPackage().getName()));
+		assertEquals(1, importer.namespaces().size());
+		assertTrue(importer.namespaces().has(SimpleInterface.class.getPackage().getName()));
 	}
 	@Test
 	public void testTypes() {
-		assertEquals(1, importer.getTypes().size());
-		assertTrue(importer.getTypes().containsKey(SimpleInterface.class.getName()));
+		assertEquals(1, importer.types().size());
+		assertTrue(importer.types().has(SimpleInterface.class.getName()));
 	}
 	
 	@Test
 	public void testInterface() {
 		Class clazz = (Class) type;
-		Namespace namespace = (Namespace) importer.getNamespaces().get(SimpleInterface.class.getPackage().getName());
+		Namespace namespace = (Namespace) importer.namespaces().named(SimpleInterface.class.getPackage().getName());
 		assertFalse(namespace.getIsStub());
 		assertTrue(clazz.getIsInterface());
 		assertEquals(namespace, clazz.getContainer());

@@ -20,17 +20,17 @@ public class ClassImplementingObserverTest extends OneSampleTestCase {
 
 	@Test
 	public void testModelSize() {
-		assertEquals(3, importer.getNamespaces().size());
-		assertEquals(4, importer.getTypes().size());
+		assertEquals(3, importer.namespaces().size());
+		assertEquals(4, importer.types().size());
 	}
 	
 	@Test
 	public void testInterface() {	
-		Class observerClass = (Class) importer.getTypes().get(Observer.class.getName());
+		Class observerClass = (Class) importer.types().named(Observer.class.getName());
 		assertTrue(observerClass.getIsInterface());
 		assertTrue(observerClass.getIsStub());
 		assertEquals(observerClass.getContainer(), 
-					 importer.getNamespaces().get(Observer.class.getPackage().getName()));
+					 importer.namespaces().named(Observer.class.getPackage().getName()));
 	}
 	
 	@Test
@@ -39,7 +39,7 @@ public class ClassImplementingObserverTest extends OneSampleTestCase {
 		assertFalse(observerClass.getIsInterface());
 		assertFalse(observerClass.getIsStub());
 		assertEquals(observerClass.getContainer(), 
-				     importer.getNamespaces().get(ClassImplementingObserver.class.getPackage().getName()));
+				     importer.namespaces().named(ClassImplementingObserver.class.getPackage().getName()));
 	}
 	
 	@Test

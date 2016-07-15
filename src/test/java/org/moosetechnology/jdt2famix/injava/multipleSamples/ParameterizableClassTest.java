@@ -27,14 +27,14 @@ public class ParameterizableClassTest extends MultipleSamplesTestCase {
 	
 	@Override
 	protected void setUp() {
-		parameterizableClass = importer.getTypes().get(SimpleParameterizableClass.class.getName());
-		parameterizedType = Famix.superclassOf(importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName()));
-		subclass = importer.getTypes().get(SimpleSubclassOfParameterizedType.class.getName());
+		parameterizableClass = importer.types().named(SimpleParameterizableClass.class.getName());
+		parameterizedType = Famix.superclassOf(importer.types().named(SimpleSubclassOfParameterizedType.class.getName()));
+		subclass = importer.types().named(SimpleSubclassOfParameterizedType.class.getName());
 	}
 	
 	@Test
 	public void types() {
-		assertEquals(9, importer.getTypes().size());
+		assertEquals(9, importer.types().size());
 		assertTrue(subclass instanceof Class);
 		assertTrue(parameterizableClass instanceof ParameterizableClass);
 		assertTrue(parameterizedType instanceof ParameterizedType);

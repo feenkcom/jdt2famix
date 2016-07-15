@@ -18,7 +18,7 @@ public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 
 	@Test
 	public void testTypes() {
-		assertEquals(5, importer.getTypes().size());
+		assertEquals(5, importer.types().size());
 	}
 	
 	@Test

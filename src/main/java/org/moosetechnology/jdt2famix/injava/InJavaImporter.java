@@ -5,11 +5,8 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -33,9 +30,25 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.moosetechnology.jdt2famix.Famix;
 import org.moosetechnology.jdt2famix.Importer;
-import org.moosetechnology.model.famix.*;
+import org.moosetechnology.model.famix.Access;
+import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Class;
+import org.moosetechnology.model.famix.ContainerEntity;
 import org.moosetechnology.model.famix.Enum;
+import org.moosetechnology.model.famix.FAMIXModel;
+import org.moosetechnology.model.famix.Inheritance;
+import org.moosetechnology.model.famix.Invocation;
+import org.moosetechnology.model.famix.LocalVariable;
+import org.moosetechnology.model.famix.Method;
+import org.moosetechnology.model.famix.NamedEntity;
+import org.moosetechnology.model.famix.Namespace;
+import org.moosetechnology.model.famix.Parameter;
+import org.moosetechnology.model.famix.ParameterType;
+import org.moosetechnology.model.famix.ParameterizableClass;
+import org.moosetechnology.model.famix.ParameterizedType;
+import org.moosetechnology.model.famix.PrimitiveType;
+import org.moosetechnology.model.famix.StructuralEntity;
+import org.moosetechnology.model.famix.Type;
 import org.moosetechnology.model.java.JavaModel;
 
 import ch.akuhn.fame.MetaRepository;
@@ -45,10 +58,10 @@ import ch.akuhn.fame.Repository;
  * The core class that holds the logic of creating the model
  * It looks like a god class, but it is convenient to have most of the logic here
  * 
- * There are two main types of methods
+ * There are two main kinds of methods
  * 1. ensure methods are those that always return the same instance of a named entity for the same qualified name.
- *    These are important for creating the graph 
- * 2. create methods create the instances both for named entities and for other types (such as associations)
+ *    These are important for creating the graph.
+ * 2. create methods always create new instances entities (both named and other types, such as associations)
  * 
  * @author girba
  *
@@ -61,44 +74,25 @@ public class InJavaImporter extends Importer {
 	public static final String CONSTRUCTOR_KIND = "constructor";
 	
 	private Namespace unknownNamespace;
-	private Map<String,Namespace> namespaces;
-	public Map<String,Namespace> getNamespaces() { return namespaces; }
-	private void addNamespace(String packageName, Namespace namespace) {
-		namespaces.put(packageName, namespace);
-		repository.add(namespace);
-	}
-	
 	private Type unknownType;
-	private Map<String, Type> types;
-	public Map<String, Type> getTypes() { return types; }
-	private void addType(String qualifiedName, Type type) {
-		types.put(qualifiedName, type);
-		repository.add(type);
-	}
-
-	private Map<String, Method> methods;
-	public Map<String, Method> getMethods() { return methods; }
-	private void addMethod(String qualifiedName, Method method) {
-		methods.put(qualifiedName, method);
-		repository.add(method);
-	}
-
-	private Map<String, Attribute> attributes;
-	public Map<String, Attribute> getAttributes() { return attributes; }
-	private void addAttribute(String qualifiedName, Attribute attribute) {
-		attributes.put(qualifiedName, attribute);
-		repository.add(attribute);
-	}
-
-	private Map<String, Parameter> parameters;
-	public Map<String, Parameter> getParameters() { return parameters; }
-	private void addParameter(String qualifiedName, Parameter parameter) {
-		parameters.put(qualifiedName, parameter);
-		repository.add(parameter);
-	}
 	
-	Repository repository;
-	public Repository getRepository() { return repository; }
+	private Repository repository;
+	public Repository repository() { return repository; }
+	
+	private EntityAccumulator<Namespace> namespaces;
+	public EntityAccumulator<Namespace> namespaces() {return namespaces;}
+
+	private EntityAccumulator<Type> types; 
+	public EntityAccumulator<Type> types() {return types;}
+
+	private EntityAccumulator<Method> methods;
+	public EntityAccumulator<Method> methods() {return methods;}
+
+	private EntityAccumulator<Attribute> attributes;
+	public EntityAccumulator<Attribute> attributes() {return attributes;}
+
+	private EntityAccumulator<Parameter> parameters;
+	public EntityAccumulator<Parameter> parameters() {return parameters;}
 	
 	/**
 	 * This is a structure that keeps track of the current stack of containers
@@ -112,16 +106,16 @@ public class InJavaImporter extends Importer {
 
 	
 	public InJavaImporter() {
-		 MetaRepository metaRepository = new MetaRepository();
-		 FAMIXModel.importInto(metaRepository);
-		 JavaModel.importInto(metaRepository);
-		 repository = new Repository(metaRepository);
-		 
-		 types = new HashMap<String, Type>();
-		 namespaces = new HashMap<String, Namespace>();
-		 methods = new HashMap<String, Method>();
-		 attributes = new HashMap<String, Attribute>();
-		 parameters = new HashMap<String, Parameter>();
+		MetaRepository metaRepository = new MetaRepository();
+		FAMIXModel.importInto(metaRepository);
+		JavaModel.importInto(metaRepository);
+		repository = new Repository(metaRepository);
+		
+		 namespaces = new EntityAccumulator<Namespace>(repository);
+		 types = new EntityAccumulator<Type>(repository);
+		 methods = new EntityAccumulator<Method>(repository);
+		 attributes = new EntityAccumulator<Attribute>(repository);
+		 parameters = new EntityAccumulator<Parameter>(repository);
 	}
 	
 	@Override
@@ -132,15 +126,13 @@ public class InJavaImporter extends Importer {
 	//NAMESPACES
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
 		String packageName = binding.getName();
-		if (namespaces.containsKey(packageName)) 
-			return namespaces.get(packageName);
+		if (namespaces.has(packageName)) return namespaces.named(packageName);
 		else {
 			Namespace namespace = createNamespaceNamed(packageName);
-			this.addNamespace(packageName, namespace);
+			namespaces.add(packageName, namespace);
 			return namespace;
 		}
 	}
-	
 
 	private Namespace createNamespaceNamed(String k) {
 		Namespace namespace = new Namespace();
@@ -154,24 +146,24 @@ public class InJavaImporter extends Importer {
 			return unknownNamespace();
 		return ensureNamespaceFromPackageBinding(binding.getPackage());
 	}
-	
+
 	public Namespace unknownNamespace() {
 		if (unknownNamespace == null) {
 			unknownNamespace = new Namespace();
 			unknownNamespace.setName(UNKNOWN_NAME);
 			unknownNamespace.setIsStub(true);
-			this.addNamespace(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
+			namespaces.add(Famix.qualifiedNameOf(unknownNamespace), unknownNamespace);
 		}
 		return unknownNamespace;
 	}
-
+	
 	//TYPES
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
 		String qualifiedName = binding.getQualifiedName();
-		if (types.containsKey(qualifiedName)) return types.get(qualifiedName);
+		if (types.has(qualifiedName)) return types.named(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
 		type.setName(binding.getName());
-		this.addType(qualifiedName, type);
+		types.add(qualifiedName, type);
 		type.setIsStub(true);
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		type.setContainer(ensureContainerEntityForTypeBinding(binding));
@@ -253,10 +245,10 @@ public class InJavaImporter extends Importer {
 		type.setContainer(unknownNamespace());
 		type.setIsStub(true);
 		String qualifiedName = Famix.qualifiedNameOf(type);
-		if (types.containsKey(qualifiedName))
-			return types.get(qualifiedName);
+		if (types.has(qualifiedName))
+			return types.named(qualifiedName);
 		else {
-			this.addType(Famix.qualifiedNameOf(type), type);
+			types.add(Famix.qualifiedNameOf(type), type);
 			return type;
 		}
 	}
@@ -268,7 +260,7 @@ public class InJavaImporter extends Importer {
 		type.setContainer(topOfContainerStack());
 		type.setName("$" + topOfContainerStack().getTypes().size());
 		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
-		this.addType(Famix.qualifiedNameOf(type), type);
+		types.add(Famix.qualifiedNameOf(type), type);
 		return type;
 	}
 	
@@ -333,10 +325,10 @@ public class InJavaImporter extends Importer {
 		String methodName = binding.getName();
 		String signature = methodName + "(" + parametersString + ")";
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + "." + signature;
-		if (methods.containsKey(qualifiedName)) 
-			return methods.get(qualifiedName);
+		if (methods.has(qualifiedName)) 
+			return methods.named(qualifiedName);
 		Method method = new Method();
-		this.addMethod(qualifiedName, method);
+		methods.add(qualifiedName, method);
 		method.setName(methodName);
 		method.setSignature(signature);
 		method.setIsStub(true);
@@ -359,11 +351,11 @@ public class InJavaImporter extends Importer {
 		String methodName = node.getName().toString();
 		String signature = methodName + "(" + parametersString + ")";
 		String qualifiedName = Famix.qualifiedNameOf(topOfContainerStack()) + "." + signature;
-		if(methods.containsKey(qualifiedName))
-			return methods.get(qualifiedName);
+		if(methods.has(qualifiedName))
+			return methods.named(qualifiedName);
 		Method method = new Method();
 		method.setName(methodName);
-		this.addMethod(qualifiedName, method);
+		methods.add(qualifiedName, method);
 		method.setSignature(signature);
 		method.setParentType((Type) topOfContainerStack());
 		method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
@@ -378,7 +370,7 @@ public class InJavaImporter extends Importer {
 		method.setIsStub(false);
 		method.setKind("initializer");
 		method.setParentType((Type) topOfContainerStack());
-		this.addMethod(Famix.qualifiedNameOf(method), method);
+		methods.add(Famix.qualifiedNameOf(method), method);
 		return method;
 	}
 
@@ -386,10 +378,10 @@ public class InJavaImporter extends Importer {
 			Method method) {
 		String name = variableDeclaration.getName().toString();
 		String qualifiedName = Famix.qualifiedNameOf(method) + "." + name;
-		if (parameters.containsKey(qualifiedName)) 
-			return parameters.get(qualifiedName);
+		if (parameters.has(qualifiedName)) 
+			return parameters.named(qualifiedName);
 		Parameter parameter = new Parameter();
-		this.addParameter(qualifiedName, parameter);
+		parameters.add(qualifiedName, parameter);
 		parameter.setName(name);
 		parameter.setParentBehaviouralEntity(method);
 		parameter.setDeclaredType(ensureTypeFromDomType(variableDeclaration.getType()));
@@ -429,10 +421,10 @@ public class InJavaImporter extends Importer {
 	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
 		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + NAME_SEPARATOR + name;
-		if (attributes.containsKey(qualifiedName)) 
-			return attributes.get(qualifiedName);
+		if (attributes.has(qualifiedName)) 
+			return attributes.named(qualifiedName);
 		Attribute attribute = new Attribute();
-		this.addAttribute(qualifiedName, attribute);
+		attributes.add(qualifiedName, attribute);
 		attribute.setName(name);
 		attribute.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
 		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));		
@@ -445,10 +437,10 @@ public class InJavaImporter extends Importer {
 			Type parentType) {
 		String name = fragment.getName().toString();
 		String qualifiedName = Famix.qualifiedNameOf(parentType);
-		if (attributes.containsKey(qualifiedName)) 
-			return attributes.get(qualifiedName);
+		if (attributes.has(qualifiedName)) 
+			return attributes.named(qualifiedName);
 		Attribute attribute = new Attribute();
-		this.addAttribute(qualifiedName, attribute);
+		attributes.add(qualifiedName, attribute);
 		attribute.setName(name);
 		attribute.setParentType(parentType);
 		attribute.setDeclaredType(ensureTypeFromDomType(field.getType()));
@@ -497,6 +489,7 @@ public class InJavaImporter extends Importer {
 			access.setVariable(ensureAttributeForVariableBinding(binding));		
 		if (binding.isParameter())
 			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));		
+		repository.add(access);
 		return access;
 	}
 	
@@ -555,7 +548,6 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("static");
 	}
 
-	
 	//EXPORT
 	
 	public void exportMSE(String fileName) {
@@ -565,6 +557,4 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}	
-
-
 }
