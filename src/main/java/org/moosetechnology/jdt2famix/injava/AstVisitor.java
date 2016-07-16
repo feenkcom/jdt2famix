@@ -33,6 +33,7 @@ import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchStatement;
+import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -352,6 +353,9 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
+	 * Handles
+	 * 		for (int i; i < n; i++)
+	 * 
 	 * We create this access explicitly to catch a boolean variable used in condition.
 	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
 	 */
@@ -362,6 +366,8 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
+	 * Handles 
+	 * 		for ( Object x : list )
 	 * We create this access explicitly to catch a boolean variable used in condition.
 	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
 	 */
@@ -392,8 +398,22 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
+	/**
+	 * Handles expressions like
+	 * 		(a && b || c)
+	 */
 	@Override
 	public boolean visit(ParenthesizedExpression node) {
+		importer.createAccessFromExpression((Expression) node.getExpression());		
+		return true;
+	}
+	
+	/**
+	 * Handles
+	 * 		synchronized(a) {}
+	 */
+	@Override
+	public boolean visit(SynchronizedStatement node) {
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}

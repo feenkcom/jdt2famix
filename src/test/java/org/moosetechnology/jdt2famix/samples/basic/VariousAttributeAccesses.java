@@ -100,4 +100,8 @@ public class VariousAttributeAccesses {
 		return attribute;
 	}
 	
+	public void readAccessThroughSynchronized() {
+		synchronized(attribute) {}
+	}
+	
 }

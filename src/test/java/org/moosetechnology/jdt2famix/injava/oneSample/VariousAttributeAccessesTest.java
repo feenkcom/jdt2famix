@@ -112,4 +112,11 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 	public void readAccessThroughConditionalOperatorCondition() {
 		assertEquals(1, methodNamed("readAccessThroughConditionalOperatorCondition").getAccesses().size());
 	}
+	
+	@Test 
+	public void readAccessThroughSynchronized() {
+		assertEquals(1, methodNamed("readAccessThroughSynchronized").getAccesses().size());
+	}
+	
+	
 }
