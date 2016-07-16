@@ -223,7 +223,8 @@ public class AstVisitor extends ASTVisitor {
 		//we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment
 		VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) field.fragments().get(field.fragments().size() - 1);
 		if (lastFragment.getInitializer() != null) {
-			importer.createAccessFromExpression(fragment.getName());
+			Access access = importer.createAccessFromExpression(fragment.getName());
+			access.setIsWrite(true);
 			importer.createAccessFromExpression((Expression) fragment.getInitializer());
 		}
 		attribute.setIsStub(false);

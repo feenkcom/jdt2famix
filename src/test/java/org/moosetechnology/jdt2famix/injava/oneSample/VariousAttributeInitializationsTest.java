@@ -18,9 +18,21 @@ public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 		assertEquals(1, type.getMethods().size());
 		assertEquals(2, importer.methods().size());
 	}
+	
+	@Test
+	public void testAttributes() {
+		assertEquals(7, type.getAttributes().size());
+	}
 
 	@Test
-	public void test() {
-		assertEquals(5, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
+	public void testAccesses() {
+		assertEquals(8, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
+	}
+	
+	@Test
+	public void testAccessToConstant() {
+		assertEquals(2, attributeNamed("CONSTANT").getIncomingAccesses().size());
+		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> !(a.getIsWrite())));
+		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> a.getIsWrite()));
 	}
 }

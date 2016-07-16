@@ -564,9 +564,13 @@ public class InJavaImporter extends Importer {
 	}
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
 		Enum parentEnum = (Enum) topOfContainerStack();
+		String enumValueName = node.getName().toString();
+		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		EnumValue enumValue = new EnumValue();
-		enumValue.setName(node.getName().toString());
+		enumValue.setName(enumValueName);
 		enumValue.setParentEnum(parentEnum);
+		enumValue.setIsStub(true);
 		return enumValue;
 	}
 }
