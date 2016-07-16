@@ -17,5 +17,5 @@ public class VariousConstructorsTest extends OneSampleTestCase {
 		assertEquals(4, type.getMethods().size());
 		type.getMethods().stream().forEach(m -> m.getKind().equals("constructor"));
 	}
-	
+
 }

@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -317,14 +318,13 @@ public class InJavaImporter extends Importer {
 	}
 
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding, Type parentType) {
-		//FIXME: the parametersString contains a , too many 
-		String parametersString = Arrays
-				.stream(binding.getParameterTypes())
-				.map(p -> (String) p.getQualifiedName())
-				.reduce("", (l, r) -> l + ", " + r);
+		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
+		Arrays
+			.stream(binding.getParameterTypes())
+			.forEach( p -> signatureJoiner.add((String) p.getQualifiedName()) );
 		String methodName = binding.getName();
-		String signature = methodName + "(" + parametersString + ")";
-		String qualifiedName = Famix.qualifiedNameOf(parentType) + "." + signature;
+		String signature = methodName + signatureJoiner.toString();
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
 		if (methods.has(qualifiedName)) 
 			return methods.named(qualifiedName);
 		Method method = new Method();
@@ -344,13 +344,13 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
-		String parametersString = Arrays
-				.stream(node.parameters().toArray())
-				.map(p -> (String) ((SingleVariableDeclaration) p).getType().toString())
-				.reduce("", (l, r) -> l + ", " + r);
+		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
+		Arrays
+			.stream(node.parameters().toArray())
+			.forEach( p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()) );
 		String methodName = node.getName().toString();
-		String signature = methodName + "(" + parametersString + ")";
-		String qualifiedName = Famix.qualifiedNameOf(topOfContainerStack()) + "." + signature;
+		String signature = methodName + signatureJoiner.toString();		
+		String qualifiedName = Famix.qualifiedNameOf(topOfContainerStack()) + NAME_SEPARATOR + signature;
 		if(methods.has(qualifiedName))
 			return methods.named(qualifiedName);
 		Method method = new Method();
@@ -364,7 +364,7 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Method ensureMethodFromInitializer() {
-		String qualifiedName = Famix.qualifiedNameOf((Type) topOfContainerStack()) + "." + INITIALIZER_NAME;
+		String qualifiedName = Famix.qualifiedNameOf((Type) topOfContainerStack()) + NAME_SEPARATOR + INITIALIZER_NAME;
 		if (methods.has(qualifiedName))
 			return methods.named(qualifiedName);
 		Method method = new Method();
@@ -380,7 +380,7 @@ public class InJavaImporter extends Importer {
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
-		String qualifiedName = Famix.qualifiedNameOf(method) + "." + name;
+		String qualifiedName = Famix.qualifiedNameOf(method) + NAME_SEPARATOR + name;
 		if (parameters.has(qualifiedName)) 
 			return parameters.named(qualifiedName);
 		Parameter parameter = new Parameter();
