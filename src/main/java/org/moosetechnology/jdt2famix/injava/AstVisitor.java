@@ -187,7 +187,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Initializer node) {
-		Method method = importer.ensureMethodFromInitializer(node);
+		Method method = importer.ensureMethodFromInitializer();
 		importer.pushOnContainerStack(method);
 		return true;
 	}
@@ -202,15 +202,30 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(FieldDeclaration node) {
+		if (node.fragments().stream().anyMatch(f -> ((VariableDeclarationFragment) f).getInitializer() != null))
+			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
 		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f, node));
 		return true;
 	}
 	
 	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
+		//only the last fragment of a field contains the initializer code.
+		//thus, to create the access to each variable in the fragment we need to ask that last fragment
+		//we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment
+		VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) field.fragments().get(field.fragments().size() - 1);
+		if (lastFragment.getInitializer() != null) {
+			importer.createAccessFromExpression(fragment.getName());
+			importer.createAccessFromExpression((Expression) fragment.getInitializer());
+		}
 		attribute.setIsStub(false);
 	}
-	
+
+	@Override
+	public void endVisit(FieldDeclaration node) {
+		if (importer.topOfContainerStack().getName().equals(InJavaImporter.INITIALIZER_NAME))
+			importer.popFromContainerStack();
+	}
 	
 	////////LOCAL VARIABLES
 	

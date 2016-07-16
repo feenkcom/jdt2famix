@@ -363,7 +363,10 @@ public class InJavaImporter extends Importer {
 		return method;
 	}
 	
-	public Method ensureMethodFromInitializer(Initializer node) {
+	public Method ensureMethodFromInitializer() {
+		String qualifiedName = Famix.qualifiedNameOf((Type) topOfContainerStack()) + "." + INITIALIZER_NAME;
+		if (methods.has(qualifiedName))
+			return methods.named(qualifiedName);
 		Method method = new Method();
 		method.setName(INITIALIZER_NAME);
 		method.setSignature(method.getName());

@@ -1,6 +1,5 @@
 package org.moosetechnology.jdt2famix.samples.basic;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class VariousAttributeAccesses {
