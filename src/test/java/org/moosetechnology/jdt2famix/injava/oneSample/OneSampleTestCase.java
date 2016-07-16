@@ -17,7 +17,7 @@ public abstract class OneSampleTestCase extends InJavaTestCase {
 		importer.runOne("src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + sampleClass().getSimpleName() + ".java");
 		type = importer.types().named(sampleClass().getName());
 	}
-	
+
 	protected abstract Class<?> sampleClass();
 
 	protected Attribute attributeNamed(String name) {

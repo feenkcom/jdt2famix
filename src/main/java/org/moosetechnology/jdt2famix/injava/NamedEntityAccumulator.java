@@ -53,4 +53,8 @@ public class NamedEntityAccumulator<T> {
 		return entities.size();
 	}
 
+	public boolean isEmpty() {
+		return entities.isEmpty();
+	}
+
 }

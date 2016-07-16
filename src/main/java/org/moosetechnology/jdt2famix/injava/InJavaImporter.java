@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -36,6 +37,7 @@ import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Class;
 import org.moosetechnology.model.famix.ContainerEntity;
 import org.moosetechnology.model.famix.Enum;
+import org.moosetechnology.model.famix.EnumValue;
 import org.moosetechnology.model.famix.FAMIXModel;
 import org.moosetechnology.model.famix.Inheritance;
 import org.moosetechnology.model.famix.Invocation;
@@ -112,11 +114,11 @@ public class InJavaImporter extends Importer {
 		JavaModel.importInto(metaRepository);
 		repository = new Repository(metaRepository);
 		
-		 namespaces = new NamedEntityAccumulator<Namespace>(repository);
-		 types = new NamedEntityAccumulator<Type>(repository);
-		 methods = new NamedEntityAccumulator<Method>(repository);
-		 attributes = new NamedEntityAccumulator<Attribute>(repository);
-		 parameters = new NamedEntityAccumulator<Parameter>(repository);
+		namespaces = new NamedEntityAccumulator<Namespace>(repository);
+		types = new NamedEntityAccumulator<Type>(repository);
+		methods = new NamedEntityAccumulator<Method>(repository);
+		attributes = new NamedEntityAccumulator<Attribute>(repository);
+		parameters = new NamedEntityAccumulator<Parameter>(repository);
 	}
 	
 	@Override
@@ -559,5 +561,12 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}	
+	}
+	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
+		Enum parentEnum = (Enum) topOfContainerStack();
+		EnumValue enumValue = new EnumValue();
+		enumValue.setName(node.getName().toString());
+		enumValue.setParentEnum(parentEnum);
+		return enumValue;
+	}
 }

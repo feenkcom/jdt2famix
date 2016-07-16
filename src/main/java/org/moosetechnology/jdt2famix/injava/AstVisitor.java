@@ -11,6 +11,7 @@ import org.eclipse.jdt.core.dom.ConditionalExpression;
 import org.eclipse.jdt.core.dom.ConstructorInvocation;
 import org.eclipse.jdt.core.dom.DoStatement;
 import org.eclipse.jdt.core.dom.EnhancedForStatement;
+import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.ExpressionStatement;
@@ -41,6 +42,7 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import org.moosetechnology.model.famix.Access;
 import org.moosetechnology.model.famix.Attribute;
 import org.moosetechnology.model.famix.Enum;
+import org.moosetechnology.model.famix.EnumValue;
 import org.moosetechnology.model.famix.Invocation;
 import org.moosetechnology.model.famix.Method;
 import org.moosetechnology.model.famix.Namespace;
@@ -136,6 +138,11 @@ public class AstVisitor extends ASTVisitor {
 		importer.popFromContainerStack();
 	}
 
+	@Override
+	public boolean visit(EnumConstantDeclaration node) {
+		importer.ensureEnumValueFromDeclaration(node);
+		return true;
+	}
 	
 	////////ANNOTATIONS
 	
