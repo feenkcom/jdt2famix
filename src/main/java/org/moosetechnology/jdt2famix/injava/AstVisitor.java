@@ -288,10 +288,11 @@ public class AstVisitor extends ASTVisitor {
 	////////ACCESSES
 	
 	/**
-	 * I do not know in which situation this is invoked. Funny, no?
+	 * This one looks highly interesting, but I do not know in which situation this is invoked. Funny, no?
 	 */
 	@Override
 	public boolean visit(FieldAccess node) {
+		//TODO Remove?
 		return true;
 	}
 
@@ -396,5 +397,17 @@ public class AstVisitor extends ASTVisitor {
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
+	
+	/**
+	 * It would be ideal to find a way to use this method for creating accesses.
+	 * However without having the context, we do not know whether this is actually an access.
+	 * That is why we have to resort to spreading these createAccessFromExpression calls everywhere.
+	 */
+	@Override
+	public boolean visit(SimpleName node) {
+		return false;
+	}
+
+	
 	
 }
