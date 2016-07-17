@@ -1,45 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-<modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-<groupId>org.moosetechnology</groupId>
-<artifactId>jdt2famix</artifactId>
-<version>0.0.1-SNAPSHOT</version>
-<packaging>jar</packaging>
-<name>jdt2famix</name>
-<url>http://maven.apache.org</url>
+	<groupId>org.moosetechnology</groupId>
+	<artifactId>jdt2famix</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>jdt2famix</name>
+	<url>http://maven.apache.org</url>
 
-<properties>
-	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-</properties>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
-<repositories>
-	<repository>
-		<id>in-project</id>
-		<name>In Project Repo</name>
-		<url>file://${project.basedir}/lib</url>
-	</repository>
-</repositories>
+	<repositories>
+		<repository>
+			<id>in-project</id>
+			<name>In Project Repo</name>
+			<url>file://${project.basedir}/lib</url>
+		</repository>
+	</repositories>
 
-  <dependencies>
-
-    <dependency>
-      	<groupId>junit</groupId>
-      	<artifactId>junit</artifactId>
-    	<version>4.11</version>
-		<scope>test</scope>
-    </dependency>
-    
-    <dependency>
- 	   <groupId>org.eclipse.jdt</groupId>
-	    <artifactId>org.eclipse.jdt.core</artifactId>
-	    <version>3.10.0</version>
-	</dependency>
-	<dependency>
-		<groupId>fame</groupId>
-		<artifactId>fame</artifactId>
-		<version>1.0</version>
-	</dependency>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.eclipse.jdt</groupId>
+			<artifactId>org.eclipse.jdt.core</artifactId>
+			<version>3.10.0</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.akuhn</groupId>
+			<artifactId>fame</artifactId>
+			<version>1.0</version>
+		</dependency>
 <!-- 	<dependency> -->
 <!-- 	    <groupId>jniport</groupId> -->
 <!-- 	    <artifactId>JNIPort</artifactId> -->
@@ -47,5 +45,5 @@
 <!-- 	    <scope>system</scope> -->
 <!-- 	    <systemPath>${basedir}/lib/JNIPort30.jar</systemPath> -->
 <!--   	</dependency> -->
-  </dependencies>
+	</dependencies>
 </project>
