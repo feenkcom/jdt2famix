@@ -342,6 +342,8 @@ public class InJavaImporter extends Importer {
 			//we do not want to set void as a return type
 			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
+		if (Modifier.isStatic(binding.getModifiers()))
+			method.setHasClassScope(true);
 		return method;
 	}
 	
@@ -418,6 +420,8 @@ public class InJavaImporter extends Importer {
 		else {
 			attribute = ensureAttributeForVariableBinding(binding);
 			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
+			if (Modifier.isStatic(binding.getModifiers()))
+				attribute.setHasClassScope(true);
 		}
 		attribute.setIsStub(true);
 		return attribute;
@@ -493,7 +497,9 @@ public class InJavaImporter extends Importer {
 		if (binding.isField())
 			access.setVariable(ensureAttributeForVariableBinding(binding));		
 		if (binding.isParameter())
-			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));		
+			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));
+		if (binding.isEnumConstant())
+			access.setVariable(ensureEnumValueFromVariableBinding(binding));
 		repository.add(access);
 		return access;
 	}
@@ -506,6 +512,7 @@ public class InJavaImporter extends Importer {
 				return createAccessFromVariableBinding(variableBinding);
 			}
 		}
+		//TODO handle the case of a QualifiedName that might point to a static attribute or enum value
 		return new Access();
 	}
 	
@@ -518,7 +525,9 @@ public class InJavaImporter extends Importer {
 				if (binding.isField())
 					return ensureAttributeForVariableBinding(binding);
 				if (binding.isParameter())
-					return ensureParameterWithinCurrentMethodFromVariableBinding(binding);		
+					return ensureParameterWithinCurrentMethodFromVariableBinding(binding);
+				if (binding.isEnumConstant())
+					return ensureEnumValueFromVariableBinding(binding);
 			}
 		}
 		return null;
@@ -549,8 +558,6 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("transient");
 		if (Modifier.isVolatile(modifiers))
 			entity.addModifiers("volatile");
-		if (Modifier.isStatic(modifiers))
-			entity.addModifiers("static");
 	}
 
 	//EXPORT
@@ -562,9 +569,22 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
+	
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
 		Enum parentEnum = (Enum) topOfContainerStack();
 		String enumValueName = node.getName().toString();
+		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
+		EnumValue enumValue = new EnumValue();
+		enumValue.setName(enumValueName);
+		enumValue.setParentEnum(parentEnum);
+		enumValue.setIsStub(true);
+		return enumValue;
+	}
+
+	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
+		Enum parentEnum = (Enum) ensureTypeFromTypeBinding(binding.getType());
+		String enumValueName = binding.getName().toString();
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		EnumValue enumValue = new EnumValue();

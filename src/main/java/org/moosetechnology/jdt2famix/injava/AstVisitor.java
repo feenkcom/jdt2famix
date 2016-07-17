@@ -225,7 +225,7 @@ public class AstVisitor extends ASTVisitor {
 		if (lastFragment.getInitializer() != null) {
 			Access access = importer.createAccessFromExpression(fragment.getName());
 			access.setIsWrite(true);
-			importer.createAccessFromExpression((Expression) fragment.getInitializer());
+			importer.createAccessFromExpression((Expression) lastFragment.getInitializer());
 		}
 		attribute.setIsStub(false);
 	}

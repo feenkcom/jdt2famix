@@ -5,6 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.injava.InJavaImporter;
 import org.moosetechnology.jdt2famix.samples.basic.VariousAttributeInitializations;
+import org.moosetechnology.model.famix.Enum;
+import org.moosetechnology.model.famix.EnumValue;
 
 public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 
@@ -20,13 +22,18 @@ public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 	}
 	
 	@Test
+	public void testInvocationsToStringConstructor() {
+		assertEquals(2, methodNamed("String").getIncomingInvocations().size());
+	}
+	
+	@Test
 	public void testAttributes() {
-		assertEquals(7, type.getAttributes().size());
+		assertEquals(8, type.getAttributes().size());
 	}
 
 	@Test
 	public void testAccesses() {
-		assertEquals(8, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
+		assertEquals(9, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
 	}
 	
 	@Test
@@ -34,5 +41,12 @@ public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 		assertEquals(2, attributeNamed("CONSTANT").getIncomingAccesses().size());
 		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> !(a.getIsWrite())));
 		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> a.getIsWrite()));
+	}
+
+	@Test
+	public void testAccessToEnumValue() {
+		Enum sampleEnum = (Enum) importer.types().stream().filter(t -> t instanceof Enum).findAny().get();
+		EnumValue enumValue = sampleEnum.getValues().stream().filter(v -> v.getName().equals("ONE")).findAny().get();
+		assertEquals(1, enumValue.getIncomingAccesses().size());
 	}
 }
