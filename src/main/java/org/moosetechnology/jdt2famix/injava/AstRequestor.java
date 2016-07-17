@@ -13,7 +13,7 @@ public class AstRequestor extends FileASTRequestor {
 
 	@Override
 	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-		System.out.println("Importing " + sourceFilePath);
+		System.out.println("jdt2famix - importing - " + sourceFilePath);
 		ast.accept(new AstVisitor(importer));
 	}
 

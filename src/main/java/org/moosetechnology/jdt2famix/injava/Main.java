@@ -1,6 +1,7 @@
 package org.moosetechnology.jdt2famix.injava;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.moosetechnology.jdt2famix.Classpath;
 import org.moosetechnology.jdt2famix.JavaFiles;
@@ -9,22 +10,22 @@ public class Main {
 
 	public static void main(String[] args) {
 		InJavaImporter importer = new InJavaImporter();
-		String javaFilesRoot = new File (".").getAbsolutePath();
-		String classpathRoot = new File (".").getAbsolutePath();
-		String mseFileName = (new File (".")).getName() + ".mse";
-		if (args.length > 0) {
-			javaFilesRoot = args[0];
-			classpathRoot = args[0];
-		}
+		String pathName;
+		if (args.length > 0)
+			pathName = args[0];
+		else 
+			pathName = ".";
+		Path path = Paths.get(pathName).toAbsolutePath().normalize();
+		String mseFileName = path.getName(path.getNameCount() - 1) + ".mse";
 		JavaFiles javaFiles = new JavaFiles();
-		javaFiles.deepJavaFiles(javaFilesRoot);
+		javaFiles.deepJavaFiles(path.toString());
 		Classpath classpath = new Classpath();
-		classpath.deepJarFiles(classpathRoot);
-		System.out.println("jdt2famix - parsing started in " + javaFilesRoot);
+		classpath.deepJarFiles(path.toString());
+		System.out.println("jdt2famix - parsing started - " + path.toString());
 		importer.run(javaFiles, classpath);
 		System.out.println("jdt2famix - parsing ended");
 		importer.exportMSE(mseFileName);
-		System.out.println("jdt2famix - model exported");
+		System.out.println("jdt2famix - model exported - " + mseFileName);
 	}
 
 }
