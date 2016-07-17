@@ -9,6 +9,7 @@ public class VariousAttributeAccesses {
 	boolean booleanAttribute = true;
 	int intAttribute = 42;
 	List<String> listAttribute;
+	Integer integerAttribute = 42;
 	
 	public VariousAttributeAccesses(String attribute) {
 		this(attribute, "somethingElse");
@@ -57,7 +58,7 @@ public class VariousAttributeAccesses {
 	}
 
 	public void readAccessThroughForCondition() {
-		for (int i = 0; booleanAttribute ; i++) {}
+		for (int i = 0; i < integerAttribute ; i++) {}
 	}
 
 	public void readAccessThroughExpandedForCondition() {
@@ -79,7 +80,7 @@ public class VariousAttributeAccesses {
 	public void readAccessThroughDoWhileRightCondition() {
 		do {} while ("attribute" == attribute);
 	}
-
+	
 	public void readAccessThroughDoWhilePlainCondition() {
 		do {} while (booleanAttribute);
 	}

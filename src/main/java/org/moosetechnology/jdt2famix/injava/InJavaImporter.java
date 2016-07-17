@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
@@ -108,7 +109,13 @@ public class InJavaImporter extends Importer {
 	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
 	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
 	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
-
+	public Type topTypeFromContainerStack() { 
+		for (Iterator<ContainerEntity> iterator = containerStack.iterator(); iterator.hasNext();) {
+			ContainerEntity next = iterator.next();
+			if (next instanceof Type) return (Type) next;
+		}
+		return null;
+	}
 	
 	public InJavaImporter() {
 		MetaRepository metaRepository = new MetaRepository();
@@ -185,7 +192,8 @@ public class InJavaImporter extends Importer {
 			//This if duplicates the condition from the create method because we want to break possible infinite loops induced by the below ensure calls
 			//This is achieved by having this condition after the addition of the type in the types map
 			ParameterizedType parameterizedType = ((ParameterizedType) type);
-			parameterizedType.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
+			if (ensureTypeFromTypeBinding(binding.getErasure()) instanceof ParameterizableClass) 
+				parameterizedType.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
 			List<Type> arguments = Stream.of(binding.getTypeArguments()).map(arg -> ensureTypeFromTypeBinding(arg)).collect(Collectors.toList());
 			parameterizedType.setArguments(arguments);
 		}
@@ -369,7 +377,8 @@ public class InJavaImporter extends Importer {
 		methods.add(qualifiedName, method);
 		method.setSignature(signature);
 		method.setParentType((Type) topOfContainerStack());
-		method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
+		if (node.getReturnType2() != null)
+			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 		method.setIsStub(true);
 		return method;
 	}
@@ -423,7 +432,7 @@ public class InJavaImporter extends Importer {
 		IVariableBinding binding = fragment.resolveBinding();
 		Attribute attribute;
 		if (binding == null)
-			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, (Type) this.topOfContainerStack());
+			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, this.topTypeFromContainerStack());
 		else {
 			attribute = ensureAttributeForVariableBinding(binding);
 			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
@@ -472,7 +481,7 @@ public class InJavaImporter extends Importer {
 		LocalVariable localVariable = new LocalVariable();
 		localVariable.setName(fragment.getName().toString());
 		localVariable.setDeclaredType(ensureTypeFromDomType(type));
-		//CHECK: We might want to recover the modifiers (final) 
+		//CHECK: We might want to recover the modifiers (e.g., final) 
 		localVariable.setIsStub(true);
 		((Method) topOfContainerStack()).addLocalVariables(localVariable);
 		repository.add(localVariable);
@@ -489,7 +498,8 @@ public class InJavaImporter extends Importer {
 			String signature) {
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack()); 
-		invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
+		if (binding != null)
+			invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
 		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;
@@ -539,7 +549,12 @@ public class InJavaImporter extends Importer {
 			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				return createAccessFromVariableBinding(variableBinding);
+				if (variableBinding.getDeclaringClass() != null)
+					/*	for example
+							String[] args;
+							args.legth
+						appears to be a qualified name, and we have to ignore it*/ 
+					return createAccessFromVariableBinding(variableBinding);
 			}
 		}
 		return new Access();
@@ -558,10 +573,12 @@ public class InJavaImporter extends Importer {
 		enumValue.setName(enumValueName);
 		enumValue.setParentEnum(parentEnum);
 		enumValue.setIsStub(true);
+		repository.add(enumValue);
 		return enumValue;
 	}
 
 	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
+		//TODO: find a way to remove code duplication induced by strong types
 		Enum parentEnum = (Enum) ensureTypeFromTypeBinding(binding.getType());
 		String enumValueName = binding.getName().toString();
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
@@ -570,6 +587,7 @@ public class InJavaImporter extends Importer {
 		enumValue.setName(enumValueName);
 		enumValue.setParentEnum(parentEnum);
 		enumValue.setIsStub(true);
+		repository.add(enumValue);
 		return enumValue;
 	}
 

@@ -13,6 +13,7 @@ public class AstRequestor extends FileASTRequestor {
 
 	@Override
 	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
+		System.out.println("Importing " + sourceFilePath);
 		ast.accept(new AstVisitor(importer));
 	}
 
