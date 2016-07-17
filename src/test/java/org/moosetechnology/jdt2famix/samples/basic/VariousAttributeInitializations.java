@@ -7,8 +7,4 @@ public class VariousAttributeInitializations {
 	boolean booleanPrimitiveAttribute = false;
 	String fragment1InitializedAttribute, fragment2InitializedAttribute = new String();
 	String attributeInitializedWithConstant = CONSTANT;
-	String attributeInitializedWithQualifiedConstant = VariousAttributeInitializations.CONSTANT;
-	SampleEnum attributeInitializedWithEnumValue = SampleEnum.ONE;
 }
-
-enum SampleEnum {ONE, TWO, FOURTYTWO}

@@ -28,25 +28,19 @@ public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 	
 	@Test
 	public void testAttributes() {
-		assertEquals(9, type.getAttributes().size());
+		assertEquals(7, type.getAttributes().size());
 	}
 
 	@Test
 	public void testAccesses() {
-		assertEquals(11, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
+		assertEquals(8, methodNamed(InJavaImporter.INITIALIZER_NAME).getAccesses().size());
 	}
 	
 	@Test
 	public void testAccessToConstant() {
-		assertEquals(3, attributeNamed("CONSTANT").getIncomingAccesses().size());
+		assertEquals(2, attributeNamed("CONSTANT").getIncomingAccesses().size());
 		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> !(a.getIsWrite())));
 		assertTrue(attributeNamed("CONSTANT").getIncomingAccesses().stream().anyMatch(a -> a.getIsWrite()));
 	}
 
-	@Test
-	public void testAccessToEnumValue() {
-		Enum sampleEnum = (Enum) importer.types().stream().filter(t -> t instanceof Enum).findAny().get();
-		EnumValue enumValue = sampleEnum.getValues().stream().filter(v -> v.getName().equals("ONE")).findAny().get();
-		assertEquals(1, enumValue.getIncomingAccesses().size());
-	}
 }
