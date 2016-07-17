@@ -85,7 +85,7 @@ public class VariousAttributeAccesses {
 	}
 
 	public void readAccessThroughDoWhileExpandedCondition() {
-		do {} while (true || (41 == 42) && booleanAttribute);
+		do {} while (true && booleanAttribute && (41 == 42) );
 	}
 	
 	public void readAccessThroughSwitchVariable() {

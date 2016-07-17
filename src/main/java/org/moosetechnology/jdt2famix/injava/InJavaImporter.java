@@ -26,6 +26,8 @@ import org.eclipse.jdt.core.dom.IVariableBinding;
 import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
+import org.eclipse.jdt.core.dom.Name;
+import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
@@ -527,14 +529,19 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Access createAccessFromExpression(Expression expression) {
-		if (expression instanceof SimpleName) {
-			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
+		//is this not horrible?
+		if (expression instanceof Name) {
+			SimpleName simpleName;
+			if (expression instanceof SimpleName)
+				simpleName = (SimpleName) expression;
+			else 
+				simpleName = ((QualifiedName) expression).getName();
+			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
 				return createAccessFromVariableBinding(variableBinding);
 			}
 		}
-		//TODO handle the case of a QualifiedName that might point to a static attribute or enum value
 		return new Access();
 	}
 

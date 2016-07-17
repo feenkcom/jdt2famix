@@ -19,7 +19,7 @@ public class VariousAttributeQualifiedInitializationsTest extends OneSampleTestC
 	@Test
 	public void testOnlyInitializer() {
 		assertEquals(1, type.getMethods().size());
-		assertEquals(2, importer.methods().size());
+		assertEquals(1, importer.methods().size());
 	}
 	
 	@Test
