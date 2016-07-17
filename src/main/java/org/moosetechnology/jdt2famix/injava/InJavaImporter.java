@@ -126,7 +126,9 @@ public class InJavaImporter extends Importer {
 		return new AstRequestor(this);
 	}
 
-	//NAMESPACES
+	
+	//NAMESPACE
+	
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
 		String packageName = binding.getName();
 		if (namespaces.has(packageName)) return namespaces.named(packageName);
@@ -160,7 +162,9 @@ public class InJavaImporter extends Importer {
 		return unknownNamespace;
 	}
 	
-	//TYPES
+	
+	//TYPE
+	
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
 		String qualifiedName = binding.getQualifiedName();
 		if (types.has(qualifiedName)) return types.named(qualifiedName);
@@ -266,6 +270,7 @@ public class InJavaImporter extends Importer {
 		types.add(Famix.qualifiedNameOf(type), type);
 		return type;
 	}
+
 	
 	//ENUM
 	
@@ -305,7 +310,7 @@ public class InJavaImporter extends Importer {
 	}
 		
 
-	//METHODS
+	//METHOD
 	
 	/**
 	 * We use this one when we know that we are aiming for the top of the container stack
@@ -407,7 +412,7 @@ public class InJavaImporter extends Importer {
 	}
 
 	
-	//ATTRIBUTES
+	//ATTRIBUTE
 	
 	/**
 	 * We pass both the fragment and the field because we need the field type when the binding cannot be resolved
@@ -488,6 +493,23 @@ public class InJavaImporter extends Importer {
 		return invocation;
 	}
 	
+	public StructuralEntity ensureStructuralEntityFromExpression(
+			Expression expression) {
+		if (expression instanceof SimpleName) {
+			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
+			if (simpleNameBinding instanceof IVariableBinding) {
+				IVariableBinding binding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
+				if (binding.isField())
+					return ensureAttributeForVariableBinding(binding);
+				if (binding.isParameter())
+					return ensureParameterWithinCurrentMethodFromVariableBinding(binding);
+				if (binding.isEnumConstant())
+					return ensureEnumValueFromVariableBinding(binding);
+			}
+		}
+		return null;
+	}
+	
 	//ACCESS
 	
 	public Access createAccessFromVariableBinding(IVariableBinding binding) {
@@ -515,60 +537,10 @@ public class InJavaImporter extends Importer {
 		//TODO handle the case of a QualifiedName that might point to a static attribute or enum value
 		return new Access();
 	}
-	
-	public StructuralEntity ensureStructuralEntityFromExpression(
-			Expression expression) {
-		if (expression instanceof SimpleName) {
-			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
-			if (simpleNameBinding instanceof IVariableBinding) {
-				IVariableBinding binding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				if (binding.isField())
-					return ensureAttributeForVariableBinding(binding);
-				if (binding.isParameter())
-					return ensureParameterWithinCurrentMethodFromVariableBinding(binding);
-				if (binding.isEnumConstant())
-					return ensureEnumValueFromVariableBinding(binding);
-			}
-		}
-		return null;
-	}
-	
-	//UTILS
-	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
-		Boolean publicModifier = Modifier.isPublic(modifiers);
-		Boolean protectedModifier = Modifier.isProtected(modifiers);
-		Boolean privateModifier = Modifier.isPrivate(modifiers);
-		if (publicModifier )
-			entity.addModifiers("public");
-		if (protectedModifier)
-			entity.addModifiers("protected");
-		if (privateModifier)
-			entity.addModifiers("private");
-		if (!(publicModifier || protectedModifier || privateModifier))
-			entity.addModifiers("package");
-		if (Modifier.isFinal(modifiers))
-			entity.addModifiers("final");
-		if (Modifier.isAbstract(modifiers))
-			entity.addModifiers("abstract");
-		if (Modifier.isNative(modifiers))
-			entity.addModifiers("native");
-		if (Modifier.isSynchronized(modifiers))
-			entity.addModifiers("synchronized");
-		if (Modifier.isTransient(modifiers))
-			entity.addModifiers("transient");
-		if (Modifier.isVolatile(modifiers))
-			entity.addModifiers("volatile");
-	}
 
-	//EXPORT
+
 	
-	public void exportMSE(String fileName) {
-		try {
-			repository.exportMSE(new FileWriter(fileName));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+	//ENUM VALUE
 	
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
 		Enum parentEnum = (Enum) topOfContainerStack();
@@ -593,4 +565,48 @@ public class InJavaImporter extends Importer {
 		enumValue.setIsStub(true);
 		return enumValue;
 	}
+
+	
+	//UTILS
+	
+	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
+		Boolean publicModifier = Modifier.isPublic(modifiers);
+		Boolean protectedModifier = Modifier.isProtected(modifiers);
+		Boolean privateModifier = Modifier.isPrivate(modifiers);
+		if (publicModifier )
+			entity.addModifiers("public");
+		if (protectedModifier)
+			entity.addModifiers("protected");
+		if (privateModifier)
+			entity.addModifiers("private");
+		if (!(publicModifier || protectedModifier || privateModifier))
+			entity.addModifiers("package");
+		if (Modifier.isFinal(modifiers))
+			entity.addModifiers("final");
+		if (Modifier.isAbstract(modifiers))
+			entity.addModifiers("abstract");
+		if (Modifier.isNative(modifiers))
+			entity.addModifiers("native");
+		if (Modifier.isSynchronized(modifiers))
+			entity.addModifiers("synchronized");
+		if (Modifier.isTransient(modifiers))
+			entity.addModifiers("transient");
+		if (Modifier.isVolatile(modifiers))
+			entity.addModifiers("volatile");
+		/*	We do not extract the static modifier here because we want to set the hasClassScope property
+			and we do that specifically only for attributes and methods */  
+	}
+
+	
+	//EXPORT
+	
+	public void exportMSE(String fileName) {
+		try {
+			repository.exportMSE(new FileWriter(fileName));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+
 }

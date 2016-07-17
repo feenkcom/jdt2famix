@@ -22,9 +22,9 @@ public class VariousAttributesTest extends OneSampleTestCase {
 	@Test
 	public void testPublicStaticIntAttribute() {
 		Attribute publicStaticIntAttribute = attributeNamed("publicStaticIntAttribute");
-		assertEquals(2, publicStaticIntAttribute.getModifiers().size());
+		assertEquals(1, publicStaticIntAttribute.getModifiers().size());
 		assertTrue(publicStaticIntAttribute.getModifiers().stream().anyMatch(m -> m.equals("public")));
-		assertTrue(publicStaticIntAttribute.getModifiers().stream().anyMatch(m -> m.equals("static")));
+		assertTrue(publicStaticIntAttribute.getHasClassScope());
 		assertNotNull(publicStaticIntAttribute.getDeclaredType());
 		assertEquals("int", publicStaticIntAttribute.getDeclaredType().getName());
 		assertEquals(PrimitiveType.class, publicStaticIntAttribute.getDeclaredType().getClass());
@@ -33,9 +33,9 @@ public class VariousAttributesTest extends OneSampleTestCase {
 	@Test
 	public void testProtectedStaticFloatAttribute() {
 		Attribute protectedStaticFloatAttribute = attributeNamed("protectedStaticFloatAttribute");
-		assertEquals(2, protectedStaticFloatAttribute.getModifiers().size());
+		assertEquals(1, protectedStaticFloatAttribute.getModifiers().size());
 		assertTrue(protectedStaticFloatAttribute.getModifiers().stream().anyMatch(m -> m.equals("protected")));
-		assertTrue(protectedStaticFloatAttribute.getModifiers().stream().anyMatch(m -> m.equals("static")));
+		assertTrue(protectedStaticFloatAttribute.getHasClassScope());
 		assertNotNull(protectedStaticFloatAttribute.getDeclaredType());
 		assertEquals("float", protectedStaticFloatAttribute.getDeclaredType().getName());
 		assertEquals(PrimitiveType.class, protectedStaticFloatAttribute.getDeclaredType().getClass());
