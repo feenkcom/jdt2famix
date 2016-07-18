@@ -550,11 +550,12 @@ public class InJavaImporter extends Importer {
 			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				if (variableBinding.getDeclaringClass() != null)
-					/*	for example
+/*				if (variableBinding.getDeclaringClass() != null)
+					somehow this condition looked like a good idea , but it really isn't
+					for example
 							String[] args;
 							args.legth
-						appears to be a qualified name, and we have to ignore it*/ 
+						appears to be a qualified name, and we wanted to ignore it*/ 
 					return createAccessFromVariableBinding(variableBinding);
 			}
 		}
