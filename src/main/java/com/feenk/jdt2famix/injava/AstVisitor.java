@@ -3,6 +3,7 @@ package com.feenk.jdt2famix.injava;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
@@ -38,6 +39,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import com.feenk.jdt2famix.model.famix.Access;
+import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.Invocation;
@@ -145,27 +147,31 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
-		// TODO Auto-generated method stub
+		ITypeBinding binding = node.resolveBinding();
+		Type type = importer.ensureTypeFromTypeBinding(binding);
+		type.setIsStub(false);
+		importer.pushOnContainerStack(type);
 		return true;
 	}
 	
 	@Override
 	public void endVisit(AnnotationTypeDeclaration node) {
-		// TODO Auto-generated method stub
+		importer.popFromContainerStack();
+	}
+	
+	@Override
+	public boolean visit(AnnotationTypeMemberDeclaration node) {
+		AnnotationTypeAttribute attribute = importer.ensureAnnotationTypeAttributeFromDeclaration(node);
+		attribute.setIsStub(false);
+		return super.visit(node);
+	}
+	
+	@Override
+	public void endVisit(AnnotationTypeMemberDeclaration node) {
 		super.endVisit(node);
 	}
 	
-//	@Override
-//	public boolean visit(AnnotationTypeMemberDeclaration node) {
-//		return super.visit(node);
-//	}
-//	
-//	@Override
-//	public void endVisit(AnnotationTypeMemberDeclaration node) {
-//		super.endVisit(node);
-//	}
-//	
-//	
+	
 	////////METHODS
 	
 	@Override

@@ -38,9 +38,9 @@ public class NamedEntityAccumulator<T> {
 				.map(p -> p.getValue());
 	}
 	
-	public void add(String packageName, T namespace) {
-		entities.put(packageName, namespace);
-		repository.add(namespace);
+	public void add(String qualifiedName, T entity) {
+		entities.put(qualifiedName, entity);
+		repository.add(entity);
 	}
 	public T named(String qualifiedName) {
 		return entities.get(qualifiedName);

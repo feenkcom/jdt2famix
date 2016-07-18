@@ -12,6 +12,7 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
@@ -37,6 +38,8 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
 import com.feenk.jdt2famix.model.famix.Access;
+import com.feenk.jdt2famix.model.famix.AnnotationType;
+import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.ContainerEntity;
@@ -217,6 +220,10 @@ public class InJavaImporter extends Importer {
 		}
 		if (binding.isEnum())
 			return new Enum();
+		if (binding.isArray())
+			return createTypeFromTypeBinding(binding.getElementType());
+		if (binding.isAnnotation())
+			return new AnnotationType();
 		Class clazz = new Class();
 		clazz.setIsInterface(binding.isInterface());
 		return clazz;
@@ -551,12 +558,12 @@ public class InJavaImporter extends Importer {
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
 /*				if (variableBinding.getDeclaringClass() != null)
-					somehow this condition looked like a good idea , but it really isn't
+					somehow this condition looked like a good idea, but it really isn't
 					for example
 							String[] args;
 							args.legth
 						appears to be a qualified name, and we wanted to ignore it*/ 
-					return createAccessFromVariableBinding(variableBinding);
+				return createAccessFromVariableBinding(variableBinding);
 			}
 		}
 		return new Access();
@@ -633,6 +640,28 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(
+			AnnotationTypeMemberDeclaration node) {
+		IMethodBinding binding = node.resolveBinding();
+		if (binding != null)
+			return ensureAnnotationTypeAttributeFromBinding(binding);
+		return new AnnotationTypeAttribute();
+	}
+	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(
+			IMethodBinding binding) {
+		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
+		AnnotationTypeAttribute attribute = new AnnotationTypeAttribute();
+		attribute.setName(binding.getName());
+		ITypeBinding returnType = binding.getReturnType();
+		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
+			//we do not want to set void as a return type
+			attribute.setDeclaredType(ensureTypeFromTypeBinding(returnType));
+		if (parentTypeBinding != null) {
+			attribute.setParentType(ensureTypeFromTypeBinding(parentTypeBinding));
+			attributes().add(Famix.qualifiedNameOf(attribute), attribute);
+		}
+		return attribute;
 	}
 	
 

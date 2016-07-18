@@ -2,6 +2,7 @@ package com.feenk.jdt2famix;
 
 import java.util.stream.Stream;
 
+import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.ContainerEntity;
 import com.feenk.jdt2famix.model.famix.Method;
@@ -40,6 +41,11 @@ public class Famix {
 	public static String qualifiedNameOf(Method method) {
 		return qualifiedNameOf(method.getParentType()) + "." + method.getSignature();
 	}
+
+	public static String qualifiedNameOf(Attribute attribute) {
+		return qualifiedNameOf(attribute.getParentType()) + "." + attribute.getName();
+	}
+	
 	public static String qualifiedNameOf(Type type) {
 		if (type.getContainer() instanceof Method)
 			return qualifiedNameOf((Method) type.getContainer()) + "." + type.getName();		
