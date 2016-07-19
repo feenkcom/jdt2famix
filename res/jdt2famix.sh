@@ -7,4 +7,4 @@
 #- the result is an MSE file with the name of the folder from which the script was executed
 
 BASE_PATH="$(cd "$(dirname "$0")" && pwd)"
-java -cp $(echo ./*.jar | tr ' ' ':') com.feenk.jdt2famix.injava.Main
+java -cp $(echo $BASE_PATH/*.jar | tr ' ' ':') com.feenk.jdt2famix.injava.Main

@@ -74,7 +74,6 @@ import ch.akuhn.fame.Repository;
  * 2. create methods always create new instances entities (both named and other types, such as associations)
  * 
  * @author girba
- *
  */
 public class InJavaImporter extends Importer {
 
@@ -193,8 +192,10 @@ public class InJavaImporter extends Importer {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, interfaceBinding);
 		}
 		if (binding.isParameterizedType()) {
-			//This if duplicates the condition from the create method because we want to break possible infinite loops induced by the below ensure calls
-			//This is achieved by having this condition after the addition of the type in the types map
+			/* This if duplicates the condition from the create method because we want to break
+			 * possible infinite loops induced by the below ensure calls.
+			 * This is achieved by having this condition after the addition of the type in the types map.
+			 */
 			ParameterizedType parameterizedType = ((ParameterizedType) type);
 			if (ensureTypeFromTypeBinding(binding.getErasure()) instanceof ParameterizableClass) 
 				parameterizedType.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
@@ -573,8 +574,6 @@ public class InJavaImporter extends Importer {
 		}
 		return new Access();
 	}
-
-
 	
 	//ENUM VALUE
 	
