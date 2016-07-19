@@ -3,13 +3,13 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleAnnotationTypeForType;
+import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
 
 public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {
-		return SimpleAnnotationTypeForType.class;
+		return AnnotationTypeWithTwoAttributesForType.class;
 	}
 
 	@Test

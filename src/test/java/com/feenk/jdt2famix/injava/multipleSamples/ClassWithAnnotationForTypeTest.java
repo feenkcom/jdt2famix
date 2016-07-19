@@ -3,19 +3,19 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithAnnotationInstanceWithoutAttributes;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleAnnotationTypeForType;
+import org.moosetechnology.jdt2famix.samples.basic.ClassWithAnnotationsForType;
+import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.Type;
 
-public class ClassWithAnnotationInstanceWithoutAttributesTest extends
+public class ClassWithAnnotationForTypeTest extends
 		MultipleSamplesTestCase {
 
 	@Override
 	protected void sampleClassesIn(JavaFiles javaFiles) {
-		javaFiles.oneJavaFile(this.fileNameFor(ClassWithAnnotationInstanceWithoutAttributes.class));
-		javaFiles.oneJavaFile(this.fileNameFor(SimpleAnnotationTypeForType.class));
+		javaFiles.oneJavaFile(this.fileNameFor(ClassWithAnnotationsForType.class));
+		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithTwoAttributesForType.class));
 	}
 
 	@Test
@@ -25,7 +25,7 @@ public class ClassWithAnnotationInstanceWithoutAttributesTest extends
 	
 	@Test
 	public void testAnnotationInstance() {
-		Type type = importer.types().named(ClassWithAnnotationInstanceWithoutAttributes.class.getName());
+		Type type = importer.types().named(ClassWithAnnotationsForType.class.getName());
 		assertEquals(1, type.getAnnotationInstances().size());
 	}
 }

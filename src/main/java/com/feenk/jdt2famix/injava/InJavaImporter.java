@@ -208,8 +208,7 @@ public class InJavaImporter extends Importer {
 			ParameterizableClass parameterizableClass = (ParameterizableClass) type;
 			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
-		IAnnotationBinding[] annotations = binding.getAnnotations();
-		createAnnotationInstancesToEntityFromAnnotationBinding(type, annotations);
+		createAnnotationInstancesToEntityFromAnnotationBinding(type, binding.getAnnotations());
 			
 		return type;
 	}
@@ -386,6 +385,7 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
 			method.setHasClassScope(true);
+		createAnnotationInstancesToEntityFromAnnotationBinding(method, binding.getAnnotations());
 		return method;
 	}
 	
@@ -424,6 +424,9 @@ public class InJavaImporter extends Importer {
 		return method;
 	}
 
+	
+	//PARAMETER
+	
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
@@ -490,7 +493,8 @@ public class InJavaImporter extends Importer {
 		attribute.setName(name);
 		attributes.add(qualifiedName, attribute);
 		attribute.setParentType(parentType);
-		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));		
+		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));
+		createAnnotationInstancesToEntityFromAnnotationBinding(attribute, binding.getAnnotations());
 		return attribute;
 	}
 
@@ -510,6 +514,8 @@ public class InJavaImporter extends Importer {
 		return attribute;
 	}
 
+	//LOCAL VARIABLE
+	
 	/**
 	 * We pass the dom type here because of the funny types of JDT 
 	 */
@@ -525,6 +531,62 @@ public class InJavaImporter extends Importer {
 		repository.add(localVariable);
 		return localVariable;
 	}
+	
+	//ENUM VALUE
+	
+	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
+		Enum parentEnum = (Enum) topOfContainerStack();
+		String enumValueName = node.getName().toString();
+		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
+		EnumValue enumValue = new EnumValue();
+		enumValue.setName(enumValueName);
+		enumValue.setParentEnum(parentEnum);
+		enumValue.setIsStub(true);
+		repository.add(enumValue);
+		return enumValue;
+	}
+
+	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
+		//TODO: find a way to remove code duplication induced by strong types
+		Enum parentEnum = (Enum) ensureTypeFromTypeBinding(binding.getType());
+		String enumValueName = binding.getName().toString();
+		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
+		EnumValue enumValue = new EnumValue();
+		enumValue.setName(enumValueName);
+		enumValue.setParentEnum(parentEnum);
+		enumValue.setIsStub(true);
+		repository.add(enumValue);
+		return enumValue;
+	}
+
+	//ANNOTATION TYPE ATTRIBUTE
+	
+	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(
+			AnnotationTypeMemberDeclaration node) {
+		IMethodBinding binding = node.resolveBinding();
+		if (binding != null)
+			return ensureAnnotationTypeAttributeFromBinding(binding);
+		return new AnnotationTypeAttribute();
+	}
+	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(
+			IMethodBinding binding) {
+		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
+		AnnotationTypeAttribute attribute = new AnnotationTypeAttribute();
+		attribute.setName(binding.getName());
+		ITypeBinding returnType = binding.getReturnType();
+		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
+			//we do not want to set void as a return type
+			attribute.setDeclaredType(ensureTypeFromTypeBinding(returnType));
+		if (parentTypeBinding != null) {
+			attribute.setParentType(ensureTypeFromTypeBinding(parentTypeBinding));
+			attributes().add(Famix.qualifiedNameOf(attribute), attribute);
+		}
+		return attribute;
+	}
+	
+	
 	
 	//INVOCATION
 	
@@ -593,34 +655,6 @@ public class InJavaImporter extends Importer {
 		return new Access();
 	}
 	
-	//ENUM VALUE
-	
-	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
-		Enum parentEnum = (Enum) topOfContainerStack();
-		String enumValueName = node.getName().toString();
-		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
-			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
-		EnumValue enumValue = new EnumValue();
-		enumValue.setName(enumValueName);
-		enumValue.setParentEnum(parentEnum);
-		enumValue.setIsStub(true);
-		repository.add(enumValue);
-		return enumValue;
-	}
-
-	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
-		//TODO: find a way to remove code duplication induced by strong types
-		Enum parentEnum = (Enum) ensureTypeFromTypeBinding(binding.getType());
-		String enumValueName = binding.getName().toString();
-		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
-			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
-		EnumValue enumValue = new EnumValue();
-		enumValue.setName(enumValueName);
-		enumValue.setParentEnum(parentEnum);
-		enumValue.setIsStub(true);
-		repository.add(enumValue);
-		return enumValue;
-	}
 
 	
 	//UTILS
@@ -663,28 +697,6 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
-	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(
-			AnnotationTypeMemberDeclaration node) {
-		IMethodBinding binding = node.resolveBinding();
-		if (binding != null)
-			return ensureAnnotationTypeAttributeFromBinding(binding);
-		return new AnnotationTypeAttribute();
-	}
-	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(
-			IMethodBinding binding) {
-		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
-		AnnotationTypeAttribute attribute = new AnnotationTypeAttribute();
-		attribute.setName(binding.getName());
-		ITypeBinding returnType = binding.getReturnType();
-		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
-			//we do not want to set void as a return type
-			attribute.setDeclaredType(ensureTypeFromTypeBinding(returnType));
-		if (parentTypeBinding != null) {
-			attribute.setParentType(ensureTypeFromTypeBinding(parentTypeBinding));
-			attributes().add(Famix.qualifiedNameOf(attribute), attribute);
-		}
-		return attribute;
-	}
-	
+
 
 }
