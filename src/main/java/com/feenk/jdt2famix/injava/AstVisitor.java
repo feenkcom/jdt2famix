@@ -18,16 +18,20 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
 import org.eclipse.jdt.core.dom.InfixExpression;
 import org.eclipse.jdt.core.dom.Initializer;
+import org.eclipse.jdt.core.dom.MarkerAnnotation;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.MethodInvocation;
+import org.eclipse.jdt.core.dom.NormalAnnotation;
 import org.eclipse.jdt.core.dom.ParenthesizedExpression;
 import org.eclipse.jdt.core.dom.ReturnStatement;
 import org.eclipse.jdt.core.dom.SimpleName;
+import org.eclipse.jdt.core.dom.SingleMemberAnnotation;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
@@ -171,6 +175,32 @@ public class AstVisitor extends ASTVisitor {
 		super.endVisit(node);
 	}
 	
+	/**
+	 * handles: @ TypeName
+	 */
+	@Override
+	public boolean visit(MarkerAnnotation node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	/**
+	 * handles: @ TypeName ( [ MemberValuePair { , MemberValuePair } ] )
+	 */
+	@Override
+	public boolean visit(NormalAnnotation node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
+	
+	/**
+	 * handles: @ TypeName ( Expression )
+	 */
+	@Override
+	public boolean visit(SingleMemberAnnotation node) {
+		// TODO Auto-generated method stub
+		return super.visit(node);
+	}
 	
 	////////METHODS
 	

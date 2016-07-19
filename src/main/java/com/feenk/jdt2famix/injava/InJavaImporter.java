@@ -20,6 +20,7 @@ import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
+import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
@@ -38,6 +39,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
 import com.feenk.jdt2famix.model.famix.Access;
+import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
@@ -78,7 +80,7 @@ import ch.akuhn.fame.Repository;
 public class InJavaImporter extends Importer {
 
 	private static final char NAME_SEPARATOR = '.';
-	public static final String INITIALIZER_NAME = "__initializer__";
+	public static final String INITIALIZER_NAME = "<init>";
 	public static final String UNKNOWN_NAME = "__UNKNOWN__";
 	public static final String CONSTRUCTOR_KIND = "constructor";
 	
@@ -206,7 +208,23 @@ public class InJavaImporter extends Importer {
 			ParameterizableClass parameterizableClass = (ParameterizableClass) type;
 			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
+		IAnnotationBinding[] annotations = binding.getAnnotations();
+		createAnnotationInstancesToEntityFromAnnotationBinding(type, annotations);
+			
 		return type;
+	}
+
+	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity type, IAnnotationBinding[] annotations) {
+		for (int i = 0; i < annotations.length; i++) {
+			IAnnotationBinding annotationBinding = annotations[i];
+			ITypeBinding annotationTypeBinding = annotationBinding.getAnnotationType();
+			AnnotationInstance annotationInstance = new AnnotationInstance();
+			annotationInstance.setAnnotatedEntity(type);
+			if (annotationBinding != null) {
+				annotationInstance.setAnnotationType((AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding));
+			}
+			repository.add(annotationInstance);
+		}
 	}
 
 	Type createTypeFromTypeBinding(ITypeBinding binding) {
