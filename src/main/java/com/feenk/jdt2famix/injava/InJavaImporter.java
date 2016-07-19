@@ -103,14 +103,12 @@ public class InJavaImporter extends Importer {
 	public NamedEntityAccumulator<Attribute> attributes() {return attributes;}
 
 	private NamedEntityAccumulator<Parameter> parameters;
-	public NamedEntityAccumulator<Parameter> parameters() {return parameters;}
 	
 	/**
 	 * This is a structure that keeps track of the current stack of containers
 	 * It is particularly useful when we deal with inner or anonymous classes
 	 */ 
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
-	public Deque<ContainerEntity> getContainerStack() { return containerStack; }
 	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
 	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
 	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
