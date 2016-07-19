@@ -3,6 +3,7 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.NestedAnnonymousClasses;
 
@@ -18,6 +19,7 @@ public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 	}
 
 	@Test
+	@Ignore
 	public void testTypes() {
 		assertEquals(5, importer.types().size());
 	}
