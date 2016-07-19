@@ -6,8 +6,9 @@ This project offers the mechanism for producing MSE files out of Java code. It i
 
 #Installation
 1. Clone or download this repository
-2. Execute in the root folder: `release.sh`
-3. This created a `./release` folder that includes all jar files and a `jdt2famix.sh` script
+2. Make sure you have [Maven](https://maven.apache.org/download.cgi) installed 
+3. Execute in the root folder: `release.sh`
+4. This created a `./release` folder that includes all jar files and a `jdt2famix.sh` script
 
 #How to create an MSE model from a target system
 Suppose you have a `mysystem` root folder in which you have the sources and all jar dependencies of your target Java system.
