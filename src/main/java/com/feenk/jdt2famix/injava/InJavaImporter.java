@@ -453,13 +453,24 @@ public class InJavaImporter extends Importer {
 	
 	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
-		String qualifiedName = binding.getDeclaringClass().getQualifiedName() + NAME_SEPARATOR + name;
+		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
+		Type parentType;
+		if (parentTypeBinding == null)
+			/* for example
+			 * 		String[] args;
+			 * 		args.length
+			 * appears like an attribute, but the declaring class is not present
+			 */
+			parentType = unknownType();
+		else 
+			parentType = ensureTypeFromTypeBinding(parentTypeBinding);
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;
 		if (attributes.has(qualifiedName)) 
 			return attributes.named(qualifiedName);
 		Attribute attribute = new Attribute();
-		attributes.add(qualifiedName, attribute);
 		attribute.setName(name);
-		attribute.setParentType(ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+		attributes.add(qualifiedName, attribute);
+		attribute.setParentType(parentType);
 		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));		
 		return attribute;
 	}
@@ -557,12 +568,6 @@ public class InJavaImporter extends Importer {
 			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-/*				if (variableBinding.getDeclaringClass() != null)
-					somehow this condition looked like a good idea, but it really isn't
-					for example
-							String[] args;
-							args.legth
-						appears to be a qualified name, and we wanted to ignore it*/ 
 				return createAccessFromVariableBinding(variableBinding);
 			}
 		}
