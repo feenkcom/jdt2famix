@@ -16,6 +16,12 @@ After having created the release, go to `mysystem`, and execute `/path/to/jdt2fa
 
 You can now import the `mysystem.mse` file into [Moose](http://moosetechnology.org). 
 
+##A note about Maven project
+
+If you happen to have a Java project that defines dependencies through Maven, you can use the following command to copy all dependencies:
+
+	``mvn dependency:copy-dependencies -DoutputDirectory=dependencies -DoverWriteSnapshots=true -DoverWriteReleases=false``
+
 #License
 * The main code of the jdt2famix is released under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
 * JDT Core is used as an external binary library available under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
