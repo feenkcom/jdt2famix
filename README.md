@@ -6,7 +6,7 @@ This project offers the mechanism for producing MSE files out of Java code. It i
 
 #Installation
 1. Clone or download this repository
-2. Make sure you have [Maven](https://maven.apache.org/download.cgi) installed 
+2. Make sure you have [Maven](https://maven.apache.org/download.cgi) installed and that `mvn` is in the execution path (i.e., change `$PATH`) 
 3. Execute in the root folder: `release.sh`
 4. This created a `./release` folder that includes all jar files and a `jdt2famix.sh` script
 
