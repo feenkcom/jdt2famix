@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>org.moosetechnology</groupId>
+	<groupId>com.feenk</groupId>
 	<artifactId>jdt2famix</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>jdt2famix</name>
-	<url>http://maven.apache.org</url>
+	<url>https://github.com/girba/jdt2famix</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
