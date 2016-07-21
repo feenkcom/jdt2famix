@@ -113,7 +113,8 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(TypeDeclaration node) {
-		importer.popFromContainerStack();
+		if (importer.topOfContainerStack() instanceof Type)
+			importer.popFromContainerStack();
 	}
 
 	@Override
