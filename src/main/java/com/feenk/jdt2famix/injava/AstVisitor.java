@@ -76,7 +76,11 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(CompilationUnit node) {
-		Namespace namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
+		Namespace namespace;
+		if (node.getPackage() == null)
+			namespace = importer.ensureNamespaceNamed("");
+		else 
+			namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
 		namespace.setIsStub(false);
 		importer.pushOnContainerStack(namespace);
 		return true;

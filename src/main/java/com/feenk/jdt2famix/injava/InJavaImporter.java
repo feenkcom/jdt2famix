@@ -147,13 +147,14 @@ public class InJavaImporter extends Importer {
 	//NAMESPACE
 	
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
-		String packageName = binding.getName();
-		if (namespaces.has(packageName)) return namespaces.named(packageName);
-		else {
-			Namespace namespace = createNamespaceNamed(packageName);
-			namespaces.add(packageName, namespace);
-			return namespace;
-		}
+		return ensureNamespaceNamed(binding.getName());
+	}
+	
+	Namespace ensureNamespaceNamed(String packageName) {
+		if (namespaces.has(packageName)) 
+			return namespaces.named(packageName);
+		else
+			return namespaces.add(packageName, createNamespaceNamed(packageName));
 	}
 
 	private Namespace createNamespaceNamed(String k) {
@@ -230,7 +231,10 @@ public class InJavaImporter extends Importer {
 				for (int j = 0; j < allMemberValuePairs.length; j++) {
 					IMemberValuePairBinding memberValueBinding = allMemberValuePairs[j];
 					AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
-					annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
+					/*
+					 * TODO: figure a way to introduce the string of the value
+					 */
+//					annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
 					annotationInstance.addAttributes(annotationInstanceAttribute);
 					repository.add(annotationInstanceAttribute);
 					annotationType.getAttributes().stream()
