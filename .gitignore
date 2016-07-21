@@ -8,3 +8,5 @@ target
 *.mse
 /bin/
 /release/
+
+tmp/

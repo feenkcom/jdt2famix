@@ -22,6 +22,7 @@ import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IBinding;
+import org.eclipse.jdt.core.dom.IMemberValuePairBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
@@ -40,6 +41,7 @@ import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
 import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
+import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
@@ -109,6 +111,7 @@ public class InJavaImporter extends Importer {
 	 * It is particularly useful when we deal with inner or anonymous classes
 	 */ 
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
+	private IAnnotationBinding annotationInstanceBinding;
 	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
 	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
 	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
@@ -213,12 +216,27 @@ public class InJavaImporter extends Importer {
 
 	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity type, IAnnotationBinding[] annotations) {
 		for (int i = 0; i < annotations.length; i++) {
-			IAnnotationBinding annotationBinding = annotations[i];
-			ITypeBinding annotationTypeBinding = annotationBinding.getAnnotationType();
+			annotationInstanceBinding = annotations[i];
+			ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
 			AnnotationInstance annotationInstance = new AnnotationInstance();
 			annotationInstance.setAnnotatedEntity(type);
-			if (annotationBinding != null) {
-				annotationInstance.setAnnotationType((AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding));
+			if (annotationInstanceBinding != null) {
+				/*FIXME: This is a mess*/
+				AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding);
+				annotationInstance.setAnnotationType(annotationType);
+				IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
+				for (int j = 0; j < allMemberValuePairs.length; j++) {
+					IMemberValuePairBinding memberValueBinding = allMemberValuePairs[j];
+					AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
+					annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
+					annotationInstance.addAttributes(annotationInstanceAttribute);
+					repository.add(annotationInstanceAttribute);
+					annotationType.getAttributes().stream()
+						.filter(a -> ((AnnotationTypeAttribute) a).getName().equals(memberValueBinding.getName()))
+						.findAny()
+						.ifPresent(attribute -> 
+						annotationInstanceAttribute.setAnnotationTypeAttribute((AnnotationTypeAttribute) attribute));
+				}
 			}
 			repository.add(annotationInstance);
 		}
@@ -355,7 +373,9 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
-		return ensureMethodFromMethodBinding(binding, ensureTypeFromTypeBinding(binding.getDeclaringClass()));
+		/*	binding.getDeclaringClass() might be null when you invoke a method from a class that is not in the path
+			It looks like calling getMethodDeclaration is more robust. */
+		return ensureMethodFromMethodBinding(binding.getMethodDeclaration(), ensureTypeFromTypeBinding(binding.getMethodDeclaration().getDeclaringClass()));
 	}
 
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding, Type parentType) {

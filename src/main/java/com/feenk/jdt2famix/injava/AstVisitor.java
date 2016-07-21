@@ -318,6 +318,9 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * new Class()
+	 */
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
 		IMethodBinding binding = node.resolveConstructorBinding();
