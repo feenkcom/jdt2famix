@@ -85,6 +85,7 @@ public class InJavaImporter extends Importer {
 	public static final String INITIALIZER_NAME = "<init>";
 	public static final String UNKNOWN_NAME = "__UNKNOWN__";
 	public static final String CONSTRUCTOR_KIND = "constructor";
+	private static final String INITIALIZER_KIND = "initializer";
 	
 	private Namespace unknownNamespace;
 	private Type unknownType;
@@ -282,9 +283,9 @@ public class InJavaImporter extends Importer {
 		if (binding != null)
 			return ensureTypeFromTypeBinding(binding);
 		if (domType.isSimpleType())
-			return typeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
+			return ensureTypeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
 		if (domType.isParameterizedType())
-			return typeNamedInUnknownNamespace(((org.eclipse.jdt.core.dom.ParameterizedType) domType).getType().toString());
+			return ensureTypeNamedInUnknownNamespace(((org.eclipse.jdt.core.dom.ParameterizedType) domType).getType().toString());
 		return unknownType();
 	}
 	
@@ -293,12 +294,12 @@ public class InJavaImporter extends Importer {
 	 */
 	public Type unknownType() {
 		if (unknownType == null) {
-			unknownType = typeNamedInUnknownNamespace(UNKNOWN_NAME);
+			unknownType = ensureTypeNamedInUnknownNamespace(UNKNOWN_NAME);
 		}
 		return unknownType;
 	}
 	
-	private Type typeNamedInUnknownNamespace(String name) {
+	public Type ensureTypeNamedInUnknownNamespace(String name) {
 		Type type = new Type();
 		type.setName(name);
 		type.setContainer(unknownNamespace());
@@ -385,15 +386,7 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) p.getQualifiedName()) );
 		String methodName = binding.getName();
 		String signature = methodName + signatureJoiner.toString();
-		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
-		if (methods.has(qualifiedName)) 
-			return methods.named(qualifiedName);
-		Method method = new Method();
-		methods.add(qualifiedName, method);
-		method.setName(methodName);
-		method.setSignature(signature);
-		method.setIsStub(true);
-		method.setParentType(parentType);
+		Method method = ensureBasicMethod(methodName, signature, parentType);
 		if (binding.isConstructor()) 
 			method.setKind(CONSTRUCTOR_KIND);
 		ITypeBinding returnType = binding.getReturnType();
@@ -414,34 +407,31 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()) );
 		String methodName = node.getName().toString();
 		String signature = methodName + signatureJoiner.toString();		
-		String qualifiedName = Famix.qualifiedNameOf(topOfContainerStack()) + NAME_SEPARATOR + signature;
+		Method method = ensureBasicMethod(methodName, signature, (Type) topOfContainerStack());
+		if (node.getReturnType2() != null)
+			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
+		return method;
+	}
+	
+	public Method ensureMethodFromInitializer() {
+		Method method = ensureBasicMethod(INITIALIZER_NAME, INITIALIZER_NAME, (Type) topOfContainerStack());
+		method.setKind(INITIALIZER_KIND);
+		method.setIsStub(false);
+		return method;
+	}
+
+	public Method ensureBasicMethod(String methodName, String signature, Type parentType) {
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
 		if(methods.has(qualifiedName))
 			return methods.named(qualifiedName);
 		Method method = new Method();
 		method.setName(methodName);
 		methods.add(qualifiedName, method);
 		method.setSignature(signature);
-		method.setParentType((Type) topOfContainerStack());
-		if (node.getReturnType2() != null)
-			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 		method.setIsStub(true);
+		method.setParentType(parentType);
 		return method;
 	}
-	
-	public Method ensureMethodFromInitializer() {
-		String qualifiedName = Famix.qualifiedNameOf((Type) topOfContainerStack()) + NAME_SEPARATOR + INITIALIZER_NAME;
-		if (methods.has(qualifiedName))
-			return methods.named(qualifiedName);
-		Method method = new Method();
-		method.setName(INITIALIZER_NAME);
-		method.setSignature(method.getName());
-		method.setIsStub(false);
-		method.setKind("initializer");
-		method.setParentType((Type) topOfContainerStack());
-		methods.add(Famix.qualifiedNameOf(method), method);
-		return method;
-	}
-
 	
 	//PARAMETER
 	
@@ -618,6 +608,16 @@ public class InJavaImporter extends Importer {
 		invocation.setSender((Method) topOfContainerStack()); 
 		if (binding != null)
 			invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
+		invocation.setSignature(signature);
+		repository.add(invocation);
+		return invocation;
+	}
+
+	public Invocation createInvocationToMethod(Method method,
+			String signature) {
+		Invocation invocation = new Invocation();
+		invocation.setSender((Method) topOfContainerStack()); 
+		invocation.addCandidates(method);  
 		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;

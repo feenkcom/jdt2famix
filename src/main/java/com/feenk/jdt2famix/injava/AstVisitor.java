@@ -326,6 +326,11 @@ public class AstVisitor extends ASTVisitor {
 		IMethodBinding binding = node.resolveConstructorBinding();
 		if (binding != null)
 			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
+		else {
+			String name = node.getType().toString();
+			Method method = importer.ensureBasicMethod(name, name, importer.ensureTypeNamedInUnknownNamespace(name));
+			importer.createInvocationToMethod(method, node.toString().trim());
+		}
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
