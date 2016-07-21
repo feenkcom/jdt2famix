@@ -116,10 +116,11 @@ public class InJavaImporter extends Importer {
 	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
 	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
 	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
-	public Type topTypeFromContainerStack() { 
+	@SuppressWarnings("unchecked")
+	public <T> T topFromContainerStack(java.lang.Class<T> clazz) { 
 		for (Iterator<ContainerEntity> iterator = containerStack.iterator(); iterator.hasNext();) {
 			ContainerEntity next = iterator.next();
-			if (next instanceof Type) return (Type) next;
+			if (next.getClass().equals(clazz)) return (T) next;
 		}
 		return null;
 	}
@@ -319,7 +320,10 @@ public class InJavaImporter extends Importer {
 		Type type = createTypeFromTypeBinding(binding);
 		type.setContainer(topOfContainerStack());
 		type.setName("$" + topOfContainerStack().getTypes().size());
-		createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		if (node.getParent() instanceof ClassInstanceCreation)
+			createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
+		if (node.getParent() instanceof EnumConstantDeclaration)
+			createInheritanceFromSubtypeToSuperType(type, topFromContainerStack(Enum.class));
 		types.add(Famix.qualifiedNameOf(type), type);
 		return type;
 	}
@@ -341,11 +345,7 @@ public class InJavaImporter extends Importer {
 	 */
 	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
 			ITypeBinding superBinding) {
-		Inheritance inheritance = new Inheritance();
-		inheritance.setSuperclass(ensureTypeFromTypeBinding(superBinding)); 
-		inheritance.setSubclass(subType);
-		repository.add(inheritance);
-		return inheritance;
+		return createInheritanceFromSubtypeToSuperType(subType, ensureTypeFromTypeBinding(superBinding)); 
 	}
 
 	/**
@@ -355,12 +355,21 @@ public class InJavaImporter extends Importer {
 	 */
 	public Inheritance createInheritanceFromSubtypeToSuperDomType(Type subType,
 			org.eclipse.jdt.core.dom.Type type) {
+		return createInheritanceFromSubtypeToSuperType(subType, ensureTypeFromDomType(type));
+	}
+
+	/**
+	 * We use this one when we have the super type 
+	 */
+	private Inheritance createInheritanceFromSubtypeToSuperType(Type subType,
+			Type superType) {
 		Inheritance inheritance = new Inheritance();
-		inheritance.setSuperclass(ensureTypeFromDomType(type)); 
+		inheritance.setSuperclass(superType); 
 		inheritance.setSubclass(subType);
 		repository.add(inheritance);
 		return inheritance;
 	}
+
 		
 
 	//METHOD
@@ -470,7 +479,7 @@ public class InJavaImporter extends Importer {
 		IVariableBinding binding = fragment.resolveBinding();
 		Attribute attribute;
 		if (binding == null)
-			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, this.topTypeFromContainerStack());
+			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, this.topFromContainerStack(Type.class));
 		else {
 			attribute = ensureAttributeForVariableBinding(binding);
 			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
@@ -543,7 +552,7 @@ public class InJavaImporter extends Importer {
 	//ENUM VALUE
 	
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
-		Enum parentEnum = (Enum) topOfContainerStack();
+		Enum parentEnum = topFromContainerStack(Enum.class);
 		String enumValueName = node.getName().toString();
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
@@ -603,7 +612,7 @@ public class InJavaImporter extends Importer {
 	 * but there can be different types of nodes (funny JDT).
 	 */
 	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
-			String signature) {
+			String signature) {		
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack()); 
 		if (binding != null)

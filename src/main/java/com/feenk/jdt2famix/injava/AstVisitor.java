@@ -143,8 +143,16 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(EnumConstantDeclaration node) {
+		if (!node.arguments().isEmpty())
+			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
 		importer.ensureEnumValueFromDeclaration(node);
 		return true;
+	}
+
+	@Override
+	public void endVisit(EnumConstantDeclaration node) {
+		if (importer.topOfContainerStack().getName().equals(InJavaImporter.INITIALIZER_NAME))
+			importer.popFromContainerStack();
 	}
 	
 	////////ANNOTATIONS
@@ -286,7 +294,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 	
 	
-	////////INVOCATIONS
+	////////INVOCATIONS:
 	
 	@Override
 	public boolean visit(MethodInvocation node) {
