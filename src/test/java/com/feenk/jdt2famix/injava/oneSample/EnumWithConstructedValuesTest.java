@@ -34,8 +34,8 @@ public class EnumWithConstructedValuesTest extends OneSampleTestCase {
 	
 	@Test 
 	public void testConstructor() {
-		assertEquals(1, type.getMethods().size());
-		assertEquals(InJavaImporter.CONSTRUCTOR_KIND, type.getMethods().stream().findAny().get().getKind());
+		assertEquals(2, type.getMethods().size());
+		assertEquals(InJavaImporter.CONSTRUCTOR_KIND, methodNamed(EnumWithConstructedValues.class.getSimpleName()).getKind());
 		assertFalse(type.getMethods().stream().findAny().get().getIsStub());
 	}
 	

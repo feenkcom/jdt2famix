@@ -120,7 +120,7 @@ public class InJavaImporter extends Importer {
 	public <T> T topFromContainerStack(java.lang.Class<T> clazz) { 
 		for (Iterator<ContainerEntity> iterator = containerStack.iterator(); iterator.hasNext();) {
 			ContainerEntity next = iterator.next();
-			if (next.getClass().equals(clazz)) return (T) next;
+			if (clazz.isInstance(next)) return (T) next;
 		}
 		return null;
 	}
