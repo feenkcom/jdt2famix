@@ -12,7 +12,7 @@ public class ClassWithVariousAnnotations {
 	@AnnotationTypeWithoutAttributesForMethodAttribute
 	public void method() {}
 	
-	@AnnotationTypeWithOneAttributeForMethodAttribute(stringAnnotationAttribute = ClassWithConstants.STRING_CONSTANT)
+	@AnnotationTypeWithOneAttributeForMethodAttribute(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForMethodAttribute.DEFAULT)
 	public void methodWithNullAnnotationValue() {}
 	
 }

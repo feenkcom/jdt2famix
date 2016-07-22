@@ -45,7 +45,8 @@ public class ClassWithVariousAnnotationsTest extends
 
 	@Test
 	public void testAnnotationInstanceOnMethods() {
-		importer.methods().stream().forEach(m -> assertEquals(1, m.getAnnotationInstances().size()));
+		Type type = importer.types().named(ClassWithVariousAnnotations.class.getName());
+		type.getMethods().stream().forEach(m -> assertEquals(1, m.getAnnotationInstances().size()));
 	}
 	
 	@Test

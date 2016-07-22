@@ -238,7 +238,9 @@ public class InJavaImporter extends Importer {
 					annotationInstance.addAttributes(annotationInstanceAttribute);
 					repository.add(annotationInstanceAttribute);
 					annotationType.getAttributes().stream()
-						.filter(a -> ((AnnotationTypeAttribute) a).getName().equals(memberValueBinding.getName()))
+						.filter(a -> 
+									(a instanceof AnnotationTypeAttribute) &&
+									((AnnotationTypeAttribute) a).getName().equals(memberValueBinding.getName()))
 						.findAny()
 						.ifPresent(attribute -> 
 						annotationInstanceAttribute.setAnnotationTypeAttribute((AnnotationTypeAttribute) attribute));
