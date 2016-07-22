@@ -165,9 +165,11 @@ public class InJavaImporter extends Importer {
 	}
 	
 	private ContainerEntity ensureContainerEntityForTypeBinding(ITypeBinding binding) {
-		if (binding.getPackage() == null)
-			return unknownNamespace();
-		return ensureNamespaceFromPackageBinding(binding.getPackage());
+		if (binding.getDeclaringClass() != null)
+			return ensureTypeFromTypeBinding(binding.getDeclaringClass());
+		if (binding.getPackage() != null)
+			return ensureNamespaceFromPackageBinding(binding.getPackage());
+		return unknownNamespace();
 	}
 
 	public Namespace unknownNamespace() {

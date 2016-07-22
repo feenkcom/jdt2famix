@@ -102,6 +102,7 @@ public class AstVisitor extends ASTVisitor {
 		if (binding == null)
 			return false;
 		Type type = importer.ensureTypeFromTypeBinding(binding);
+		
 		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
 		/* This is an ugly patch. When the binding to the superclass or super interfaces cannot be resolved,
 		 * we try to recover as much info as possible
