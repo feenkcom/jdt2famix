@@ -3,9 +3,9 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForMethodAttribute;
+import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
 import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForMethodAttribute;
+import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
 import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
 import org.moosetechnology.jdt2famix.samples.basic.ClassWithAnnotationsForType;
 import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
@@ -13,6 +13,7 @@ import org.moosetechnology.jdt2famix.samples.basic.ClassWithVariousAnnotations;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
+import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
 
 public class ClassWithVariousAnnotationsTest extends
@@ -22,8 +23,8 @@ public class ClassWithVariousAnnotationsTest extends
 	protected void sampleClassesIn(JavaFiles javaFiles) {
 		javaFiles.oneJavaFile(this.fileNameFor(ClassWithVariousAnnotations.class));
 		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForType.class));
-		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForMethodAttribute.class));
-		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithOneAttributeForMethodAttribute.class));
+		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForAll.class));
+		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithOneAttributeForAll.class));
 	}
 
 	@Test
@@ -54,5 +55,13 @@ public class ClassWithVariousAnnotationsTest extends
 		AnnotationInstance annotationInstance = methodNamed("methodWithNullAnnotationValue").getAnnotationInstances().stream().findAny().get();
 		assertEquals(1, annotationInstance.getAttributes().size());
 		assertNull(annotationInstance.getAttributes().stream().findAny().get().getValue());
+	}
+
+	@Test
+	public void testMethodWithAnnotationForParameter() {
+		Parameter parameter = methodNamed("methodWithAnnotationForParameter").getParameters().stream().findAny().get();
+		assertEquals(1, parameter.getAnnotationInstances().size());
+		AnnotationInstance annotationInstance = parameter.getAnnotationInstances().stream().findAny().get();
+		assertNotNull(annotationInstance);
 	}
 }

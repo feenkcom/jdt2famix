@@ -3,16 +3,22 @@ package org.moosetechnology.jdt2famix.samples.basic;
 @AnnotationTypeWithoutAttributesForType
 public class ClassWithVariousAnnotations {
 	
-	@AnnotationTypeWithoutAttributesForMethodAttribute
+	@AnnotationTypeWithoutAttributesForAll
 	public String stringAttribute;
 
-	@AnnotationTypeWithoutAttributesForMethodAttribute
+	@AnnotationTypeWithoutAttributesForAll
 	public int intAttribute;
 	
-	@AnnotationTypeWithoutAttributesForMethodAttribute
+	@AnnotationTypeWithoutAttributesForAll
 	public void method() {}
 	
-	@AnnotationTypeWithOneAttributeForMethodAttribute(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForMethodAttribute.DEFAULT)
+	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForAll.DEFAULT)
 	public void methodWithNullAnnotationValue() {}
 	
+	@AnnotationTypeWithoutAttributesForAll
+	public void methodWithAnnotationForParameter(
+			@AnnotationTypeWithoutAttributesForAll
+			String parameter) {}
+
+
 }
