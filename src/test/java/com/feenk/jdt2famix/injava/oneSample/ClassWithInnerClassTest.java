@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.moosetechnology.jdt2famix.samples.basic.ClassWithInnerClass;
 
+import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.model.famix.Type;
 
 public class ClassWithInnerClassTest extends OneSampleTestCase {
@@ -28,6 +29,7 @@ public class ClassWithInnerClassTest extends OneSampleTestCase {
 	public void testInnerClass() {
 		Type innerClass = importer.types().stream().filter(t -> t.getName().equals("InnerClass")).findAny().get();
 		assertEquals(type, innerClass.getContainer());
+		assertEquals(innerClass, importer.types().named(Famix.qualifiedNameOf(innerClass)));
 	}
 	
 }
