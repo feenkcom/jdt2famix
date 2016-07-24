@@ -185,6 +185,7 @@ public class AstVisitor extends ASTVisitor {
 		ITypeBinding binding = node.resolveBinding();
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		type.setIsStub(false);
+		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		importer.pushOnContainerStack(type);
 		return true;
 	}

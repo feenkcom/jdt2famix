@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
+import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
@@ -33,9 +34,17 @@ public class ClassWithVariousAnnotationsTest extends
 	}
 	
 	@Test
+	public void testAnnotationTypeForTypeSourceAnchor() {
+		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithoutAttributesForType.class.getName());
+		assertEquals(1, annotationType.getInstances().size());
+		assertNotNull(annotationType.getSourceAnchor());
+	}
+	
+	@Test
 	public void testAnnotationInstanceOnType() {
 		Type type = importer.types().named(ClassWithVariousAnnotations.class.getName());
 		assertEquals(1, type.getAnnotationInstances().size());
+//		assertNotNull(type.getAnnotationInstances().stream().findAny().get()
 	}
 
 	@Test
