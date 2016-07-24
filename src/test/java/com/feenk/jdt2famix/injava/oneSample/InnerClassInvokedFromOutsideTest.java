@@ -21,6 +21,22 @@ public class InnerClassInvokedFromOutsideTest extends OneSampleTestCase {
 		assertEquals(1, innerConstructor.getIncomingInvocations().size());
 		assertTrue(innerConstructor.getIsStub());
 	}
+
+	@Test
+	public void testOuterConstructor() {
+		Method innerConstructor = methodNamed("OuterClass");
+		assertNotNull(innerConstructor);
+		assertEquals(1, innerConstructor.getIncomingInvocations().size());
+		assertTrue(innerConstructor.getIsStub());
+	}
+
+	@Test
+	public void testInnerMethod() {
+		Method innerConstructor = methodNamed("innerMethod");
+		assertNotNull(innerConstructor);
+		assertEquals(1, innerConstructor.getIncomingInvocations().size());
+		assertFalse(innerConstructor.getIsStub());
+	}
 	
 	@Test
 	public void testMethod() {
