@@ -2,6 +2,7 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 
 import static org.junit.Assert.*;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
@@ -44,7 +45,13 @@ public class ClassWithVariousAnnotationsTest extends
 	public void testAnnotationInstanceOnType() {
 		Type type = importer.types().named(ClassWithVariousAnnotations.class.getName());
 		assertEquals(1, type.getAnnotationInstances().size());
-//		assertNotNull(type.getAnnotationInstances().stream().findAny().get()
+	}
+
+	@Ignore
+	@Test
+	public void testAnnotationInstanceOnTypeSourceAnchor() {
+		Type type = importer.types().named(ClassWithVariousAnnotations.class.getName());
+		assertNotNull(type.getAnnotationInstances().stream().findAny().get().getSourceAnchor());
 	}
 
 	@Test
