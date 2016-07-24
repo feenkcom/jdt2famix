@@ -49,6 +49,7 @@ import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.CaughtException;
+import com.feenk.jdt2famix.model.famix.Comment;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.Invocation;
@@ -113,7 +114,6 @@ public class AstVisitor extends ASTVisitor {
 		if (binding == null)
 			return false;
 		Type type = importer.ensureTypeFromTypeBinding(binding);
-		
 		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
 		/* This is an ugly patch. When the binding to the superclass or super interfaces cannot be resolved,
 		 * we try to recover as much info as possible
@@ -124,6 +124,7 @@ public class AstVisitor extends ASTVisitor {
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, compilationUnit);
+		importer.createCommentFromJavadoc(type, node);
 		importer.pushOnContainerStack(type);
 		return true;
 	}

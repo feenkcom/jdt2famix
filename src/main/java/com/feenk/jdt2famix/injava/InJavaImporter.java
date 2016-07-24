@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
@@ -37,6 +38,7 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
+import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
 import com.feenk.jdt2famix.Famix;
@@ -48,6 +50,7 @@ import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Class;
+import com.feenk.jdt2famix.model.famix.Comment;
 import com.feenk.jdt2famix.model.famix.ContainerEntity;
 import com.feenk.jdt2famix.model.famix.DeclaredException;
 import com.feenk.jdt2famix.model.famix.Enum;
@@ -221,7 +224,6 @@ public class InJavaImporter extends Importer {
 			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
 		createAnnotationInstancesToEntityFromAnnotationBinding(type, binding.getAnnotations());
-			
 		return type;
 	}
 
@@ -617,6 +619,7 @@ public class InJavaImporter extends Importer {
 			attribute.setParentType(ensureTypeFromTypeBinding(parentTypeBinding));
 			attributes().add(Famix.qualifiedNameOf(attribute), attribute);
 		}
+		repository.add(attribute);
 		return attribute;
 	}
 	
@@ -706,6 +709,7 @@ public class InJavaImporter extends Importer {
 		DeclaredException declaredException = new DeclaredException();
 		method.addDeclaredExceptions(declaredException);
 		declaredException.setExceptionClass((Class) ensureTypeFromTypeBinding(binding));
+		repository.add(declaredException);
 		return declaredException;
 	}
 	
@@ -722,9 +726,18 @@ public class InJavaImporter extends Importer {
 		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
 		sourcedEntity.setSourceAnchor(fileAnchor);
+		repository.add(sourcedEntity);
 	}
 
+	//COMMENT
 	
+	public Comment createCommentFromJavadoc(SourcedEntity type, BodyDeclaration node) {
+		Comment comment = new Comment();
+		comment.setContent(node.getJavadoc().toString());
+		type.addComments(comment);
+		repository.add(comment);
+		return comment;
+	}
 	
 	//UTILS
 	
