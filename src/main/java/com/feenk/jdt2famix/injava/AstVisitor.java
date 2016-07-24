@@ -1,11 +1,14 @@
 package com.feenk.jdt2famix.injava;
 
 
+import java.util.Arrays;
+
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.ConditionalExpression;
@@ -37,6 +40,7 @@ import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
 import org.eclipse.jdt.core.dom.SuperMethodInvocation;
 import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
+import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
@@ -45,10 +49,12 @@ import org.eclipse.jdt.core.dom.WhileStatement;
 import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
+import com.feenk.jdt2famix.model.famix.CaughtException;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Namespace;
+import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
 
 
@@ -224,8 +230,10 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(MethodDeclaration node) {
 		IMethodBinding binding = node.resolveBinding();
 		Method method;
-		if (binding != null)
+		if (binding != null) {
 			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
+			Arrays.stream(binding.getExceptionTypes()).forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));			
+		}
 		else
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		method.setIsStub(false);
@@ -493,6 +501,25 @@ public class AstVisitor extends ASTVisitor {
 		return false;
 	}
 
+	@Override
+	public boolean visit(CatchClause node) {
+		CaughtException caughtException = new CaughtException();
+		ITypeBinding binding = node.getException().getType().resolveBinding();
+		if (binding != null) {
+			Type caughtType = importer.ensureTypeFromTypeBinding(binding);
+			caughtException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) caughtType);
+			caughtException.setDefiningMethod((Method) importer.topOfContainerStack());
+		}
+		return true;
+	}
 	
+	@Override
+	public boolean visit(ThrowStatement node) {
+		ThrownException thrownException = new ThrownException();
+//		Type thrownType = importer.ensureTypeFromTypeBinding(node.getType().resolveBinding());
+//		thrownException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) thrownType);
+//		thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
+		return true;
+	}
 	
 }

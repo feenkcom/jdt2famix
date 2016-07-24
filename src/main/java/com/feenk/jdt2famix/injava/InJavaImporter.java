@@ -47,6 +47,7 @@ import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.ContainerEntity;
+import com.feenk.jdt2famix.model.famix.DeclaredException;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.FAMIXModel;
@@ -62,6 +63,7 @@ import com.feenk.jdt2famix.model.famix.ParameterizableClass;
 import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
 import com.feenk.jdt2famix.model.famix.StructuralEntity;
+import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.model.java.JavaModel;
 
@@ -734,6 +736,12 @@ public class InJavaImporter extends Importer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	public DeclaredException createDeclaredExceptionFromTypeBinding(ITypeBinding binding, Method method) {
+		DeclaredException declaredException = new DeclaredException();
+		method.addDeclaredExceptions(declaredException);
+		declaredException.setExceptionClass((Class) ensureTypeFromTypeBinding(binding));
+		return declaredException;
 	}
 
 
