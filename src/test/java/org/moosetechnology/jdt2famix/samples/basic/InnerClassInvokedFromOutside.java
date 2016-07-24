@@ -2,8 +2,7 @@ package org.moosetechnology.jdt2famix.samples.basic;
 
 public class InnerClassInvokedFromOutside {
 	public static void method() {
-		OuterClass outer = new OuterClass();
-		outer.new InnerClass().innerMethod();
+		new OuterClass().new InnerClass().innerMethod();
 	}
 }
 
