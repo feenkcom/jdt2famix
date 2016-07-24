@@ -25,7 +25,7 @@ public abstract class MultipleSamplesTestCase extends InJavaTestCase {
 
 	protected abstract void sampleClassesIn(JavaFiles javaFiles);
 	protected String fileNameFor(Class<?> clazz) {
-		return basicSamplesPath() + clazz.getSimpleName() + ".java";
+		return basicSamplesPath() + "/" + clazz.getSimpleName() + ".java";
 	}
 	protected String basicSamplesPath() {
 		String relativePath = "src/test/java/org/moosetechnology/jdt2famix/samples/basic/";
