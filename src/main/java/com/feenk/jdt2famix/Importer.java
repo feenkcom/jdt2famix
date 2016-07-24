@@ -9,12 +9,15 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 
 public abstract class Importer {	
 	
+	protected String ignoredRootPath;
+
 	/**
 	 * Primary method to trigger the importer after having defined the 
 	 * (1) {@link JavaFiles} with files to be parsed, and 
 	 * (2) {@link Classpath} with dependencies
 	 */
 	public void run(JavaFiles javaFiles, Classpath classpath) {
+		ignoredRootPath = javaFiles.ignoredRootPath();
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);

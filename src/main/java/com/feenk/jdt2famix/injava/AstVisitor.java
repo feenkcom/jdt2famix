@@ -21,7 +21,6 @@ import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.ForStatement;
-import org.eclipse.jdt.core.dom.IAnnotationBinding;
 import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IfStatement;
@@ -73,16 +72,20 @@ import com.feenk.jdt2famix.model.famix.Type;
 public class AstVisitor extends ASTVisitor {
 
 	private InJavaImporter importer;
+	CompilationUnit compilationUnit;
+	private String sourceFilePath;
 	
-	public AstVisitor(InJavaImporter importer) {
+	public AstVisitor(InJavaImporter importer, String sourceFilePath) {
 		this.importer = importer;
+		this.sourceFilePath = sourceFilePath;
 	}
-	
+		
 	////////PACKAGES
 	
 	@Override
 	public boolean visit(CompilationUnit node) {
 		Namespace namespace;
+		compilationUnit = node;
 		if (node.getPackage() == null)
 			namespace = importer.ensureNamespaceNamed("");
 		else 
@@ -102,6 +105,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////TYPES
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
@@ -118,6 +122,7 @@ public class AstVisitor extends ASTVisitor {
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
+		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -226,6 +231,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////METHODS
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		IMethodBinding binding = node.resolveBinding();
@@ -265,6 +271,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////ATTRIBUTES
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (node.fragments().stream().anyMatch(f -> ((VariableDeclarationFragment) f).getInitializer() != null))
@@ -302,6 +309,7 @@ public class AstVisitor extends ASTVisitor {
 //				importer.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
 //		return true;
 //	}
+	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationStatement node) {
 		node.fragments().stream().forEach(
 				fragment -> 
@@ -312,6 +320,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////INVOCATIONS:
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
@@ -321,6 +330,7 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperMethodInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
@@ -328,6 +338,7 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(ConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
@@ -335,6 +346,7 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
 		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
@@ -345,6 +357,7 @@ public class AstVisitor extends ASTVisitor {
 	/**
 	 * new Class()
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(ClassInstanceCreation node) {
 		IMethodBinding binding = node.resolveConstructorBinding();

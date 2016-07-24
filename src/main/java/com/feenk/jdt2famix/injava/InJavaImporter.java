@@ -51,6 +51,7 @@ import com.feenk.jdt2famix.model.famix.DeclaredException;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.FAMIXModel;
+import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.LocalVariable;
@@ -742,6 +743,15 @@ public class InJavaImporter extends Importer {
 		method.addDeclaredExceptions(declaredException);
 		declaredException.setExceptionClass((Class) ensureTypeFromTypeBinding(binding));
 		return declaredException;
+	}
+	
+	
+	public void createSourceAnchor(Type type, String sourceFilePath, int startLineNumber, int endLineNumber) {
+		FileAnchor fileAnchor = new FileAnchor();
+		fileAnchor.setStartLine(startLineNumber);
+		fileAnchor.setEndLine(endLineNumber);
+		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
+		type.setSourceAnchor(fileAnchor);
 	}
 
 

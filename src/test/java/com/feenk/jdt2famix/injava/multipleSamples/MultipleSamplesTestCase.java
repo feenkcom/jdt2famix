@@ -1,5 +1,7 @@
 package com.feenk.jdt2famix.injava.multipleSamples;
 
+import java.nio.file.Paths;
+
 import org.junit.Before;
 
 import com.feenk.jdt2famix.JavaFiles;
@@ -23,7 +25,11 @@ public abstract class MultipleSamplesTestCase extends InJavaTestCase {
 
 	protected abstract void sampleClassesIn(JavaFiles javaFiles);
 	protected String fileNameFor(Class<?> clazz) {
-		return "src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + clazz.getSimpleName() + ".java";
+		return basicSamplesPath() + clazz.getSimpleName() + ".java";
+	}
+	protected String basicSamplesPath() {
+		String relativePath = "src/test/java/org/moosetechnology/jdt2famix/samples/basic/";
+		return Paths.get(relativePath).toAbsolutePath().normalize().toString();
 	}
 
 }
