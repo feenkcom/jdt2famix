@@ -63,6 +63,7 @@ import com.feenk.jdt2famix.model.famix.ParameterType;
 import com.feenk.jdt2famix.model.famix.ParameterizableClass;
 import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
+import com.feenk.jdt2famix.model.famix.SourcedEntity;
 import com.feenk.jdt2famix.model.famix.StructuralEntity;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
@@ -746,12 +747,12 @@ public class InJavaImporter extends Importer {
 	}
 	
 	
-	public void createSourceAnchor(Type type, String sourceFilePath, int startLineNumber, int endLineNumber) {
+	public void createSourceAnchor(SourcedEntity sourcedEntity, String sourceFilePath, int startLineNumber, int endLineNumber) {
 		FileAnchor fileAnchor = new FileAnchor();
 		fileAnchor.setStartLine(startLineNumber);
 		fileAnchor.setEndLine(endLineNumber);
 		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
-		type.setSourceAnchor(fileAnchor);
+		sourcedEntity.setSourceAnchor(fileAnchor);
 	}
 
 

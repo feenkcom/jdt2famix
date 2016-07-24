@@ -10,6 +10,7 @@ import org.junit.Test;
 import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
+import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.samples.basic.EnumWithSimpleValues;
 
 public class EnumWithSimpleValuesTest extends OneSampleTestCase {
@@ -17,12 +18,6 @@ public class EnumWithSimpleValuesTest extends OneSampleTestCase {
 	@Override
 	protected Class<?> sampleClass() {return EnumWithSimpleValues.class;}
 	
-//	@Before
-//	public void setUp() {
-//		importer = new InJavaImporter();
-//		importer.runOne("src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + "EnumWithSimpleValues" + ".java");
-//	}
-
 	@Test
 	public void testEnumType() {
 		assertNotNull(type);
@@ -36,5 +31,18 @@ public class EnumWithSimpleValuesTest extends OneSampleTestCase {
 		values.stream().anyMatch(v -> v.getName().equals("ONE"));
 		values.stream().anyMatch(v -> v.getName().equals("TWO"));
 		values.stream().anyMatch(v -> v.getName().equals("THREE"));
+	}
+	
+	@Test
+	public void testEnumSourceAnchor() {
+		assertNotNull(type.getSourceAnchor());
+	}
+
+	@Test
+	public void testEnumValueSourceAnchor() {
+		Collection<EnumValue> values = ((Enum) type).getValues();
+		FileAnchor typeAnchor = (FileAnchor) type.getSourceAnchor(); 
+		values.stream().forEach(value -> assertNotNull(value.getSourceAnchor()));
+		values.stream().forEach(value -> assertEquals(typeAnchor.getFileName(), ((FileAnchor) value.getSourceAnchor()).getFileName()));
 	}
 }

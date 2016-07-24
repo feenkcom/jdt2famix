@@ -31,5 +31,11 @@ public class ClassWithInnerClassTest extends OneSampleTestCase {
 		assertEquals(type, innerClass.getContainer());
 		assertEquals(innerClass, importer.types().named(Famix.qualifiedNameOf(innerClass)));
 	}
+
+	@Test
+	public void testInnerClassSourceAnchor() {
+		Type innerClass = importer.types().stream().filter(t -> t.getName().equals("InnerClass")).findAny().get();
+		assertNotNull(innerClass.getSourceAnchor());
+	}
 	
 }

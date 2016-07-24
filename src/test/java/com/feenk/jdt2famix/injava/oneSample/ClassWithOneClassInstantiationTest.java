@@ -8,13 +8,13 @@ import org.junit.Test;
 
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
-import com.feenk.jdt2famix.samples.basic.ClassWithOneNew;
+import com.feenk.jdt2famix.samples.basic.ClassWithOneClassInstantiation;
 
-public class ClassWithOneNewTest extends OneSampleTestCase {
+public class ClassWithOneClassInstantiationTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {
-		return ClassWithOneNew.class;
+		return ClassWithOneClassInstantiation.class;
 	}
 	
 	@Test
@@ -25,7 +25,7 @@ public class ClassWithOneNewTest extends OneSampleTestCase {
 		assertNotNull(defaultConstructor);
 		assertEquals("constructor", defaultConstructor.getKind());
 		assertTrue(defaultConstructor.getIsStub());
-		assertEquals(ClassWithOneNew.class.getSimpleName(), defaultConstructor.getName());
+		assertEquals(ClassWithOneClassInstantiation.class.getSimpleName(), defaultConstructor.getName());
 		assertEquals(type, defaultConstructor.getParentType());
 	}
 

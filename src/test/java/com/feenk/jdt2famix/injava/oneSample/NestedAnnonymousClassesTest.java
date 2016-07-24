@@ -7,6 +7,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.Famix;
+import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.NestedAnnonymousClasses;
@@ -40,5 +41,13 @@ public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 		assertEquals(nestedMethod, (typeInNestedMethod.getContainer()));
 		assertEquals("$1", nestedMethod.getParentType().getName());
 		assertEquals(NestedAnnonymousClasses.class.getName() + ".topMethod().$1.nestedMethod().$1", Famix.qualifiedNameOf(typeInNestedMethod));
+	}
+	
+	@Test
+	public void testAllNonStubTypesHaveSourceAnchor() {
+		FileAnchor typeAnchor = (FileAnchor) type.getSourceAnchor(); 		
+		importer.types().stream()
+			.filter(t -> ! t.getIsStub())
+			.forEach( t -> assertEquals(typeAnchor.getFileName(), ((FileAnchor) t.getSourceAnchor()).getFileName()));
 	}
 }

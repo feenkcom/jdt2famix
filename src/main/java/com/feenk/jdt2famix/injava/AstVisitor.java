@@ -50,6 +50,7 @@ import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.CaughtException;
 import com.feenk.jdt2famix.model.famix.Enum;
+import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Namespace;
@@ -137,6 +138,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(AnonymousClassDeclaration node) {
 		Type type = importer.ensureTypeFromAnonymousDeclaration(node);
 		type.setIsStub(false);
+		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -151,6 +153,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(EnumDeclaration node) {
 		Enum famixEnum = importer.ensureEnumFromDeclaration(node);
 		famixEnum.setIsStub(false);
+		importer.createSourceAnchor(famixEnum, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		importer.pushOnContainerStack(famixEnum);
 		return true;
 	}
@@ -164,7 +167,8 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(EnumConstantDeclaration node) {
 		if (!node.arguments().isEmpty())
 			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
-		importer.ensureEnumValueFromDeclaration(node);
+		EnumValue enumValue = importer.ensureEnumValueFromDeclaration(node);
+		importer.createSourceAnchor(enumValue, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		return true;
 	}
 
