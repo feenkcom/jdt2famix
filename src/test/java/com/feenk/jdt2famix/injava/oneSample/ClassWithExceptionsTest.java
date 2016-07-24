@@ -4,7 +4,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithExceptions;
+
+import com.feenk.jdt2famix.samples.basic.ClassWithExceptions;
 
 public class ClassWithExceptionsTest extends OneSampleTestCase {
 

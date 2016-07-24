@@ -3,13 +3,13 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EmptyClass;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleParameterizableClass;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAnnonymousClasses;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.EmptyClass;
+import com.feenk.jdt2famix.samples.basic.SimpleParameterizableClass;
+import com.feenk.jdt2famix.samples.basic.VariousAnnonymousClasses;
 
 public class VariousAnnonymousClassesTest extends MultipleSamplesTestCase {
 

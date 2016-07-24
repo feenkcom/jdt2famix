@@ -3,7 +3,8 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousLocalVariables;
+
+import com.feenk.jdt2famix.samples.basic.VariousLocalVariables;
 
 public class VariousLocalVariablesTest extends OneSampleTestCase {
 	

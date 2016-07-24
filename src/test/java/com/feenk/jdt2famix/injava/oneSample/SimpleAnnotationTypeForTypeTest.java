@@ -3,7 +3,8 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
 
 public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 

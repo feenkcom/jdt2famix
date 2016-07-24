@@ -5,11 +5,11 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.NestedAnnonymousClasses;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.NestedAnnonymousClasses;
 
 public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 

@@ -3,10 +3,10 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAttributeAccesses;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAttributeAccessesSubclass;
 
 import com.feenk.jdt2famix.JavaFiles;
+import com.feenk.jdt2famix.samples.basic.VariousAttributeAccesses;
+import com.feenk.jdt2famix.samples.basic.VariousAttributeAccessesSubclass;
 
 public class VariousAttributeAccessesSubclassTest extends
 		MultipleSamplesTestCase {

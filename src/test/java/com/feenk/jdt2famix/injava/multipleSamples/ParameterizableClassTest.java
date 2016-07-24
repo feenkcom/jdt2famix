@@ -3,8 +3,6 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleParameterizableClass;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleSubclassOfParameterizedType;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.JavaFiles;
@@ -12,6 +10,8 @@ import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.ParameterizableClass;
 import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.SimpleParameterizableClass;
+import com.feenk.jdt2famix.samples.basic.SimpleSubclassOfParameterizedType;
 
 public class ParameterizableClassTest extends MultipleSamplesTestCase {
 

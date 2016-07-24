@@ -5,8 +5,9 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EmptyClass;
-import org.moosetechnology.jdt2famix.samples.basic.UnresolvedInvocations;
+
+import com.feenk.jdt2famix.samples.basic.EmptyClass;
+import com.feenk.jdt2famix.samples.basic.UnresolvedInvocations;
 
 public class UnresolvedInvocationsTest extends OneSampleTestCase {
 

@@ -3,10 +3,10 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.SimpleInterface;
 
 import com.feenk.jdt2famix.model.famix.Namespace;
 import com.feenk.jdt2famix.model.famix.Class;
+import com.feenk.jdt2famix.samples.basic.SimpleInterface;
 
 public class SimpleInterfaceTestCase extends OneSampleTestCase {
 

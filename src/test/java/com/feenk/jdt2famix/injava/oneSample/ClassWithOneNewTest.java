@@ -5,10 +5,10 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithOneNew;
 
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.samples.basic.ClassWithOneNew;
 
 public class ClassWithOneNewTest extends OneSampleTestCase {
 

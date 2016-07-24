@@ -6,11 +6,11 @@ import java.util.Collection;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EnumWithSimpleValues;
 
 import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
+import com.feenk.jdt2famix.samples.basic.EnumWithSimpleValues;
 
 public class EnumWithSimpleValuesTest extends OneSampleTestCase {
 

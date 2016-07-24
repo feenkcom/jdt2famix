@@ -3,10 +3,10 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithInnerClass;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.ClassWithInnerClass;
 
 public class ClassWithInnerClassTest extends OneSampleTestCase {
 

@@ -3,10 +3,10 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAttributes;
 
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
+import com.feenk.jdt2famix.samples.basic.VariousAttributes;
 
 public class VariousAttributesTest extends OneSampleTestCase {
 

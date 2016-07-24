@@ -4,14 +4,14 @@ import static org.junit.Assert.*;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithAnnotationsForType;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
+import com.feenk.jdt2famix.samples.basic.ClassWithAnnotationsForType;
 
 public class ClassWithAnnotationForTypeTest extends
 		MultipleSamplesTestCase {

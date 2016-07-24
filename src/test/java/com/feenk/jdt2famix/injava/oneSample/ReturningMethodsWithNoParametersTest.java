@@ -3,9 +3,9 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ReturningMethodsWithNoParameters;
 
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.samples.basic.ReturningMethodsWithNoParameters;
 
 public class ReturningMethodsWithNoParametersTest extends OneSampleTestCase {
 

@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import java.util.stream.Stream;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAttributeAccesses;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Parameter;
+import com.feenk.jdt2famix.samples.basic.VariousAttributeAccesses;
 
 public class VariousAttributeAccessesTest extends OneSampleTestCase {
 

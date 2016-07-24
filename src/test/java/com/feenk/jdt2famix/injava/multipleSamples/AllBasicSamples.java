@@ -3,11 +3,11 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EmptyClass;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.EmptyClass;
 
 public class AllBasicSamples extends MultipleSamplesTestCase {
 

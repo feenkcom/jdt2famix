@@ -3,10 +3,10 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VoidMethodsWithOneParameter;
 
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
+import com.feenk.jdt2famix.samples.basic.VoidMethodsWithOneParameter;
 
 public class VoidMethodsWithOneParameterTest extends OneSampleTestCase {
 

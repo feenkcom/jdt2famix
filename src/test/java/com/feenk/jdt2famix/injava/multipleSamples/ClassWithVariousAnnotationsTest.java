@@ -3,18 +3,18 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithAnnotationsForType;
-import org.moosetechnology.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithVariousAnnotations;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
+import com.feenk.jdt2famix.samples.basic.ClassWithAnnotationsForType;
+import com.feenk.jdt2famix.samples.basic.ClassWithVariousAnnotations;
 
 public class ClassWithVariousAnnotationsTest extends
 		MultipleSamplesTestCase {

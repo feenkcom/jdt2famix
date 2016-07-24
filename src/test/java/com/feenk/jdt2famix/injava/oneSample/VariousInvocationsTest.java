@@ -3,12 +3,12 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousInvocations;
 
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.LocalVariable;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Parameter;
+import com.feenk.jdt2famix.samples.basic.VariousInvocations;
 
 public class VariousInvocationsTest extends OneSampleTestCase {
 

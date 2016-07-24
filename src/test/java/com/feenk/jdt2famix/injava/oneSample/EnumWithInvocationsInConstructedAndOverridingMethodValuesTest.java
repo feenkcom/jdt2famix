@@ -5,12 +5,12 @@ import static org.junit.Assert.*;
 import java.util.stream.Stream;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EnumWithInvocationsInConstructedAndOverridingMethodValues;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.samples.basic.EnumWithInvocationsInConstructedAndOverridingMethodValues;
 
 public class EnumWithInvocationsInConstructedAndOverridingMethodValuesTest extends
 		OneSampleTestCase {

@@ -3,9 +3,9 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithInvocationFromStaticInitializer;
 
 import com.feenk.jdt2famix.injava.InJavaImporter;
+import com.feenk.jdt2famix.samples.basic.ClassWithInvocationFromStaticInitializer;
 
 public class ClassWithInvocationFromStaticInitializerTest extends
 		OneSampleTestCase {

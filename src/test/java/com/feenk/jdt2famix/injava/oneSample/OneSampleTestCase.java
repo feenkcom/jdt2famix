@@ -15,7 +15,7 @@ public abstract class OneSampleTestCase extends InJavaTestCase {
 	@Before
 	public void setUp() {
 		importer = new InJavaImporter();
-		importer.runOne("src/test/java/org/moosetechnology/jdt2famix/samples/basic/" + sampleClass().getSimpleName() + ".java");
+		importer.runOne("src/test/java/com/feenk/jdt2famix/samples/basic/" + sampleClass().getSimpleName() + ".java");
 		type = importer.types().named(sampleClass().getName());
 	}
 

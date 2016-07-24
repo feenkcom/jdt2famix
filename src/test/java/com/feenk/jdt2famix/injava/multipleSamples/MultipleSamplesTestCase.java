@@ -28,7 +28,7 @@ public abstract class MultipleSamplesTestCase extends InJavaTestCase {
 		return basicSamplesPath() + "/" + clazz.getSimpleName() + ".java";
 	}
 	protected String basicSamplesPath() {
-		String relativePath = "src/test/java/org/moosetechnology/jdt2famix/samples/basic/";
+		String relativePath = "src/test/java/com/feenk/jdt2famix/samples/basic/";
 		return Paths.get(relativePath).toAbsolutePath().normalize().toString();
 	}
 

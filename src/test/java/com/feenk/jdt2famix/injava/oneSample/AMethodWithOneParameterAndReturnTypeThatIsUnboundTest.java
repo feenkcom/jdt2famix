@@ -3,9 +3,9 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.AMethodWithOneParameterAndReturnTypeThatIsUnbound;
 
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.samples.basic.AMethodWithOneParameterAndReturnTypeThatIsUnbound;
 
 public class AMethodWithOneParameterAndReturnTypeThatIsUnboundTest extends
 		OneSampleTestCase {

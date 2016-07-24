@@ -7,10 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.util.Observer;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassImplementingObserver;
 
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.samples.basic.ClassImplementingObserver;
 
 public class ClassImplementingObserverTest extends OneSampleTestCase {
 

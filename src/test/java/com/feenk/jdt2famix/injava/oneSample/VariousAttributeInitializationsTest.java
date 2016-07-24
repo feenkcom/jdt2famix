@@ -3,11 +3,11 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.VariousAttributeInitializations;
 
 import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
+import com.feenk.jdt2famix.samples.basic.VariousAttributeInitializations;
 
 public class VariousAttributeInitializationsTest extends OneSampleTestCase {
 

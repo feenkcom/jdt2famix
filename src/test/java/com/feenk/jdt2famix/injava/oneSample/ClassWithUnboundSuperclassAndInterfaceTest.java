@@ -3,7 +3,8 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.ClassWithUnboundSuperclassAndInterface;
+
+import com.feenk.jdt2famix.samples.basic.ClassWithUnboundSuperclassAndInterface;
 
 public class ClassWithUnboundSuperclassAndInterfaceTest extends
 		OneSampleTestCase {

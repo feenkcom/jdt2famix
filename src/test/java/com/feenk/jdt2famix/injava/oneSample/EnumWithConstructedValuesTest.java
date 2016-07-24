@@ -5,11 +5,11 @@ import static org.junit.Assert.*;
 import java.util.Collection;
 
 import org.junit.Test;
-import org.moosetechnology.jdt2famix.samples.basic.EnumWithConstructedValues;
 
 import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
+import com.feenk.jdt2famix.samples.basic.EnumWithConstructedValues;
 
 public class EnumWithConstructedValuesTest extends OneSampleTestCase {
 
