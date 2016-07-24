@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.model.famix.Attribute;
+import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
 import com.feenk.jdt2famix.samples.basic.VariousAttributes;
 
@@ -57,6 +58,13 @@ public class VariousAttributesTest extends OneSampleTestCase {
 		Attribute protectedVariousMethodsAttribute = attributeNamed("protectedVariousMethodsAttribute");
 		assertNotEquals(importer.unknownType(), protectedVariousMethodsAttribute.getDeclaredType());
 		assertEquals(importer.unknownNamespace(), protectedVariousMethodsAttribute.getDeclaredType().getContainer());
-
 	}
+	
+	@Test
+	public void testAttributeSourceAnchorFileNameIsLikeForItsClass() {
+		FileAnchor fileAnchor = (FileAnchor) type.getSourceAnchor();
+		type.getAttributes().stream()
+			.forEach(a -> assertEquals(fileAnchor.getFileName(), ((FileAnchor) a.getSourceAnchor()).getFileName())); 
+	}
+
 }

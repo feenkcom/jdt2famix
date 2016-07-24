@@ -12,9 +12,11 @@ import java.util.StringJoiner;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
@@ -698,6 +700,31 @@ public class InJavaImporter extends Importer {
 	}
 	
 
+	// EXCEPTION
+	
+	public DeclaredException createDeclaredExceptionFromTypeBinding(ITypeBinding binding, Method method) {
+		DeclaredException declaredException = new DeclaredException();
+		method.addDeclaredExceptions(declaredException);
+		declaredException.setExceptionClass((Class) ensureTypeFromTypeBinding(binding));
+		return declaredException;
+	}
+	
+	
+	//SOURCE ANCHOR
+	
+	/**
+	 * We pass the compilationUnit because this is where the logic of getting the line number is.
+	 * We cannot complain about the sense of humor in this design :)
+	 */
+	public void createSourceAnchor(SourcedEntity sourcedEntity, String sourceFilePath, ASTNode node, CompilationUnit compilationUnit) {
+		FileAnchor fileAnchor = new FileAnchor();
+		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
+		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
+		sourcedEntity.setSourceAnchor(fileAnchor);
+	}
+
+	
 	
 	//UTILS
 	
@@ -739,21 +766,5 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
-	public DeclaredException createDeclaredExceptionFromTypeBinding(ITypeBinding binding, Method method) {
-		DeclaredException declaredException = new DeclaredException();
-		method.addDeclaredExceptions(declaredException);
-		declaredException.setExceptionClass((Class) ensureTypeFromTypeBinding(binding));
-		return declaredException;
-	}
-	
-	
-	public void createSourceAnchor(SourcedEntity sourcedEntity, String sourceFilePath, int startLineNumber, int endLineNumber) {
-		FileAnchor fileAnchor = new FileAnchor();
-		fileAnchor.setStartLine(startLineNumber);
-		fileAnchor.setEndLine(endLineNumber);
-		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
-		sourcedEntity.setSourceAnchor(fileAnchor);
-	}
-
 
 }

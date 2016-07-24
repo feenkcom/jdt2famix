@@ -123,7 +123,7 @@ public class AstVisitor extends ASTVisitor {
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
-		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		importer.createSourceAnchor(type, sourceFilePath, node, compilationUnit);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -138,7 +138,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(AnonymousClassDeclaration node) {
 		Type type = importer.ensureTypeFromAnonymousDeclaration(node);
 		type.setIsStub(false);
-		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		importer.createSourceAnchor(type, sourceFilePath, node, compilationUnit);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -153,7 +153,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(EnumDeclaration node) {
 		Enum famixEnum = importer.ensureEnumFromDeclaration(node);
 		famixEnum.setIsStub(false);
-		importer.createSourceAnchor(famixEnum, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		importer.createSourceAnchor(famixEnum, sourceFilePath, node, compilationUnit);
 		importer.pushOnContainerStack(famixEnum);
 		return true;
 	}
@@ -168,7 +168,7 @@ public class AstVisitor extends ASTVisitor {
 		if (!node.arguments().isEmpty())
 			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
 		EnumValue enumValue = importer.ensureEnumValueFromDeclaration(node);
-		importer.createSourceAnchor(enumValue, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		importer.createSourceAnchor(enumValue, sourceFilePath, node, compilationUnit);
 		return true;
 	}
 
@@ -185,7 +185,7 @@ public class AstVisitor extends ASTVisitor {
 		ITypeBinding binding = node.resolveBinding();
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		type.setIsStub(false);
-		importer.createSourceAnchor(type, sourceFilePath, compilationUnit.getLineNumber(node.getStartPosition()), compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		importer.createSourceAnchor(type, sourceFilePath, node, compilationUnit);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -253,6 +253,7 @@ public class AstVisitor extends ASTVisitor {
 			stream().
 			forEach(p -> 
 				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
+		importer.createSourceAnchor(method, sourceFilePath, node, compilationUnit);
 		return true;
 	}
 	
@@ -287,6 +288,8 @@ public class AstVisitor extends ASTVisitor {
 	
 	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
+		importer.createSourceAnchor(attribute, sourceFilePath, fragment, compilationUnit);
+
 		//only the last fragment of a field contains the initializer code.
 		//thus, to create the access to each variable in the fragment we need to ask that last fragment
 		//we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment
