@@ -132,6 +132,23 @@ public class NamedEntity extends SourcedEntity {
         this.name = name;
     }
     
+    private Package parentPackage;
+    
+    @FameProperty(name = "parentPackage", opposite = "childNamedEntities")
+    public Package getParentPackage() {
+        return parentPackage;
+    }
+
+    public void setParentPackage(Package parentPackage) {
+        if (this.parentPackage != null) {
+            if (this.parentPackage.equals(parentPackage)) return;
+            this.parentPackage.getChildNamedEntities().remove(this);
+        }
+        this.parentPackage = parentPackage;
+        if (parentPackage == null) return;
+        parentPackage.getChildNamedEntities().add(this);
+    }
+    
     private Collection<AnnotationInstance> annotationInstances; 
 
     @FameProperty(name = "annotationInstances", opposite = "annotatedEntity", derived = true)
@@ -186,23 +203,6 @@ public class NamedEntity extends SourcedEntity {
     }
     
                 
-    private Package parentPackage;
-    
-    @FameProperty(name = "parentPackage", opposite = "childNamedEntities")
-    public Package getParentPackage() {
-        return parentPackage;
-    }
-
-    public void setParentPackage(Package parentPackage) {
-        if (this.parentPackage != null) {
-            if (this.parentPackage.equals(parentPackage)) return;
-            this.parentPackage.getChildNamedEntities().remove(this);
-        }
-        this.parentPackage = parentPackage;
-        if (parentPackage == null) return;
-        parentPackage.getChildNamedEntities().add(this);
-    }
-    
 
 
 }

@@ -10,7 +10,7 @@ import ch.akuhn.fame.FamePackage;
 
 @FamePackage("FAMIX")
 @FameDescription("AnnotationInstance")
-public class AnnotationInstance extends Entity {
+public class AnnotationInstance extends SourcedEntity {
 
 
 

@@ -23,17 +23,6 @@ public class Folder extends AbstractFile {
         this.numberOfFiles = numberOfFiles;
     }
     
-    private Number numberOfFolders;
-    
-    @FameProperty(name = "numberOfFolders")
-    public Number getNumberOfFolders() {
-        return numberOfFolders;
-    }
-
-    public void setNumberOfFolders(Number numberOfFolders) {
-        this.numberOfFolders = numberOfFolders;
-    }
-    
     private Number totalNumberOfLinesOfText;
     
     @FameProperty(name = "totalNumberOfLinesOfText")
@@ -43,6 +32,17 @@ public class Folder extends AbstractFile {
 
     public void setTotalNumberOfLinesOfText(Number totalNumberOfLinesOfText) {
         this.totalNumberOfLinesOfText = totalNumberOfLinesOfText;
+    }
+    
+    private Number numberOfFolders;
+    
+    @FameProperty(name = "numberOfFolders")
+    public Number getNumberOfFolders() {
+        return numberOfFolders;
+    }
+
+    public void setNumberOfFolders(Number numberOfFolders) {
+        this.numberOfFolders = numberOfFolders;
     }
     
     private Number numberOfLinesOfText;

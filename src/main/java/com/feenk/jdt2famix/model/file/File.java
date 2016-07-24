@@ -23,17 +23,6 @@ public class File extends AbstractFile {
         this.numberOfInternalClones = numberOfInternalClones;
     }
     
-    private Number totalNumberOfLinesOfText;
-    
-    @FameProperty(name = "totalNumberOfLinesOfText")
-    public Number getTotalNumberOfLinesOfText() {
-        return totalNumberOfLinesOfText;
-    }
-
-    public void setTotalNumberOfLinesOfText(Number totalNumberOfLinesOfText) {
-        this.totalNumberOfLinesOfText = totalNumberOfLinesOfText;
-    }
-    
     private Number numberOfKiloBytes;
     
     @FameProperty(name = "numberOfKiloBytes")
@@ -43,6 +32,17 @@ public class File extends AbstractFile {
 
     public void setNumberOfKiloBytes(Number numberOfKiloBytes) {
         this.numberOfKiloBytes = numberOfKiloBytes;
+    }
+    
+    private Number totalNumberOfLinesOfText;
+    
+    @FameProperty(name = "totalNumberOfLinesOfText")
+    public Number getTotalNumberOfLinesOfText() {
+        return totalNumberOfLinesOfText;
+    }
+
+    public void setTotalNumberOfLinesOfText(Number totalNumberOfLinesOfText) {
+        this.totalNumberOfLinesOfText = totalNumberOfLinesOfText;
     }
     
     private Number numberOfDuplicatedFiles;
@@ -56,17 +56,6 @@ public class File extends AbstractFile {
         this.numberOfDuplicatedFiles = numberOfDuplicatedFiles;
     }
     
-    private Number numberOfEmptyLinesOfText;
-    
-    @FameProperty(name = "numberOfEmptyLinesOfText")
-    public Number getNumberOfEmptyLinesOfText() {
-        return numberOfEmptyLinesOfText;
-    }
-
-    public void setNumberOfEmptyLinesOfText(Number numberOfEmptyLinesOfText) {
-        this.numberOfEmptyLinesOfText = numberOfEmptyLinesOfText;
-    }
-    
     private Number numberOfCharacters;
     
     @FameProperty(name = "numberOfCharacters")
@@ -76,6 +65,17 @@ public class File extends AbstractFile {
 
     public void setNumberOfCharacters(Number numberOfCharacters) {
         this.numberOfCharacters = numberOfCharacters;
+    }
+    
+    private Number numberOfEmptyLinesOfText;
+    
+    @FameProperty(name = "numberOfEmptyLinesOfText")
+    public Number getNumberOfEmptyLinesOfText() {
+        return numberOfEmptyLinesOfText;
+    }
+
+    public void setNumberOfEmptyLinesOfText(Number numberOfEmptyLinesOfText) {
+        this.numberOfEmptyLinesOfText = numberOfEmptyLinesOfText;
     }
     
     private Number averageNumberOfCharactersPerLine;

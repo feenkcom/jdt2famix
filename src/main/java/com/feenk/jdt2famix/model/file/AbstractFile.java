@@ -1,11 +1,10 @@
 // Automagically generated code, please do not change
 package com.feenk.jdt2famix.model.file;
 
+import com.feenk.jdt2famix.model.famix.Entity;
 import ch.akuhn.fame.FameProperty;
 import ch.akuhn.fame.FameDescription;
 import ch.akuhn.fame.FamePackage;
-
-import com.feenk.jdt2famix.model.famix.Entity;
 
 
 @FamePackage("FILE")

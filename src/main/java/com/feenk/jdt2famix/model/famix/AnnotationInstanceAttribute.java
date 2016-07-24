@@ -8,7 +8,7 @@ import ch.akuhn.fame.FamePackage;
 
 @FamePackage("FAMIX")
 @FameDescription("AnnotationInstanceAttribute")
-public class AnnotationInstanceAttribute extends Entity {
+public class AnnotationInstanceAttribute extends SourcedEntity {
 
 
 

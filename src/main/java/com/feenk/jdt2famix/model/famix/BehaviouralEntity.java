@@ -377,60 +377,6 @@ public class BehaviouralEntity extends ContainerEntity {
         this.numberOfConditionals = numberOfConditionals;
     }
     
-    private Collection<Access> accesses; 
-
-    @FameProperty(name = "accesses", opposite = "accessor", derived = true)
-    public Collection<Access> getAccesses() {
-        if (accesses == null) {
-            accesses = new MultivalueSet<Access>() {
-                @Override
-                protected void clearOpposite(Access e) {
-                    e.setAccessor(null);
-                }
-                @Override
-                protected void setOpposite(Access e) {
-                    e.setAccessor(BehaviouralEntity.this);
-                }
-            };
-        }
-        return accesses;
-    }
-    
-    public void setAccesses(Collection<? extends Access> accesses) {
-        this.getAccesses().clear();
-        this.getAccesses().addAll(accesses);
-    }                    
-    
-        
-    public void addAccesses(Access one) {
-        this.getAccesses().add(one);
-    }   
-    
-    public void addAccesses(Access one, Access... many) {
-        this.getAccesses().add(one);
-        for (Access each : many)
-            this.getAccesses().add(each);
-    }   
-    
-    public void addAccesses(Iterable<? extends Access> many) {
-        for (Access each : many)
-            this.getAccesses().add(each);
-    }   
-                
-    public void addAccesses(Access[] many) {
-        for (Access each : many)
-            this.getAccesses().add(each);
-    }
-    
-    public int numberOfAccesses() {
-        return getAccesses().size();
-    }
-
-    public boolean hasAccesses() {
-        return !getAccesses().isEmpty();
-    }
-    
-                
     private Collection<Parameter> parameters; 
 
     @FameProperty(name = "parameters", opposite = "parentBehaviouralEntity", derived = true)
@@ -482,6 +428,60 @@ public class BehaviouralEntity extends ContainerEntity {
 
     public boolean hasParameters() {
         return !getParameters().isEmpty();
+    }
+    
+                
+    private Collection<Access> accesses; 
+
+    @FameProperty(name = "accesses", opposite = "accessor", derived = true)
+    public Collection<Access> getAccesses() {
+        if (accesses == null) {
+            accesses = new MultivalueSet<Access>() {
+                @Override
+                protected void clearOpposite(Access e) {
+                    e.setAccessor(null);
+                }
+                @Override
+                protected void setOpposite(Access e) {
+                    e.setAccessor(BehaviouralEntity.this);
+                }
+            };
+        }
+        return accesses;
+    }
+    
+    public void setAccesses(Collection<? extends Access> accesses) {
+        this.getAccesses().clear();
+        this.getAccesses().addAll(accesses);
+    }                    
+    
+        
+    public void addAccesses(Access one) {
+        this.getAccesses().add(one);
+    }   
+    
+    public void addAccesses(Access one, Access... many) {
+        this.getAccesses().add(one);
+        for (Access each : many)
+            this.getAccesses().add(each);
+    }   
+    
+    public void addAccesses(Iterable<? extends Access> many) {
+        for (Access each : many)
+            this.getAccesses().add(each);
+    }   
+                
+    public void addAccesses(Access[] many) {
+        for (Access each : many)
+            this.getAccesses().add(each);
+    }
+    
+    public int numberOfAccesses() {
+        return getAccesses().size();
+    }
+
+    public boolean hasAccesses() {
+        return !getAccesses().isEmpty();
     }
     
                 

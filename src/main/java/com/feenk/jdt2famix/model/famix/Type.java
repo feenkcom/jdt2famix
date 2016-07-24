@@ -409,6 +409,59 @@ public class Type extends ContainerEntity {
     }
     
                 
+    private Collection<ParameterizedType> argumentsInParameterizedTypes; 
+
+    @FameProperty(name = "argumentsInParameterizedTypes", opposite = "arguments", derived = true)
+    public Collection<ParameterizedType> getArgumentsInParameterizedTypes() {
+        if (argumentsInParameterizedTypes == null) {
+            argumentsInParameterizedTypes = new MultivalueSet<ParameterizedType>() {
+                @Override
+                protected void clearOpposite(ParameterizedType e) {
+                    e.getArguments().remove(Type.this);
+                }
+                @Override
+                protected void setOpposite(ParameterizedType e) {
+                    e.getArguments().add(Type.this);
+                }
+            };
+        }
+        return argumentsInParameterizedTypes;
+    }
+    
+    public void setArgumentsInParameterizedTypes(Collection<? extends ParameterizedType> argumentsInParameterizedTypes) {
+        this.getArgumentsInParameterizedTypes().clear();
+        this.getArgumentsInParameterizedTypes().addAll(argumentsInParameterizedTypes);
+    }
+    
+    public void addArgumentsInParameterizedTypes(ParameterizedType one) {
+        this.getArgumentsInParameterizedTypes().add(one);
+    }   
+    
+    public void addArgumentsInParameterizedTypes(ParameterizedType one, ParameterizedType... many) {
+        this.getArgumentsInParameterizedTypes().add(one);
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }   
+    
+    public void addArgumentsInParameterizedTypes(Iterable<? extends ParameterizedType> many) {
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }   
+                
+    public void addArgumentsInParameterizedTypes(ParameterizedType[] many) {
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }
+    
+    public int numberOfArgumentsInParameterizedTypes() {
+        return getArgumentsInParameterizedTypes().size();
+    }
+
+    public boolean hasArgumentsInParameterizedTypes() {
+        return !getArgumentsInParameterizedTypes().isEmpty();
+    }
+    
+                
     private Collection<Attribute> attributes; 
 
     @FameProperty(name = "attributes", opposite = "parentType", derived = true)
@@ -460,59 +513,6 @@ public class Type extends ContainerEntity {
 
     public boolean hasAttributes() {
         return !getAttributes().isEmpty();
-    }
-    
-                
-    private Collection<ParameterizedType> argumentsInParameterizedTypes; 
-
-    @FameProperty(name = "argumentsInParameterizedTypes", opposite = "arguments", derived = true)
-    public Collection<ParameterizedType> getArgumentsInParameterizedTypes() {
-        if (argumentsInParameterizedTypes == null) {
-            argumentsInParameterizedTypes = new MultivalueSet<ParameterizedType>() {
-                @Override
-                protected void clearOpposite(ParameterizedType e) {
-                    e.getArguments().remove(Type.this);
-                }
-                @Override
-                protected void setOpposite(ParameterizedType e) {
-                    e.getArguments().add(Type.this);
-                }
-            };
-        }
-        return argumentsInParameterizedTypes;
-    }
-    
-    public void setArgumentsInParameterizedTypes(Collection<? extends ParameterizedType> argumentsInParameterizedTypes) {
-        this.getArgumentsInParameterizedTypes().clear();
-        this.getArgumentsInParameterizedTypes().addAll(argumentsInParameterizedTypes);
-    }
-    
-    public void addArgumentsInParameterizedTypes(ParameterizedType one) {
-        this.getArgumentsInParameterizedTypes().add(one);
-    }   
-    
-    public void addArgumentsInParameterizedTypes(ParameterizedType one, ParameterizedType... many) {
-        this.getArgumentsInParameterizedTypes().add(one);
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }   
-    
-    public void addArgumentsInParameterizedTypes(Iterable<? extends ParameterizedType> many) {
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }   
-                
-    public void addArgumentsInParameterizedTypes(ParameterizedType[] many) {
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }
-    
-    public int numberOfArgumentsInParameterizedTypes() {
-        return getArgumentsInParameterizedTypes().size();
-    }
-
-    public boolean hasArgumentsInParameterizedTypes() {
-        return !getArgumentsInParameterizedTypes().isEmpty();
     }
     
                 
