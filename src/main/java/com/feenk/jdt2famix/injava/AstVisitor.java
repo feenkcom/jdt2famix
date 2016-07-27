@@ -557,6 +557,7 @@ public class AstVisitor extends ASTVisitor {
 			Type caughtType = importer.ensureTypeFromTypeBinding(binding);
 			caughtException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) caughtType);
 			caughtException.setDefiningMethod((Method) importer.topOfContainerStack());
+			importer.repository().add(caughtException);
 		}
 		return true;
 	}
@@ -569,6 +570,7 @@ public class AstVisitor extends ASTVisitor {
 			Type thrownType = importer.ensureTypeFromTypeBinding(typeBinding);
 			thrownException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) thrownType);
 			thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
+			importer.repository().add(thrownException);
 		}
 		return true;
 	}

@@ -727,7 +727,7 @@ public class InJavaImporter extends Importer {
 		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
 		fileAnchor.setFileName(sourceFilePath.replaceFirst("^"+ignoredRootPath+"/", ""));
 		sourcedEntity.setSourceAnchor(fileAnchor);
-		repository.add(sourcedEntity);
+		repository.add(fileAnchor);
 	}
 
 	//COMMENT
