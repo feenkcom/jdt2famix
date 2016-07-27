@@ -33,4 +33,14 @@ public class ClassWithCommentsTest extends OneSampleTestCase {
 	public void testInitializerWithJavadoc() {
 		assertEquals(1, methodNamed(InJavaImporter.INITIALIZER_NAME).getComments().size());
 	}
+
+	@Test
+	public void testMethodWithOneLineComment() {
+		assertEquals(1, methodNamed("methodWithOneLineComment").getComments().size());
+	}
+
+	@Test
+	public void testMethodWithMultiLineComment() {
+		assertEquals(1, methodNamed("methodWithMultiLineComment").getComments().size());
+	}
 }

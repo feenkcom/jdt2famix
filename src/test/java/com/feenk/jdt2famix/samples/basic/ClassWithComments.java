@@ -18,4 +18,12 @@ public class ClassWithComments {
 	 * Method Javadoc
 	 */
 	public void methodWithJavadoc() {}
+	
+	//Method one line comment
+	public void methodWithOneLineComment() {}
+
+	/*
+	 * Method multi line comment
+	 */
+	public void methodWithMultiLineComment() {}
 }
