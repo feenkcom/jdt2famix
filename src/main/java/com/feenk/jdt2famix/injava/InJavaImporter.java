@@ -525,11 +525,8 @@ public class InJavaImporter extends Importer {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;
 		if (attributes.has(qualifiedName)) 
 			return attributes.named(qualifiedName);
-		Attribute attribute = new Attribute();
-		attribute.setName(name);
-		attributes.add(qualifiedName, attribute);
-		attribute.setParentType(parentType);
-		attribute.setDeclaredType(ensureTypeFromTypeBinding(binding.getType()));
+		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,
+				ensureTypeFromTypeBinding(binding.getType()));
 		createAnnotationInstancesToEntityFromAnnotationBinding(attribute, binding.getAnnotations());
 		return attribute;
 	}
@@ -542,11 +539,17 @@ public class InJavaImporter extends Importer {
 		String qualifiedName = Famix.qualifiedNameOf(parentType);
 		if (attributes.has(qualifiedName)) 
 			return attributes.named(qualifiedName);
+		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,
+				ensureTypeFromDomType(field.getType()));
+		return attribute;
+	}
+	private Attribute ensureBasicAttribute(Type parentType, String name,
+			String qualifiedName, Type declaredType) {
 		Attribute attribute = new Attribute();
-		attributes.add(qualifiedName, attribute);
 		attribute.setName(name);
 		attribute.setParentType(parentType);
-		attribute.setDeclaredType(ensureTypeFromDomType(field.getType()));
+		attribute.setDeclaredType(declaredType);
+		attributes.add(qualifiedName, attribute);
 		return attribute;
 	}
 
@@ -575,12 +578,7 @@ public class InJavaImporter extends Importer {
 		String enumValueName = node.getName().toString();
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
-		EnumValue enumValue = new EnumValue();
-		enumValue.setName(enumValueName);
-		enumValue.setParentEnum(parentEnum);
-		enumValue.setIsStub(true);
-		repository.add(enumValue);
-		return enumValue;
+		return ensureBasicEnumValue(parentEnum, enumValueName);
 	}
 
 	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
@@ -589,6 +587,10 @@ public class InJavaImporter extends Importer {
 		String enumValueName = binding.getName().toString();
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
+		return ensureBasicEnumValue(parentEnum, enumValueName);
+	}
+	
+	private EnumValue ensureBasicEnumValue(Enum parentEnum, String enumValueName) {
 		EnumValue enumValue = new EnumValue();
 		enumValue.setName(enumValueName);
 		enumValue.setParentEnum(parentEnum);
@@ -731,7 +733,9 @@ public class InJavaImporter extends Importer {
 
 	//COMMENT
 	
-	public Comment createCommentFromJavadoc(SourcedEntity type, BodyDeclaration node) {
+	public Comment ensureCommentFromJavadoc(SourcedEntity type, BodyDeclaration node) {
+		if (node.getJavadoc() == null)
+			return null;
 		Comment comment = new Comment();
 		comment.setContent(node.getJavadoc().toString());
 		type.addComments(comment);

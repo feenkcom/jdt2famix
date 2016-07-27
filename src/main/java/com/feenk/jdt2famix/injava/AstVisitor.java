@@ -124,7 +124,7 @@ public class AstVisitor extends ASTVisitor {
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, compilationUnit);
-		importer.createCommentFromJavadoc(type, node);
+		importer.ensureCommentFromJavadoc(type, node);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -210,28 +210,37 @@ public class AstVisitor extends ASTVisitor {
 	
 	/**
 	 * handles: @ TypeName
+	 * We do not use this one because we want to tie the creation of annotation instances with
+	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
+	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
+	 * (e.g., {link {@link #visit(TypeDeclaration)}   
 	 */
 	@Override
 	public boolean visit(MarkerAnnotation node) {
-		// TODO Auto-generated method stub
 		return super.visit(node);
 	}
 	
 	/**
 	 * handles: @ TypeName ( [ MemberValuePair { , MemberValuePair } ] )
+	 * We do not use this one because we want to tie the creation of annotation instances with
+	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
+	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
+	 * (e.g., {link {@link #visit(TypeDeclaration)}   
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
-		// TODO Auto-generated method stub
 		return super.visit(node);
 	}
 	
 	/**
 	 * handles: @ TypeName ( Expression )
+	 * We do not use this one because we want to tie the creation of annotation instances with
+	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
+	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
+	 * (e.g., {link {@link #visit(TypeDeclaration)}   
 	 */
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
-		// TODO Auto-generated method stub
 		return super.visit(node);
 	}
 	
@@ -329,6 +338,10 @@ public class AstVisitor extends ASTVisitor {
 	
 	////////INVOCATIONS:
 	
+	/**
+	 * handles
+	 * 		object.method(parameter)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodInvocation node) {
@@ -339,6 +352,10 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 
+	/**
+	 * handles
+	 * 		super.method(parameter)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperMethodInvocation node) {
@@ -347,6 +364,10 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
+	/**
+	 * handles
+	 * 		this(parameter)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(ConstructorInvocation node) {
@@ -355,6 +376,10 @@ public class AstVisitor extends ASTVisitor {
 		return true;
 	}
 	
+	/**
+	 * handles
+	 * 		super(parameter)
+	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
@@ -364,7 +389,8 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * new Class()
+	 * handles
+	 * 		new Class()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -543,5 +569,6 @@ public class AstVisitor extends ASTVisitor {
 //		thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
 		return true;
 	}
+	
 	
 }
