@@ -563,10 +563,13 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ThrowStatement node) {
-		ThrownException thrownException = new ThrownException();
-//		Type thrownType = importer.ensureTypeFromTypeBinding(node.getType().resolveBinding());
-//		thrownException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) thrownType);
-//		thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
+		ITypeBinding typeBinding = node.getExpression().resolveTypeBinding();
+		if (typeBinding != null) {
+			ThrownException thrownException = new ThrownException();
+			Type thrownType = importer.ensureTypeFromTypeBinding(typeBinding);
+			thrownException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) thrownType);
+			thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
+		}
 		return true;
 	}
 	

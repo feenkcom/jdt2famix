@@ -387,7 +387,6 @@ public class InJavaImporter extends Importer {
 	}
 
 		
-
 	//METHOD
 	
 	/**
@@ -735,16 +734,16 @@ public class InJavaImporter extends Importer {
 	
 	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {
 		if (node.getJavadoc() != null)
-			ensureBasicComment(entity, node.getJavadoc().toString());
+			createBasicComment(entity, node.getJavadoc().toString());
 		else {
 			//if there is no javadoc, we look for single line or multi line comments before the node
 			CompilationUnit root = (CompilationUnit) node.getRoot();
 			int firstLeadingCommentIndex = root.firstLeadingCommentIndex(node);
 			if (firstLeadingCommentIndex >= 0)  
-				ensureBasicComment(entity, root.getCommentList().get(firstLeadingCommentIndex).toString());
+				createBasicComment(entity, root.getCommentList().get(firstLeadingCommentIndex).toString());
 		}
 	}
-	private void ensureBasicComment(SourcedEntity entity, String content) {
+	private void createBasicComment(SourcedEntity entity, String content) {
 		Comment comment = new Comment();
 		comment.setContent(content);
 		entity.addComments(comment);

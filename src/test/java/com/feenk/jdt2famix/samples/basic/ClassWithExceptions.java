@@ -7,4 +7,17 @@ public class ClassWithExceptions {
 			throw e;
 		}
 	}
+
+	public void methodThrowingInstantiatedException() throws Exception {
+		throw new RuntimeException();
+	}
+
+	public void methodThrowingExceptionReturnedFromAnotherMethod() throws Exception {
+		throw exception();
+	}
+
+	private RuntimeException exception() {
+		return null;
+	}
+		
 }
