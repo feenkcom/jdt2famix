@@ -733,14 +733,13 @@ public class InJavaImporter extends Importer {
 
 	//COMMENT
 	
-	public Comment ensureCommentFromJavadoc(SourcedEntity type, BodyDeclaration node) {
-		if (node.getJavadoc() == null)
-			return null;
-		Comment comment = new Comment();
-		comment.setContent(node.getJavadoc().toString());
-		type.addComments(comment);
-		repository.add(comment);
-		return comment;
+	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {
+		if (node.getJavadoc() != null) {
+			Comment comment = new Comment();
+			comment.setContent(node.getJavadoc().toString());
+			entity.addComments(comment);
+			repository.add(comment);
+		}
 	}
 	
 	//UTILS

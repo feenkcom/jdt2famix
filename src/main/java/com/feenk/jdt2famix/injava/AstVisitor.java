@@ -122,7 +122,7 @@ public class AstVisitor extends ASTVisitor {
 			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, (CompilationUnit) node.getRoot());
-		importer.ensureCommentFromJavadoc(type, node);
+		importer.ensureCommentFromBodyDeclaration(type, node);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
@@ -153,6 +153,7 @@ public class AstVisitor extends ASTVisitor {
 		Enum famixEnum = importer.ensureEnumFromDeclaration(node);
 		famixEnum.setIsStub(false);
 		importer.createSourceAnchor(famixEnum, sourceFilePath, node, (CompilationUnit) node.getRoot());
+		importer.ensureCommentFromBodyDeclaration(famixEnum, node);
 		importer.pushOnContainerStack(famixEnum);
 		return true;
 	}
@@ -168,6 +169,7 @@ public class AstVisitor extends ASTVisitor {
 			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
 		EnumValue enumValue = importer.ensureEnumValueFromDeclaration(node);
 		importer.createSourceAnchor(enumValue, sourceFilePath, node, (CompilationUnit) node.getRoot());
+		importer.ensureCommentFromBodyDeclaration(enumValue, node);
 		return true;
 	}
 
@@ -186,6 +188,7 @@ public class AstVisitor extends ASTVisitor {
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, (CompilationUnit) node.getRoot());
 		importer.pushOnContainerStack(type);
+		importer.ensureCommentFromBodyDeclaration(type, node);
 		return true;
 	}
 	
@@ -198,6 +201,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(AnnotationTypeMemberDeclaration node) {
 		AnnotationTypeAttribute attribute = importer.ensureAnnotationTypeAttributeFromDeclaration(node);
 		attribute.setIsStub(false);
+		importer.ensureCommentFromBodyDeclaration(attribute, node);
 		return super.visit(node);
 	}
 	
@@ -220,10 +224,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	/**
 	 * handles: @ TypeName ( [ MemberValuePair { , MemberValuePair } ] )
-	 * We do not use this one because we want to tie the creation of annotation instances with
-	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
-	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
-	 * (e.g., {link {@link #visit(TypeDeclaration)}   
+	 * see comment from {@link #visit(MarkerAnnotation)}
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
@@ -232,10 +233,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	/**
 	 * handles: @ TypeName ( Expression )
-	 * We do not use this one because we want to tie the creation of annotation instances with
-	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
-	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
-	 * (e.g., {link {@link #visit(TypeDeclaration)}   
+	 * see comment from {@link #visit(MarkerAnnotation)}
 	 */
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
@@ -262,6 +260,7 @@ public class AstVisitor extends ASTVisitor {
 			forEach(p -> 
 				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
 		importer.createSourceAnchor(method, sourceFilePath, node, (CompilationUnit) node.getRoot());
+		importer.ensureCommentFromBodyDeclaration(method, node);
 		return true;
 	}
 	
@@ -274,6 +273,8 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(Initializer node) {
 		Method method = importer.ensureMethodFromInitializer();
 		importer.pushOnContainerStack(method);
+		importer.createSourceAnchor(method, sourceFilePath, node, (CompilationUnit) node.getRoot());
+		importer.ensureCommentFromBodyDeclaration(method, node);
 		return true;
 	}
 
@@ -297,6 +298,7 @@ public class AstVisitor extends ASTVisitor {
 	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
 		importer.createSourceAnchor(attribute, sourceFilePath, fragment, (CompilationUnit) field.getRoot());
+		importer.ensureCommentFromBodyDeclaration(attribute, field);
 
 		//only the last fragment of a field contains the initializer code.
 		//thus, to create the access to each variable in the fragment we need to ask that last fragment
