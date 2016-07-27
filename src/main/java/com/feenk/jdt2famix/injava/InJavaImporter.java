@@ -72,6 +72,7 @@ import com.feenk.jdt2famix.model.famix.SourcedEntity;
 import com.feenk.jdt2famix.model.famix.StructuralEntity;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
+import com.feenk.jdt2famix.model.famix.UnknownVariable;
 import com.feenk.jdt2famix.model.java.JavaModel;
 
 import ch.akuhn.fame.MetaRepository;
@@ -98,6 +99,7 @@ public class InJavaImporter extends Importer {
 	
 	private Namespace unknownNamespace;
 	private Type unknownType;
+	private UnknownVariable unknownVariable;
 	
 	private Repository repository;
 	public Repository repository() { return repository; }
@@ -672,19 +674,6 @@ public class InJavaImporter extends Importer {
 	
 	//ACCESS
 	
-	public Access createAccessFromVariableBinding(IVariableBinding binding) {
-		Access access = new Access();
-		access.setAccessor((Method) topOfContainerStack());
-		access.setIsWrite(false);
-		if (binding.isField())
-			access.setVariable(ensureAttributeForVariableBinding(binding));		
-		if (binding.isParameter())
-			access.setVariable(ensureParameterWithinCurrentMethodFromVariableBinding(binding));
-		if (binding.isEnumConstant())
-			access.setVariable(ensureEnumValueFromVariableBinding(binding));
-		repository.add(access);
-		return access;
-	}
 	
 	public Access createAccessFromExpression(Expression expression) {
 		//is this not horrible?
@@ -703,6 +692,37 @@ public class InJavaImporter extends Importer {
 		return new Access();
 	}
 	
+	private Access createAccessFromVariableBinding(IVariableBinding binding) {
+		Access access = new Access();
+		StructuralEntity variable = null;
+		boolean isField = binding.isField();
+		boolean isParameter = binding.isParameter();
+		boolean isEnumConstant = binding.isEnumConstant();
+		if (!isField && !isParameter && !isEnumConstant)
+			//we only consider fields, parameters and enum constants
+			return access;
+		if (isField) 
+			variable = ensureAttributeForVariableBinding(binding);
+		if (isParameter)
+			variable = ensureParameterWithinCurrentMethodFromVariableBinding(binding);
+		if (isEnumConstant)
+			variable = ensureEnumValueFromVariableBinding(binding);
+		if (variable == null)
+			access.setVariable(unknownVariable());
+		access.setVariable(variable);
+		access.setAccessor((Method) topOfContainerStack());
+		access.setIsWrite(false);
+		repository.add(access);
+		return access;
+	}
+	
+	public UnknownVariable unknownVariable() {
+		if (unknownVariable == null) {
+			unknownVariable = new UnknownVariable();
+			repository.add(unknownVariable);
+		}
+		return unknownVariable;
+	}
 
 	// EXCEPTION
 	

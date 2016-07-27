@@ -101,7 +101,7 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 	
 	@Test 
 	public void readAccessThroughForCondition() {
-		assertEquals(2, methodNamed("readAccessThroughForCondition").getAccesses().size());
+		assertEquals(1, methodNamed("readAccessThroughForCondition").getAccesses().size());
 	}
 
 	@Test 

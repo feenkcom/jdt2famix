@@ -2,6 +2,7 @@ package com.feenk.jdt2famix.injava;
 
 
 import java.util.Arrays;
+import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
@@ -41,6 +42,7 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
+import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
@@ -475,14 +477,21 @@ public class AstVisitor extends ASTVisitor {
 
 	/**
 	 * Handles
-	 * 		for (int i; i < n; i++)
+	 * 		for (int i = init; i < n; i++)
 	 * 
 	 * We create this access explicitly to catch a boolean variable used in condition.
 	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(ForStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
+//		for (Iterator<?> iterator = node.initializers().iterator(); iterator.hasNext();) {
+//			VariableDeclarationExpression initializerExpression = (VariableDeclarationExpression) iterator.next();
+//			for (Iterator<?> iterator2 = initializerExpression.fragments().iterator(); iterator2.hasNext();) {
+//				VariableDeclarationFragment fragment = (VariableDeclarationFragment) iterator2.next();
+//				importer.createAccessFromExpression((Expression) fragment.getInitializer());
+//			}
+//		}
 		return true;
 	}
 
