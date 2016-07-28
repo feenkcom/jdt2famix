@@ -6,6 +6,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
+import com.feenk.jdt2famix.model.famix.AnnotationInstance;
+import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
@@ -35,11 +37,18 @@ public class ClassWithAnnotationForTypeTest extends
 		assertEquals(3, type.getAnnotationInstances().size());
 	}
 
-	@Ignore
 	@Test
 	public void testAnnotationInstance() {
 		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithTwoAttributesForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
-		assertEquals(2, annotationType.getInstances().stream().findAny().get().getAttributes().size());
+		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
+		assertEquals(2, annotationInstance.getAttributes().size());
+		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
+		AnnotationInstanceAttribute annotationInstanceAttribute = annotationInstance.getAttributes()
+					.stream()
+					.filter(a -> a.getAnnotationTypeAttribute().getName().equals("stringAnnotationAttribute"))
+					.findAny()
+					.get();
+		assertNotNull(annotationInstanceAttribute.getValue());
 	}
 }

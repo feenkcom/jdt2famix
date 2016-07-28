@@ -70,7 +70,7 @@ public class ClassWithVariousAnnotationsTest extends
 	public void testMethodWithNullAnnotationValue() {
 		AnnotationInstance annotationInstance = methodNamed("methodWithNullAnnotationValue").getAnnotationInstances().stream().findAny().get();
 		assertEquals(1, annotationInstance.getAttributes().size());
-		assertNull(annotationInstance.getAttributes().stream().findAny().get().getValue());
+		assertEquals("string", annotationInstance.getAttributes().stream().findAny().get().getValue());
 	}
 
 	@Test

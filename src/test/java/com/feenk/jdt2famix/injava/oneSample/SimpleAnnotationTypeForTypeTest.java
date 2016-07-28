@@ -20,7 +20,12 @@ public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 
 	@Test
 	public void testAttributes() {
-		assertEquals(2, importer.attributes().size());
+		assertEquals(2, type.getAttributes().size());
 	}
 	
+	@Test
+	public void testBooleanAnnotationAttribute() {
+		assertEquals("boolean", attributeNamed("booleanAnnotationAttribute").getDeclaredType().getName());
+	}
+
 }

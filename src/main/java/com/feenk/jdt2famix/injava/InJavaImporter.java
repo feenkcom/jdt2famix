@@ -228,39 +228,50 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity type, IAnnotationBinding[] annotations) {
-		for (int i = 0; i < annotations.length; i++) {
-			annotationInstanceBinding = annotations[i];
+	/**
+	 * Main method for creating annotation instances
+	 */
+	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity entity, IAnnotationBinding[] annotations) {
+		for (IAnnotationBinding annotationInstanceBinding : annotations) {
 			ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
 			AnnotationInstance annotationInstance = new AnnotationInstance();
-			annotationInstance.setAnnotatedEntity(type);
+			annotationInstance.setAnnotatedEntity(entity);
 			if (annotationInstanceBinding != null) {
-				/*FIXME: This is a mess*/
-				AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding);
-				annotationInstance.setAnnotationType(annotationType);
-				IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
-				for (int j = 0; j < allMemberValuePairs.length; j++) {
-					IMemberValuePairBinding memberValueBinding = allMemberValuePairs[j];
-					AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
-					/*
-					 * TODO: figure a way to introduce the string of the value
-					 */
-//					annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
-					annotationInstance.addAttributes(annotationInstanceAttribute);
-					repository.add(annotationInstanceAttribute);
-					annotationType.getAttributes().stream()
-						.filter(a -> 
-									(a instanceof AnnotationTypeAttribute) &&
-									((AnnotationTypeAttribute) a).getName().equals(memberValueBinding.getName()))
-						.findAny()
-						.ifPresent(attribute -> 
-						annotationInstanceAttribute.setAnnotationTypeAttribute((AnnotationTypeAttribute) attribute));
-				}
+				createAnnotationInstanceFromAnnotationInstanceBinding(annotationInstanceBinding, annotationTypeBinding,
+						annotationInstance);
 			}
 			repository.add(annotationInstance);
 		}
 	}
+	private void createAnnotationInstanceFromAnnotationInstanceBinding(IAnnotationBinding annotationInstanceBinding,
+			ITypeBinding annotationTypeBinding,
+			AnnotationInstance annotationInstance) {
+		AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding);
+		annotationInstance.setAnnotationType(annotationType);
+		IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
+		for (IMemberValuePairBinding memberValueBinding : allMemberValuePairs) {
+			AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
+			/*
+			 * TODO: figure a way to introduce the string of the value
+			 */
+			annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
+			annotationInstance.addAttributes(annotationInstanceAttribute);
+			repository.add(annotationInstanceAttribute);
 
+			annotationInstanceAttribute.setAnnotationTypeAttribute(ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
+		}
+	}
+	private AnnotationTypeAttribute ensureAnnotationTypeAttribute(Type parentType, String name) {
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;
+		if (attributes().has(qualifiedName))
+			return (AnnotationTypeAttribute) attributes().named(qualifiedName);
+		AnnotationTypeAttribute attribute = new AnnotationTypeAttribute();
+		attribute.setName(name);
+		attribute.setParentType(parentType);
+		attributes.add(qualifiedName, attribute);
+		return attribute;
+	}
+	
 	Type createTypeFromTypeBinding(ITypeBinding binding) {
 		if (binding.isPrimitive())
 			return new PrimitiveType();
@@ -625,20 +636,16 @@ public class InJavaImporter extends Importer {
 	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(
 			IMethodBinding binding) {
 		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
-		AnnotationTypeAttribute attribute = new AnnotationTypeAttribute();
-		attribute.setName(binding.getName());
+		if (parentTypeBinding == null) { return null; }
+		AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(parentTypeBinding);		
+		AnnotationTypeAttribute attribute = ensureAnnotationTypeAttribute(annotationType, binding.getName());
 		ITypeBinding returnType = binding.getReturnType();
-		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
+		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void"))) {
 			//we do not want to set void as a return type
 			attribute.setDeclaredType(ensureTypeFromTypeBinding(returnType));
-		if (parentTypeBinding != null) {
-			attribute.setParentType(ensureTypeFromTypeBinding(parentTypeBinding));
-			attributes().add(Famix.qualifiedNameOf(attribute), attribute);
 		}
-		repository.add(attribute);
 		return attribute;
 	}
-	
 	
 	
 	//INVOCATION
