@@ -1,8 +1,6 @@
 package com.feenk.jdt2famix.injava;
 
-
 import java.util.Arrays;
-import java.util.Iterator;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
@@ -42,7 +40,6 @@ import org.eclipse.jdt.core.dom.SwitchStatement;
 import org.eclipse.jdt.core.dom.SynchronizedStatement;
 import org.eclipse.jdt.core.dom.ThrowStatement;
 import org.eclipse.jdt.core.dom.TypeDeclaration;
-import org.eclipse.jdt.core.dom.VariableDeclarationExpression;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
@@ -51,7 +48,6 @@ import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.CaughtException;
-import com.feenk.jdt2famix.model.famix.Comment;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.Invocation;
@@ -402,8 +398,11 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
 		else {
 			String name = node.getType().toString();
-			Method method = importer.ensureBasicMethod(name, name, importer.ensureTypeNamedInUnknownNamespace(name));
-			importer.createInvocationToMethod(method, node.toString().trim());
+			importer.createBasicMethod(
+					name, 
+					name, 
+					importer.ensureTypeNamedInUnknownNamespace(name), 
+					m -> importer.createInvocationToMethod(m, node.toString().trim()));
 		}
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;

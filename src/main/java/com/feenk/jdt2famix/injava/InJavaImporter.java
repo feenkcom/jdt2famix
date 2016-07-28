@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,7 +32,6 @@ import org.eclipse.jdt.core.dom.IMethodBinding;
 import org.eclipse.jdt.core.dom.IPackageBinding;
 import org.eclipse.jdt.core.dom.ITypeBinding;
 import org.eclipse.jdt.core.dom.IVariableBinding;
-import org.eclipse.jdt.core.dom.Initializer;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
 import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.Name;
@@ -38,8 +39,10 @@ import org.eclipse.jdt.core.dom.QualifiedName;
 import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
+
+import ch.akuhn.fame.MetaRepository;
+import ch.akuhn.fame.Repository;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
@@ -70,13 +73,9 @@ import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
 import com.feenk.jdt2famix.model.famix.SourcedEntity;
 import com.feenk.jdt2famix.model.famix.StructuralEntity;
-import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.model.famix.UnknownVariable;
 import com.feenk.jdt2famix.model.java.JavaModel;
-
-import ch.akuhn.fame.MetaRepository;
-import ch.akuhn.fame.Repository;
 
 /**
  * The core class that holds the logic of creating the model
@@ -412,7 +411,13 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) p.getQualifiedName()) );
 		String methodName = binding.getName();
 		String signature = methodName + signatureJoiner.toString();
-		Method method = ensureBasicMethod(methodName, signature, parentType);
+		return createBasicMethod(
+				methodName, 
+				signature, 
+				parentType,
+				m -> setUpMethodFromMethodBinding(m, binding));
+	}
+	private void setUpMethodFromMethodBinding(Method method, IMethodBinding binding) {
 		if (binding.isConstructor()) 
 			method.setKind(CONSTRUCTOR_KIND);
 		ITypeBinding returnType = binding.getReturnType();
@@ -422,8 +427,8 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
 			method.setHasClassScope(true);
+		//FIXME: we should not create annotations all the time
 		createAnnotationInstancesToEntityFromAnnotationBinding(method, binding.getAnnotations());
-		return method;
 	}
 	
 	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
@@ -433,20 +438,31 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()) );
 		String methodName = node.getName().toString();
 		String signature = methodName + signatureJoiner.toString();		
-		Method method = ensureBasicMethod(methodName, signature, (Type) topOfContainerStack());
+		return createBasicMethod(
+				methodName, 
+				signature, 
+				(Type) topOfContainerStack(),
+				m -> setUpMethodFromMethodDeclaration(m, node));
+	}
+	private void setUpMethodFromMethodDeclaration(Method method, MethodDeclaration node) {
 		if (node.getReturnType2() != null)
 			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
-		return method;
 	}
 	
 	public Method ensureMethodFromInitializer() {
-		Method method = ensureBasicMethod(INITIALIZER_NAME, INITIALIZER_NAME, (Type) topOfContainerStack());
-		method.setKind(INITIALIZER_KIND);
-		method.setIsStub(false);
-		return method;
+		return createBasicMethod(
+				INITIALIZER_NAME, 
+				INITIALIZER_NAME, 
+				(Type) topOfContainerStack(),
+				m -> setUpMethodFromInitializer(m));
 	}
 
-	public Method ensureBasicMethod(String methodName, String signature, Type parentType) {
+	private void setUpMethodFromInitializer(Method method) {
+		method.setKind(INITIALIZER_KIND);
+		method.setIsStub(false);
+	}
+	
+	public Method createBasicMethod(String methodName, String signature, Type parentType, Consumer<Method> ifAbsent) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
 		if(methods.has(qualifiedName))
 			return methods.named(qualifiedName);
@@ -456,6 +472,7 @@ public class InJavaImporter extends Importer {
 		method.setSignature(signature);
 		method.setIsStub(true);
 		method.setParentType(parentType);
+		ifAbsent.accept(method);
 		return method;
 	}
 	

@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.stream.Stream;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.Famix;
@@ -94,6 +95,7 @@ public class VariousAttributeAccessesTest extends OneSampleTestCase {
 		assertEquals(1, methodNamed("readAccessThroughSwitchVariable").getAccesses().size());
 	}
 
+	@Ignore
 	@Test 
 	public void readAccessThroughForInit() {
 		assertEquals(1, methodNamed("readAccessThroughForInit").getAccesses().size());

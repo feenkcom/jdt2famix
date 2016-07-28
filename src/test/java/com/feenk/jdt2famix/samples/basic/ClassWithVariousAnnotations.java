@@ -20,5 +20,9 @@ public class ClassWithVariousAnnotations {
 			@AnnotationTypeWithoutAttributesForAll
 			String parameter) {}
 
+	@AnnotationTypeWithoutAttributesForAll
+	public void methodInvokingMethodWithAnnotation() {
+		method();
+	}
 
 }
