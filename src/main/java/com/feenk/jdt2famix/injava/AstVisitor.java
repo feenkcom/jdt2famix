@@ -398,7 +398,7 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
 		else {
 			String name = node.getType().toString();
-			importer.createBasicMethod(
+			importer.ensureBasicMethod(
 					name, 
 					name, 
 					importer.ensureTypeNamedInUnknownNamespace(name), 

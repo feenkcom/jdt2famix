@@ -3,21 +3,21 @@ package com.feenk.jdt2famix.inpharo;
 //import jniport.SmalltalkRequest;
 
 import org.eclipse.jdt.core.dom.ASTVisitor;
-import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
-import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
-import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
-import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.ClassInstanceCreation;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.ConstructorInvocation;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
-import org.eclipse.jdt.core.dom.FieldAccess;
-import org.eclipse.jdt.core.dom.FieldDeclaration;
-import org.eclipse.jdt.core.dom.MethodDeclaration;
-import org.eclipse.jdt.core.dom.MethodInvocation;
-import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
-import org.eclipse.jdt.core.dom.SuperMethodInvocation;
-import org.eclipse.jdt.core.dom.TypeDeclaration;
+//import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
+//import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
+//import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
+//import org.eclipse.jdt.core.dom.Assignment;
+//import org.eclipse.jdt.core.dom.ClassInstanceCreation;
+//import org.eclipse.jdt.core.dom.CompilationUnit;
+//import org.eclipse.jdt.core.dom.ConstructorInvocation;
+//import org.eclipse.jdt.core.dom.EnumDeclaration;
+//import org.eclipse.jdt.core.dom.FieldAccess;
+//import org.eclipse.jdt.core.dom.FieldDeclaration;
+//import org.eclipse.jdt.core.dom.MethodDeclaration;
+//import org.eclipse.jdt.core.dom.MethodInvocation;
+//import org.eclipse.jdt.core.dom.SuperConstructorInvocation;
+//import org.eclipse.jdt.core.dom.SuperMethodInvocation;
+//import org.eclipse.jdt.core.dom.TypeDeclaration;
 
 public class AstVisitor extends ASTVisitor {
 
@@ -124,25 +124,21 @@ public class AstVisitor extends ASTVisitor {
 //	
 //	@Override
 //	public boolean visit(AnnotationTypeDeclaration node) {
-//		// TODO Auto-generated method stub
 //		return super.visit(node);
 //	}
 //	
 //	@Override
 //	public void endVisit(AnnotationTypeDeclaration node) {
-//		// TODO Auto-generated method stub
 //		super.endVisit(node);
 //	}
 //	
 //	@Override
 //	public boolean visit(AnnotationTypeMemberDeclaration node) {
-//		// TODO Auto-generated method stub
 //		return super.visit(node);
 //	}
 //	
 //	@Override
 //	public void endVisit(AnnotationTypeMemberDeclaration node) {
-//		// TODO Auto-generated method stub
 //		super.endVisit(node);
 //	}
 //	

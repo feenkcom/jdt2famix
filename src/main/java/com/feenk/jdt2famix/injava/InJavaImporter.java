@@ -411,7 +411,7 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) p.getQualifiedName()) );
 		String methodName = binding.getName();
 		String signature = methodName + signatureJoiner.toString();
-		return createBasicMethod(
+		return ensureBasicMethod(
 				methodName, 
 				signature, 
 				parentType,
@@ -427,7 +427,6 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
 			method.setHasClassScope(true);
-		//FIXME: we should not create annotations all the time
 		createAnnotationInstancesToEntityFromAnnotationBinding(method, binding.getAnnotations());
 	}
 	
@@ -438,7 +437,7 @@ public class InJavaImporter extends Importer {
 			.forEach( p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()) );
 		String methodName = node.getName().toString();
 		String signature = methodName + signatureJoiner.toString();		
-		return createBasicMethod(
+		return ensureBasicMethod(
 				methodName, 
 				signature, 
 				(Type) topOfContainerStack(),
@@ -450,7 +449,7 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Method ensureMethodFromInitializer() {
-		return createBasicMethod(
+		return ensureBasicMethod(
 				INITIALIZER_NAME, 
 				INITIALIZER_NAME, 
 				(Type) topOfContainerStack(),
@@ -462,7 +461,7 @@ public class InJavaImporter extends Importer {
 		method.setIsStub(false);
 	}
 	
-	public Method createBasicMethod(String methodName, String signature, Type parentType, Consumer<Method> ifAbsent) {
+	public Method ensureBasicMethod(String methodName, String signature, Type parentType, Consumer<Method> ifAbsent) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
 		if(methods.has(qualifiedName))
 			return methods.named(qualifiedName);
@@ -594,21 +593,18 @@ public class InJavaImporter extends Importer {
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
 		Enum parentEnum = topFromContainerStack(Enum.class);
 		String enumValueName = node.getName().toString();
-		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
-			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		return ensureBasicEnumValue(parentEnum, enumValueName);
 	}
 
 	public EnumValue ensureEnumValueFromVariableBinding(IVariableBinding binding) {
-		//TODO: find a way to remove code duplication induced by strong types
 		Enum parentEnum = (Enum) ensureTypeFromTypeBinding(binding.getType());
 		String enumValueName = binding.getName().toString();
-		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
-			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		return ensureBasicEnumValue(parentEnum, enumValueName);
 	}
 	
 	private EnumValue ensureBasicEnumValue(Enum parentEnum, String enumValueName) {
+		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		EnumValue enumValue = new EnumValue();
 		enumValue.setName(enumValueName);
 		enumValue.setParentEnum(parentEnum);
