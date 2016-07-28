@@ -17,11 +17,21 @@ After having created the release, go to `mysystem`, and execute `/path/to/jdt2fa
 
 You can now import the `mysystem.mse` file into [Moose](http://moosetechnology.org). 
 
-##A note about Maven project
+##The importance of including external dependencies
+
+It is important to have all external dependencies in a subfolder of `mysystem`. This ensures that the importer can correctly identify dependencies to outside entities. Consider the following example of a class definition 
+
+	@ExternalAnnotation
+	public class MyClass extends ExternalClass { ... }
+
+In order to describe completely `MyClass`, we need to extract information about all its immediate dependencies. For example, in our case we need to have information about `ExternalClass` and `@ExternalAnnotation`. That is why, we need to have the external libraries available in the Classpath of the importer. As the importer automatically retrieves all jars/ears/wars from the root folder of `mysystem`, it is enough to place these dependencies somewhere under that folder.  
+
+
+##A note about Maven projects
 
 If you happen to have a Java project that defines dependencies through Maven, you can use the following command to copy all dependencies:
 
-	``mvn dependency:copy-dependencies -DoutputDirectory=dependencies -DoverWriteSnapshots=true -DoverWriteReleases=false``
+	mvn dependency:copy-dependencies -DoutputDirectory=dependencies -DoverWriteSnapshots=true -DoverWriteReleases=false
 
 #License
 * The main code of the jdt2famix is released under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
