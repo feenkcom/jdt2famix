@@ -9,6 +9,7 @@ import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
+import com.feenk.jdt2famix.model.famix.NamedEntity;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
@@ -44,11 +45,32 @@ public class ClassWithAnnotationForTypeTest extends
 		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
 		assertEquals(2, annotationInstance.getAttributes().size());
 		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
-		AnnotationInstanceAttribute annotationInstanceAttribute = annotationInstance.getAttributes()
-					.stream()
-					.filter(a -> a.getAnnotationTypeAttribute().getName().equals("stringAnnotationAttribute"))
-					.findAny()
-					.get();
-		assertNotNull(annotationInstanceAttribute.getValue());
 	}
+	
+	@Test
+	public void testStringAnnotationAttribute() {
+		AnnotationInstanceAttribute stringAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithTwoAttributesForType.class, "stringAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		assertEquals("string", stringAnnotationAttribute.getValue());
+	}
+
+	@Test
+	public void testBooleanAnnotationAttribute() {
+		AnnotationInstanceAttribute booleanAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithTwoAttributesForType.class, "booleanAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		assertEquals("true", booleanAnnotationAttribute.getValue());
+	}
+
+	private AnnotationInstanceAttribute annotationInstanceAttribute(Class<?> annotationClass, String attributeNamed, NamedEntity annotatedEntity) {
+		AnnotationType annotationType = (AnnotationType) importer.types().named(annotationClass.getName());
+		AnnotationInstance annotationInstance = annotationType.getInstances()
+				.stream()
+				.filter(inst -> inst.getAnnotatedEntity().equals(annotatedEntity))
+				.findAny()
+				.get();
+		return annotationInstance.getAttributes()
+				.stream()
+				.filter(a -> a.getAnnotationTypeAttribute().getName().equals(attributeNamed))
+				.findAny()
+				.get();
+	}
+
 }
