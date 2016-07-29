@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.model.famix.FileAnchor;
+import com.feenk.jdt2famix.model.famix.Namespace;
 import com.feenk.jdt2famix.samples.basic.EmptyClass;
 
 public class EmptyClassTest extends OneSampleTestCase {
@@ -21,6 +22,13 @@ public class EmptyClassTest extends OneSampleTestCase {
 		assertEquals(3, ((FileAnchor) type.getSourceAnchor()).getStartLine());
 		assertEquals(4, ((FileAnchor) type.getSourceAnchor()).getEndLine());
 		assertFalse(((FileAnchor) type.getSourceAnchor()).getFileName().isEmpty());
+	}
+	
+	@Test
+	public void testNamespaceNesting() {
+		assertNotNull(type.getContainer());
+		assertEquals(Namespace.class, type.getContainer().getClass());
+		assertEquals(Namespace.class, ((Namespace) type.getContainer()).getParentScope().getClass());
 	}
 	
 }

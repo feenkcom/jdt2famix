@@ -6,6 +6,7 @@ import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.ContainerEntity;
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.model.famix.ScopingEntity;
 import com.feenk.jdt2famix.model.famix.Type;
 
 /*
@@ -51,10 +52,12 @@ public class Famix {
 			return qualifiedNameOf((Method) type.getContainer()) + "." + type.getName();		
 		if (type.getContainer() instanceof Type)
 			return qualifiedNameOf((Type) type.getContainer()) + "." + type.getName();
-		return qualifiedNameOf(type.getContainer()) + "." + type.getName();
-		
+		return qualifiedNameOf((ScopingEntity) type.getContainer()) + "." + type.getName();
 	}
-	public static String qualifiedNameOf(ContainerEntity container) {
+	
+	public static String qualifiedNameOf(ScopingEntity container) {
+		if (container.getParentScope() != null)
+			return qualifiedNameOf(container.getParentScope()) + "." + container.getName();
 		return container.getName();
 	}
 }

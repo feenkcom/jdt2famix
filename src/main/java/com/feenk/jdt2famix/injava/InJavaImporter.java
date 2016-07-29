@@ -167,10 +167,17 @@ public class InJavaImporter extends Importer {
 			return namespaces.add(packageName, createNamespaceNamed(packageName));
 	}
 
-	private Namespace createNamespaceNamed(String k) {
+	private Namespace createNamespaceNamed(String qualifiedName) {
+		int lastIndexOfDot = qualifiedName.lastIndexOf(".");
 		Namespace namespace = new Namespace();
-		namespace.setName(k);
 		namespace.setIsStub(true);
+		if (lastIndexOfDot <= 0)
+			namespace.setName(qualifiedName);
+		else {
+			namespace.setName(qualifiedName.substring(lastIndexOfDot+1));
+			Namespace parentNamespace = ensureNamespaceNamed(qualifiedName.substring(0, lastIndexOfDot));
+			namespace.setParentScope(parentNamespace);
+		}
 		return namespace;
 	}
 	
