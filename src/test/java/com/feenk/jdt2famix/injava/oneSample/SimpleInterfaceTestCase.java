@@ -17,8 +17,8 @@ public class SimpleInterfaceTestCase extends OneSampleTestCase {
 
 	@Test
 	public void testNamespaces() {
-		assertEquals(1, importer.namespaces().size());
 		assertTrue(importer.namespaces().has(SimpleInterface.class.getPackage().getName()));
+		assertNotNull(importer.namespaces().named(SimpleInterface.class.getPackage().getName()).getParentScope());
 	}
 	@Test
 	public void testTypes() {
