@@ -4,6 +4,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
@@ -271,8 +272,15 @@ public class InJavaImporter extends Importer {
 			 * we get a null as value.   
 			 */
 			return "null";
-		if (value instanceof ITypeBinding) {
+		if (value instanceof ITypeBinding)
 			return ((ITypeBinding)value).getName() + ".class";
+		if (value instanceof Object[]) {
+			Object[] array = (Object[]) value;
+			StringJoiner signatureJoiner = new StringJoiner(", ", "{", "}");
+			Arrays
+			.stream(array)
+			.forEach( object -> signatureJoiner.add(annotationInstanceAttributeValueString(object)) );
+			return signatureJoiner.toString();
 		}
 		return value.toString();
 	}

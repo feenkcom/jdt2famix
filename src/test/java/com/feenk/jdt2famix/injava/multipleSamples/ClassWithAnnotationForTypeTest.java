@@ -43,7 +43,7 @@ public class ClassWithAnnotationForTypeTest extends
 		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithMultipleAttributesForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
 		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
-		assertEquals(3, annotationInstance.getAttributes().size());
+		assertEquals(4, annotationInstance.getAttributes().size());
 		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
 	}
 	
@@ -63,6 +63,12 @@ public class ClassWithAnnotationForTypeTest extends
 	public void testClassAnnotationAttribute() {
 		AnnotationInstanceAttribute classAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithMultipleAttributesForType.class, "classAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
 		assertEquals("Object.class", classAnnotationAttribute.getValue());
+	}
+
+	@Test
+	public void testClassCollectionAnnotationAttribute() {
+		AnnotationInstanceAttribute classCollectionAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithMultipleAttributesForType.class, "classCollectionAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		assertEquals("{Object.class, String.class}", classCollectionAnnotationAttribute.getValue());
 	}
 
 	private AnnotationInstanceAttribute annotationInstanceAttribute(Class<?> annotationClass, String attributeNamed, NamedEntity annotatedEntity) {

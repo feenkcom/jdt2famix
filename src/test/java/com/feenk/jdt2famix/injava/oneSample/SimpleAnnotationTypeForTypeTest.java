@@ -20,7 +20,7 @@ public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 
 	@Test
 	public void testAttributes() {
-		assertEquals(3, type.getAttributes().size());
+		assertEquals(4, type.getAttributes().size());
 	}
 	
 	@Test
