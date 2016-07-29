@@ -21,7 +21,7 @@ public class ClassImplementingObserverTest extends OneSampleTestCase {
 
 	@Test
 	public void testModelSize() {
-		assertEquals(3, importer.namespaces().size());
+		assertEquals(8, importer.namespaces().size());
 		assertEquals(4, importer.types().size());
 	}
 	
