@@ -13,8 +13,8 @@ public class ClassWithVariousAnnotations {
 	public void method() {}
 	
 	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForAll.DEFAULT)
-	public void methodWithNullAnnotationValue() {}
-	
+	public void methodWithConstantAnnotationValue() {}
+
 	@AnnotationTypeWithoutAttributesForAll
 	public void methodWithAnnotationForParameter(
 			@AnnotationTypeWithoutAttributesForAll

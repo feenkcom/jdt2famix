@@ -122,7 +122,6 @@ public class InJavaImporter extends Importer {
 	 * It is particularly useful when we deal with inner or anonymous classes
 	 */ 
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
-	private IAnnotationBinding annotationInstanceBinding;
 	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
 	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
 	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
@@ -252,14 +251,23 @@ public class InJavaImporter extends Importer {
 		for (IMemberValuePairBinding memberValueBinding : allMemberValuePairs) {
 			AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
 			/*
-			 * TODO: figure a way to introduce the string of the value
+			 * TODO: figure a way to introduce a better string of a value for non-primitive objects
 			 */
-			annotationInstanceAttribute.setValue(memberValueBinding.getValue().toString());
+			annotationInstanceAttribute.setValue(stringFrom(memberValueBinding.getValue()));
 			annotationInstance.addAttributes(annotationInstanceAttribute);
 			repository.add(annotationInstanceAttribute);
 
 			annotationInstanceAttribute.setAnnotationTypeAttribute(ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
 		}
+	}
+	private String stringFrom(Object annotationInstanceAttributeValue) {
+		if (annotationInstanceAttributeValue == null)
+			/*
+			 * Theoretically, this should not happen because the Java compiler prevents you from setting null to an enum constant.
+			 * However, during the importing of real projects, this happens sometimes (and I do not know how to reproduce it)  
+			 */
+			return "null";
+		return annotationInstanceAttributeValue.toString();
 	}
 	private AnnotationTypeAttribute ensureAnnotationTypeAttribute(Type parentType, String name) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;

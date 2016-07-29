@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 public @interface AnnotationTypeWithOneAttributeForAll {
 	public static final String DEFAULT = "string";
 	
-	String stringAnnotationAttribute();
+	public abstract String stringAnnotationAttribute();
 }
