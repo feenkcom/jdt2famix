@@ -17,7 +17,7 @@ public abstract class Importer {
 	 * (2) {@link Classpath} with dependencies
 	 */
 	public void run(JavaFiles javaFiles, Classpath classpath) {
-		ignoredRootPath = javaFiles.ignoredRootPath();
+		ignoredRootPath = javaFiles.ignoredRootPath().replaceAll("\\\\", "/");
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
 		parser.setResolveBindings(true);
 		parser.setKind(ASTParser.K_COMPILATION_UNIT);
