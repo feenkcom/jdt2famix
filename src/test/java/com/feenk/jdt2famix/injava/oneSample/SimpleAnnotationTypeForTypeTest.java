@@ -4,13 +4,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithMultipleAttributesForType;
 
 public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {
-		return AnnotationTypeWithTwoAttributesForType.class;
+		return AnnotationTypeWithMultipleAttributesForType.class;
 	}
 
 	@Test
@@ -20,7 +20,7 @@ public class SimpleAnnotationTypeForTypeTest extends OneSampleTestCase {
 
 	@Test
 	public void testAttributes() {
-		assertEquals(2, type.getAttributes().size());
+		assertEquals(3, type.getAttributes().size());
 	}
 	
 	@Test

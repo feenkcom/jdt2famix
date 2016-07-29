@@ -253,21 +253,26 @@ public class InJavaImporter extends Importer {
 			/*
 			 * TODO: figure a way to introduce a better string of a value for non-primitive objects
 			 */
-			annotationInstanceAttribute.setValue(stringFrom(memberValueBinding.getValue()));
+			annotationInstanceAttribute.setValue(annotationInstanceAttributeValueString(memberValueBinding.getValue()));
 			annotationInstance.addAttributes(annotationInstanceAttribute);
 			repository.add(annotationInstanceAttribute);
 
 			annotationInstanceAttribute.setAnnotationTypeAttribute(ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
 		}
 	}
-	private String stringFrom(Object annotationInstanceAttributeValue) {
-		if (annotationInstanceAttributeValue == null)
+	private String annotationInstanceAttributeValueString(Object value) {
+		if (value == null)
 			/*
 			 * Theoretically, this should not happen because the Java compiler prevents you from setting null to an enum constant.
-			 * However, during the importing of real projects, this happens sometimes (and I do not know how to reproduce it)  
+			 * However, we can still get a null during import.
+			 * For example, when referencing something like attribute=MyClass.class, without MyClass being available,
+			 * we get a null as value.   
 			 */
 			return "null";
-		return annotationInstanceAttributeValue.toString();
+		if (value instanceof ITypeBinding) {
+			return ((ITypeBinding)value).getName() + ".class";
+		}
+		return value.toString();
 	}
 	private AnnotationTypeAttribute ensureAnnotationTypeAttribute(Type parentType, String name) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;

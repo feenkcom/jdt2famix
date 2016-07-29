@@ -7,7 +7,8 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target( { ElementType.TYPE})
-public @interface AnnotationTypeWithTwoAttributesForType {
+public @interface AnnotationTypeWithMultipleAttributesForType {
 	boolean booleanAnnotationAttribute() default true;
 	String stringAnnotationAttribute() default "";
+	Class <?> classAnnotationAttribute() default Object.class;
 }

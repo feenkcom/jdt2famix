@@ -11,7 +11,7 @@ import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.NamedEntity;
 import com.feenk.jdt2famix.model.famix.Type;
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithMultipleAttributesForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
 import com.feenk.jdt2famix.samples.basic.ClassWithAnnotationsForType;
@@ -22,7 +22,7 @@ public class ClassWithAnnotationForTypeTest extends
 	@Override
 	protected void sampleClassesIn(JavaFiles javaFiles) {
 		javaFiles.oneJavaFile(this.fileNameFor(ClassWithAnnotationsForType.class));
-		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithTwoAttributesForType.class));
+		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithMultipleAttributesForType.class));
 		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForType.class));
 		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithValueAttributeForType.class));
 	}
@@ -40,23 +40,29 @@ public class ClassWithAnnotationForTypeTest extends
 
 	@Test
 	public void testAnnotationInstance() {
-		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithTwoAttributesForType.class.getName());
+		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithMultipleAttributesForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
 		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
-		assertEquals(2, annotationInstance.getAttributes().size());
+		assertEquals(3, annotationInstance.getAttributes().size());
 		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
 	}
 	
 	@Test
 	public void testStringAnnotationAttribute() {
-		AnnotationInstanceAttribute stringAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithTwoAttributesForType.class, "stringAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		AnnotationInstanceAttribute stringAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithMultipleAttributesForType.class, "stringAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
 		assertEquals("string", stringAnnotationAttribute.getValue());
 	}
 
 	@Test
 	public void testBooleanAnnotationAttribute() {
-		AnnotationInstanceAttribute booleanAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithTwoAttributesForType.class, "booleanAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		AnnotationInstanceAttribute booleanAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithMultipleAttributesForType.class, "booleanAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
 		assertEquals("true", booleanAnnotationAttribute.getValue());
+	}
+
+	@Test
+	public void testClassAnnotationAttribute() {
+		AnnotationInstanceAttribute classAnnotationAttribute = annotationInstanceAttribute(AnnotationTypeWithMultipleAttributesForType.class, "classAnnotationAttribute", importer.types().named(ClassWithAnnotationsForType.class.getName()));
+		assertEquals("Object.class", classAnnotationAttribute.getValue());
 	}
 
 	private AnnotationInstanceAttribute annotationInstanceAttribute(Class<?> annotationClass, String attributeNamed, NamedEntity annotatedEntity) {

@@ -11,7 +11,7 @@ import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithTwoAttributesForType;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithMultipleAttributesForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
@@ -67,8 +67,8 @@ public class ClassWithVariousAnnotationsTest extends
 	}
 	
 	@Test
-	public void testMethodWithNullAnnotationValue() {
-		AnnotationInstance annotationInstance = methodNamed("methodWithNullAnnotationValue").getAnnotationInstances().stream().findAny().get();
+	public void testMethodWithConstantAnnotationValue() {
+		AnnotationInstance annotationInstance = methodNamed("methodWithConstantAnnotationValue").getAnnotationInstances().stream().findAny().get();
 		assertEquals(1, annotationInstance.getAttributes().size());
 		assertEquals("string", annotationInstance.getAttributes().stream().findAny().get().getValue());
 	}
