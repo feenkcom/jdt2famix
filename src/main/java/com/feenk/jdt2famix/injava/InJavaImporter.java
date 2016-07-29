@@ -62,6 +62,7 @@ import com.feenk.jdt2famix.model.famix.FAMIXModel;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
+import com.feenk.jdt2famix.model.famix.JavaSourceLanguage;
 import com.feenk.jdt2famix.model.famix.LocalVariable;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.NamedEntity;
@@ -139,6 +140,7 @@ public class InJavaImporter extends Importer {
 		FAMIXModel.importInto(metaRepository);
 		JavaModel.importInto(metaRepository);
 		repository = new Repository(metaRepository);
+		repository.add(new JavaSourceLanguage());
 		
 		namespaces = new NamedEntityAccumulator<Namespace>(repository);
 		types = new NamedEntityAccumulator<Type>(repository);
