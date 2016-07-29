@@ -1,11 +1,13 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import com.feenk.jdt2famix.model.famix.Invocation;
-import com.feenk.jdt2famix.model.famix.LocalVariable;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.samples.basic.VariousInvocations;

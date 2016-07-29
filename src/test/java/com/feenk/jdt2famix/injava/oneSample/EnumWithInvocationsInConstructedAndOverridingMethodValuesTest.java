@@ -1,8 +1,7 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
-
-import java.util.stream.Stream;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 

@@ -1,12 +1,12 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 
 import org.junit.Test;
 
-import com.feenk.jdt2famix.samples.basic.EmptyClass;
 import com.feenk.jdt2famix.samples.basic.UnresolvedInvocations;
 
 public class UnresolvedInvocationsTest extends OneSampleTestCase {

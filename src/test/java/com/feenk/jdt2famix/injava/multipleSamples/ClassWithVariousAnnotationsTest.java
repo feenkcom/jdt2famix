@@ -1,6 +1,7 @@
 package com.feenk.jdt2famix.injava.multipleSamples;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,11 +12,8 @@ import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithMultipleAttributesForType;
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
-import com.feenk.jdt2famix.samples.basic.ClassWithAnnotationsForType;
 import com.feenk.jdt2famix.samples.basic.ClassWithVariousAnnotations;
 
 public class ClassWithVariousAnnotationsTest extends
