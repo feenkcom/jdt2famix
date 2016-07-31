@@ -385,15 +385,6 @@ public class InJavaImporter extends Importer {
 	}
 
 	
-	//ENUM
-	
-	public Enum ensureEnumFromDeclaration(EnumDeclaration node) {
-		ITypeBinding binding = node.resolveBinding();
-		Enum famixEnum = (Enum) ensureTypeFromTypeBinding(binding);
-		return famixEnum;
-	}
-
-	
 	//INHERITANCE
 	
 	/**

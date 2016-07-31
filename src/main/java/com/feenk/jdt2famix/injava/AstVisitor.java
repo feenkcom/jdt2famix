@@ -45,6 +45,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import com.feenk.jdt2famix.model.famix.Access;
+import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.CaughtException;
@@ -148,7 +149,10 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(EnumDeclaration node) {
-		Enum famixEnum = importer.ensureEnumFromDeclaration(node);
+		ITypeBinding binding = node.resolveBinding();
+		if (binding == null)
+			return false;
+		Enum famixEnum = (Enum) importer.ensureTypeFromTypeBinding(binding);
 		famixEnum.setIsStub(false);
 		importer.createSourceAnchor(famixEnum, sourceFilePath, node, (CompilationUnit) node.getRoot());
 		importer.ensureCommentFromBodyDeclaration(famixEnum, node);
@@ -158,7 +162,8 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(EnumDeclaration node) {
-		importer.popFromContainerStack();
+		if (importer.topOfContainerStack() instanceof Enum)
+			importer.popFromContainerStack();
 	}
 
 	@Override
@@ -182,6 +187,8 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
+		if (binding == null)
+			return false;
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, (CompilationUnit) node.getRoot());
@@ -192,7 +199,8 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(AnnotationTypeDeclaration node) {
-		importer.popFromContainerStack();
+		if (importer.topOfContainerStack() instanceof AnnotationType)
+			importer.popFromContainerStack();
 	}
 	
 	@Override
