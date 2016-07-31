@@ -91,8 +91,6 @@ import com.feenk.jdt2famix.model.java.JavaModel;
  * @author girba
  */
 public class InJavaImporter extends Importer {
-
-    private static final Logger logger = LogManager.getLogger(Importer.class);
 	
 	private static final char NAME_SEPARATOR = '.';
 	public static final String INITIALIZER_NAME = "<init>";
@@ -178,6 +176,9 @@ public class InJavaImporter extends Importer {
 		if (lastIndexOfDot <= 0)
 			namespace.setName(qualifiedName);
 		else {
+			/* Java packages are not nested, even though they look like they are.
+			 * But, in Famix, namespaces are nested. So we create nesting based on the . separator
+			 */
 			namespace.setName(qualifiedName.substring(lastIndexOfDot+1));
 			Namespace parentNamespace = ensureNamespaceNamed(qualifiedName.substring(0, lastIndexOfDot));
 			namespace.setParentScope(parentNamespace);
@@ -262,9 +263,6 @@ public class InJavaImporter extends Importer {
 		IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
 		for (IMemberValuePairBinding memberValueBinding : allMemberValuePairs) {
 			AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
-			/*
-			 * TODO: figure a way to introduce a better string of a value for non-primitive objects
-			 */
 			annotationInstanceAttribute.setValue(annotationInstanceAttributeValueString(memberValueBinding.getValue()));
 			annotationInstance.addAttributes(annotationInstanceAttribute);
 			repository.add(annotationInstanceAttribute);
@@ -603,6 +601,7 @@ public class InJavaImporter extends Importer {
 		attributes.add(qualifiedName, attribute);
 		return attribute;
 	}
+	
 
 	//LOCAL VARIABLE
 	
@@ -647,6 +646,7 @@ public class InJavaImporter extends Importer {
 		return enumValue;
 	}
 
+	
 	//ANNOTATION TYPE ATTRIBUTE
 	
 	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(
@@ -715,8 +715,8 @@ public class InJavaImporter extends Importer {
 		return null;
 	}
 	
-	//ACCESS
 	
+	//ACCESS
 	
 	public Access createAccessFromExpression(Expression expression) {
 		//is this not horrible?
@@ -767,6 +767,7 @@ public class InJavaImporter extends Importer {
 		return unknownVariable;
 	}
 
+	
 	// EXCEPTION
 	
 	public DeclaredException createDeclaredExceptionFromTypeBinding(ITypeBinding binding, Method method) {

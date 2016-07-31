@@ -9,6 +9,10 @@ import org.eclipse.jdt.core.dom.FileASTRequestor;
 
 public abstract class Importer {	
 	
+	/**
+	 * Typically holds the prefix of the path of the root folder in which the importer was triggered.
+	 * It is useful for creating relative paths for the source anchors  
+	 */
 	protected String ignoredRootPath;
 
 	/**
