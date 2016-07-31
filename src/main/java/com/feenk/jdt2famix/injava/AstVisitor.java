@@ -86,6 +86,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(CompilationUnit node) {
 		Namespace namespace;
 		if (node.getPackage() == null)
+			/* This is the default package */
 			namespace = importer.ensureNamespaceNamed("");
 		else 
 			namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
@@ -306,9 +307,9 @@ public class AstVisitor extends ASTVisitor {
 		importer.createSourceAnchor(attribute, sourceFilePath, fragment, (CompilationUnit) field.getRoot());
 		importer.ensureCommentFromBodyDeclaration(attribute, field);
 
-		//only the last fragment of a field contains the initializer code.
-		//thus, to create the access to each variable in the fragment we need to ask that last fragment
-		//we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment
+		/* only the last fragment of a field contains the initializer code.
+		 * thus, to create the access to each variable in the fragment we need to ask that last fragment
+		 * we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment */
 		VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) field.fragments().get(field.fragments().size() - 1);
 		if (lastFragment.getInitializer() != null) {
 			Access access = importer.createAccessFromExpression(fragment.getName());
@@ -423,7 +424,6 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(FieldAccess node) {
-		//TODO Remove?
 		return true;
 	}
 
@@ -580,10 +580,10 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(ThrowStatement node) {
-		ITypeBinding typeBinding = node.getExpression().resolveTypeBinding();
-		if (typeBinding != null) {
+		ITypeBinding binding = node.getExpression().resolveTypeBinding();
+		if (binding != null) {
 			ThrownException thrownException = new ThrownException();
-			Type thrownType = importer.ensureTypeFromTypeBinding(typeBinding);
+			Type thrownType = importer.ensureTypeFromTypeBinding(binding);
 			thrownException.setExceptionClass((com.feenk.jdt2famix.model.famix.Class) thrownType);
 			thrownException.setDefiningMethod((Method) importer.topOfContainerStack());
 			importer.repository().add(thrownException);
