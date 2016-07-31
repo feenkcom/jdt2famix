@@ -2,6 +2,8 @@ package com.feenk.jdt2famix.injava;
 
 import java.util.Arrays;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -44,6 +46,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
+import com.feenk.jdt2famix.Utils;
 import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
@@ -75,11 +78,18 @@ public class AstVisitor extends ASTVisitor {
 	private InJavaImporter importer;
 	private String sourceFilePath;
 	
+	private static final Logger logger = LogManager.getLogger(AstVisitor.class);
+	
 	public AstVisitor(InJavaImporter importer, String sourceFilePath) {
 		this.importer = importer;
 		this.sourceFilePath = sourceFilePath;
 	}
 		
+	public void logNullBinding(String string, Object extraData) {
+		logger.error(string + " - " + extraData + " - " + sourceFilePath);
+	}
+
+	
 	////////PACKAGES
 	
 	@Override
@@ -109,8 +119,10 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
-		if (binding == null)
+		if (binding == null) {
+			logNullBinding("visit(TypeDeclaration)", node.getName());
 			return false;
+		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
 		/* This is an ugly patch. When the binding to the superclass or super interfaces cannot be resolved,
@@ -151,8 +163,10 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
-		if (binding == null)
+		if (binding == null) {
+			logNullBinding("visit(EnumDeclaration)", node.getName());
 			return false;
+		}
 		Enum famixEnum = (Enum) importer.ensureTypeFromTypeBinding(binding);
 		famixEnum.setIsStub(false);
 		importer.createSourceAnchor(famixEnum, sourceFilePath, node, (CompilationUnit) node.getRoot());
@@ -188,8 +202,10 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
-		if (binding == null)
+		if (binding == null) {
+			logNullBinding("visit(AnnotationTypeDeclaration)", node.getName());
 			return false;
+		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, (CompilationUnit) node.getRoot());
@@ -258,8 +274,10 @@ public class AstVisitor extends ASTVisitor {
 			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
 			Arrays.stream(binding.getExceptionTypes()).forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));			
 		}
-		else
+		else {
+			logNullBinding("visit(MethodDeclaration)", node.getName());
 			method = importer.ensureMethodFromMethodDeclaration(node);
+		}
 		method.setIsStub(false);
 		importer.pushOnContainerStack(method);
 		node.parameters().

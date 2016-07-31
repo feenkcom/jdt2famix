@@ -13,6 +13,8 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
@@ -90,6 +92,8 @@ import com.feenk.jdt2famix.model.java.JavaModel;
  */
 public class InJavaImporter extends Importer {
 
+    private static final Logger logger = LogManager.getLogger(Importer.class);
+	
 	private static final char NAME_SEPARATOR = '.';
 	public static final String INITIALIZER_NAME = "<init>";
 	public static final String UNKNOWN_NAME = "__UNKNOWN__";
@@ -849,5 +853,5 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
-
+	
 }
