@@ -2,11 +2,11 @@
 <Configuration status="WARN">
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
-			<PatternLayout pattern="%d{HH:mm:ss.SSS} %-5level %logger{36} - %msg%n"/>
+			<PatternLayout pattern="%d{HH:mm:ss} - %msg%n"/>
 		</Console>
 		<File name="ImportErrors" fileName="import-errors.log">
 			<PatternLayout pattern="%m%n"/>
-		</File>    
+		</File>
 	</Appenders>
 	<Loggers>
 		<Root level="trace">

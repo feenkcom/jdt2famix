@@ -56,5 +56,9 @@ public class JavaFiles {
 	public String ignoredRootPath() {
 		return ignoredRootPath;
 	}
+	
+	public int size() {
+		return javaFilePaths.size();
+	}
 
 }

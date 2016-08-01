@@ -26,12 +26,11 @@ public class Main {
 		javaFiles.deepJavaFiles(path.toString());
 		Classpath classpath = new Classpath();
 		classpath.deepJarFiles(path.toString());
-		logger.trace("importing started - " + path.toString());
+		logger.trace("importing root folder - " + path.toString());
 		importer.run(javaFiles, classpath);
-		logger.trace("importing done - " + path.toString());
-		logger.trace("export started - " + mseFileName);
+		logger.trace("exporting - " + mseFileName);
 		importer.exportMSE(mseFileName);
-		logger.trace("export done - " + mseFileName);
+		logger.trace("done");
 	}
 
 }

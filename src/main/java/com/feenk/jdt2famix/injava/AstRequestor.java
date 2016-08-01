@@ -5,20 +5,28 @@ import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 
+import com.feenk.jdt2famix.JavaFiles;
+
 public class AstRequestor extends FileASTRequestor {
 	
-	private InJavaImporter importer;
+	protected InJavaImporter importer;
 	private static Logger logger = LogManager.getLogger(AstRequestor.class);
-
-	public AstRequestor(InJavaImporter importer) {
+	
+	protected int currentFileIndex = 0; 
+	protected int allJavaFileCount;
+	
+	public AstRequestor(InJavaImporter importer, JavaFiles allJavaFiles) {
 		this.importer = importer;
+		allJavaFileCount = allJavaFiles.size();
 	}
 
 	@Override
 	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
-		logger.trace("importing - " + sourceFilePath);
+		logger.trace("importing file - "
+				+ String.format("%0"+ Integer.toString(allJavaFileCount).length() + "d", currentFileIndex++)
+				+ "/" + allJavaFileCount + " - "
+				+ sourceFilePath);
 		ast.accept(new AstVisitor(importer, sourceFilePath));
-		logger.trace("done importing - " + sourceFilePath);
 	}
 
 }

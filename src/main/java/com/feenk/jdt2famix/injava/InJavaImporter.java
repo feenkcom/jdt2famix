@@ -47,6 +47,7 @@ import ch.akuhn.fame.Repository;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
+import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
@@ -151,8 +152,8 @@ public class InJavaImporter extends Importer {
 	}
 	
 	@Override
-	protected FileASTRequestor getRequestor() {
-		return new AstRequestor(this);
+	protected FileASTRequestor getRequestor(JavaFiles allJavaFiles) {
+		return new AstRequestor(this, allJavaFiles);
 	}
 
 	
@@ -789,7 +790,7 @@ public class InJavaImporter extends Importer {
 		FileAnchor fileAnchor = new FileAnchor();
 		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
 		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-		fileAnchor.setFileName(sourceFilePath.replaceAll("\\\\", "/").replaceFirst("^"+ignoredRootPath+"/", ""));
+		fileAnchor.setFileName(pathWithoutIgnoredRootPath(sourceFilePath));
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}

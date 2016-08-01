@@ -84,8 +84,11 @@ public class AstVisitor extends ASTVisitor {
 		this.sourceFilePath = sourceFilePath;
 	}
 		
-	public void logNullBinding(String string, Object extraData) {
-		logger.error(string + " - " + extraData + " - " + sourceFilePath);
+	public void logNullBinding(String string, Object extraData, int lineNumber) {
+		logger.error("unresolved " + string +
+				" - " + extraData +
+				" - " + sourceFilePath +
+				" - " + lineNumber);
 	}
 
 	
@@ -119,7 +122,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(TypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("visit(TypeDeclaration)", node.getName());
+			logNullBinding("type declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
@@ -163,7 +166,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(EnumDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("visit(EnumDeclaration)", node.getName());
+			logNullBinding("enum declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Enum famixEnum = (Enum) importer.ensureTypeFromTypeBinding(binding);
@@ -202,7 +205,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(AnnotationTypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("visit(AnnotationTypeDeclaration)", node.getName());
+			logNullBinding("annotation type declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
@@ -274,7 +277,7 @@ public class AstVisitor extends ASTVisitor {
 			Arrays.stream(binding.getExceptionTypes()).forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));			
 		}
 		else {
-			logNullBinding("visit(MethodDeclaration)", node.getName());
+			logNullBinding("method declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		}
 		method.setIsStub(false);

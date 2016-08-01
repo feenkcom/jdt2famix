@@ -14,6 +14,9 @@ public abstract class Importer {
 	 * It is useful for creating relative paths for the source anchors  
 	 */
 	protected String ignoredRootPath;
+	public String pathWithoutIgnoredRootPath(String originalPath) { 
+		return originalPath.replaceAll("\\\\", "/").replaceFirst("^"+ignoredRootPath+"/", "");
+	}
 
 	/**
 	 * Primary method to trigger the importer after having defined the 
@@ -33,7 +36,7 @@ public abstract class Importer {
 		parser.setCompilerOptions(options);
 		
 		parser.setEnvironment(classpath.paths(), new String[]{}, new String[]{}, true);
-		parser.createASTs(javaFiles.paths(), null, new String[0], getRequestor(), null);
+		parser.createASTs(javaFiles.paths(), null, new String[0], getRequestor(javaFiles), null);
 	}
 
 	public void run(JavaFiles javaFiles) {
@@ -46,6 +49,6 @@ public abstract class Importer {
 		this.run(javaFiles, new Classpath());
 	}
 
-	protected abstract FileASTRequestor getRequestor();
+	protected abstract FileASTRequestor getRequestor(JavaFiles allJavaFiles);
 
 }
