@@ -23,7 +23,7 @@ public class AstRequestor extends FileASTRequestor {
 	@Override
 	public void acceptAST(String sourceFilePath, CompilationUnit ast) {
 		logger.trace("importing file - "
-				+ String.format("%0"+ Integer.toString(allJavaFileCount).length() + "d", currentFileIndex++)
+				+ String.format("%0"+ Integer.toString(allJavaFileCount).length() + "d", ++currentFileIndex)
 				+ "/" + allJavaFileCount + " - "
 				+ sourceFilePath);
 		ast.accept(new AstVisitor(importer, sourceFilePath));
