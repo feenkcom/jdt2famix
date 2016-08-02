@@ -88,7 +88,7 @@ public class AstVisitor extends ASTVisitor {
 		logger.error("unresolved " + string +
 				" - " + extraData +
 				" - " + sourceFilePath +
-				" - " + lineNumber);
+				" - line " + lineNumber);
 	}
 
 	
