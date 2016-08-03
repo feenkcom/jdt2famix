@@ -10,6 +10,7 @@ mkdir release
 #2. produce the jdt2famix jar
 mvn package
 cp ./target/jdt2famix*.jar ./release/
+cp ./target/classes/log4j2.xml ./release/
 
 #3. copy all jar dependencies
 mvn dependency:copy-dependencies -DoutputDirectory=release -DoverWriteSnapshots=true -DoverWriteReleases=false
