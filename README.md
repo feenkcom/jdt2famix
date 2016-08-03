@@ -5,6 +5,12 @@ This project offers the mechanism for producing MSE files out of Java code. It i
 <img src="doc/jdt2famix-standalone.png"/>
 
 #Installation
+
+##Run a release
+1. [Download a binary release](https://github.com/girba/jdt2famix/releases)
+2. The downloaded folder contains all jar files and a `jdt2famix.sh` script
+
+##Create a binary release from sources
 1. Clone or download this repository
 2. Make sure you have [Maven](https://maven.apache.org/download.cgi) installed and that `mvn` is in the execution path (i.e., change `$PATH`) 
 3. Execute in the root folder: `release.sh`
