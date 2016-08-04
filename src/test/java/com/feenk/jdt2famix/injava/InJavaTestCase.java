@@ -1,6 +1,7 @@
 package com.feenk.jdt2famix.injava;
 
 import com.feenk.jdt2famix.injava.InJavaImporter;
+import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Method;
 
 public class InJavaTestCase {
@@ -13,6 +14,14 @@ public class InJavaTestCase {
 	            .filter(m -> m.getName().equals(name))
 	            .findAny()
 	            .get();
+	}
+
+	protected Attribute attributeNamed(String name) {
+		return importer.attributes()
+				.stream()
+				.filter(a -> a.getName().equals(name))
+				.findAny()
+				.get();
 	}
 
 }

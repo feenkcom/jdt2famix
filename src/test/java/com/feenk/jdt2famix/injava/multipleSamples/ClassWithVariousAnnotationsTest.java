@@ -78,4 +78,16 @@ public class ClassWithVariousAnnotationsTest extends
 		AnnotationInstance annotationInstance = parameter.getAnnotationInstances().stream().findAny().get();
 		assertNotNull(annotationInstance);
 	}
+
+	@Test
+	public void testMethodWithExpressionAnnotationValue() {
+		AnnotationInstance annotationInstance = methodNamed("methodWithExpressionAnnotationValue").getAnnotationInstances().stream().findAny().get();
+		assertEquals(1, annotationInstance.getAttributes().size());
+		assertEquals("stringstring", annotationInstance.getAttributes().stream().findAny().get().getValue());
+	}
+	
+	@Test
+	public void testAccessesToConstant() {
+		assertEquals(2, attributeNamed("DEFAULT").getIncomingAccesses().size());
+	}
 }

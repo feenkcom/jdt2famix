@@ -15,6 +15,9 @@ public class ClassWithVariousAnnotations {
 	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForAll.DEFAULT)
 	public void methodWithConstantAnnotationValue() {}
 
+	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = "string" + AnnotationTypeWithOneAttributeForAll.DEFAULT)
+	public void methodWithExpressionAnnotationValue() {}
+
 	@AnnotationTypeWithoutAttributesForAll
 	public void methodWithAnnotationForParameter(
 			@AnnotationTypeWithoutAttributesForAll
@@ -24,5 +27,7 @@ public class ClassWithVariousAnnotations {
 	public void methodInvokingMethodWithAnnotation() {
 		method();
 	}
+	
+	
 
 }
