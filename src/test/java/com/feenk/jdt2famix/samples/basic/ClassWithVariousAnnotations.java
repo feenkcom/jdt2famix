@@ -4,6 +4,12 @@ package com.feenk.jdt2famix.samples.basic;
 public class ClassWithVariousAnnotations {
 	
 	@AnnotationTypeWithoutAttributesForAll
+	public static String staticStringAttribute;
+
+	@AnnotationTypeWithoutAttributesForAll
+	public static String staticStringMethod() { return "staticMethod"; }
+	
+	@AnnotationTypeWithoutAttributesForAll
 	public String stringAttribute;
 
 	@AnnotationTypeWithoutAttributesForAll
