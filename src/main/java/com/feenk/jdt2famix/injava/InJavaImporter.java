@@ -758,6 +758,10 @@ public class InJavaImporter extends Importer {
 		if (topOfContainerStack() instanceof Method)
 			access.setAccessor((Method) topOfContainerStack());
 		if (topOfContainerStack() instanceof Type)
+			/* This is ugly, but it happens when we have an access from within an annotation
+			 * around a type or attribute like:
+			 * 		@Annotation(name="something" + AClass.DEFAULT)
+			 */
 			access.setAccessor(ensureInitializerMethod());
 		repository.add(access);
 		return access;
