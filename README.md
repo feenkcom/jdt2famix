@@ -39,6 +39,20 @@ If you happen to have a Java project that defines dependencies through Maven, yo
 
 	mvn dependency:copy-dependencies -DoutputDirectory=dependencies -DoverWriteSnapshots=true -DoverWriteReleases=false
 
+##Understanding import problems through logging
+
+jdt2famix logs the problems encountered during import.
+
+These problems do not stop the import, but they do lead to loss of information quality in the model. These problems are typically due to missing jars in the classpath, and if you know which parts are problematic, you get a chance of fixing them.
+
+To give you an example, entries might look like this:
+
+    unresolved type declaration - TestPlatform - .../jdt2famix/tmp/guava/guava-tests/test/com/google/common/math/TestPlatform.java - line 21
+    unresolved method declaration - suite - .../jdt2famix/tmp/guava/guava-tests/test/com/google/common/primitives/ByteArrayAsListTest.java - line 51
+
+For example, in the case of guava, importing just the checked out code, gives us 419 problems, most of which were method declaration problems (due to unknown return types). However, after downloading all jars from the maven dependencies, we got only 47 problems (only type declaration problems, but no more method declaration problems). Interestingly, guava is made out of several sub-projects, and these problems appear if we import the overall project. But, if we import only a subproject at a time, the problems do not appear anymore, so likely the issue is related to conflicting jars, or duplicated sources.
+
+
 #License
 * The main code of the jdt2famix is released under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
 * JDT Core is used as an external binary library available under [Eclipse Public License - v 1.0](http://wiki.eclipse.org/EPL).
