@@ -754,6 +754,7 @@ public class InJavaImporter extends Importer {
 		if (variable == null)
 			access.setVariable(unknownVariable());
 		access.setVariable(variable);
+		access.setIsWrite(false);
 		if (topOfContainerStack() instanceof Method)
 			access.setAccessor((Method) topOfContainerStack());
 		if (topOfContainerStack() instanceof Type)
