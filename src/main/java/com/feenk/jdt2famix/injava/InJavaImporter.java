@@ -360,10 +360,7 @@ public class InJavaImporter extends Importer {
 	}
 	
 	public Type ensureTypeNamedInUnknownNamespace(String name) {
-		Type type = new Type();
-		type.setName(name);
-		type.setContainer(unknownNamespace());
-		type.setIsStub(true);
+		Type type = createTypeNamedInUnknownNamespace(name);
 		String qualifiedName = Famix.qualifiedNameOf(type);
 		if (types.has(qualifiedName))
 			return types.named(qualifiedName);
@@ -373,10 +370,16 @@ public class InJavaImporter extends Importer {
 		}
 	}
 
+	public Type createTypeNamedInUnknownNamespace(String name) {
+		Type type = new Type();
+		type.setName(name);
+		type.setContainer(unknownNamespace());
+		type.setIsStub(true);
+		return type;
+	}
+
 	public Type ensureTypeFromAnonymousDeclaration(
-			AnonymousClassDeclaration node) {
-		ITypeBinding binding = node.resolveBinding();
-		Type type = createTypeFromTypeBinding(binding);
+			Type type, AnonymousClassDeclaration node) {
 		type.setContainer(topOfContainerStack());
 		type.setName("$" + topOfContainerStack().getTypes().size());
 		if (node.getParent() instanceof ClassInstanceCreation)

@@ -20,6 +20,19 @@ public class ClassWithInnerClassDefinedInLambda {
 		});
 	}
 
+	public void methodWithInnerClassInLambdaBlock() {
+		ParameterizableInterface<Boolean> c = value -> {
+			EmptyClass e = new EmptyClass() {
+				@Override
+				public boolean equals(Object obj) {
+					return true;
+				};
+			};
+			return e.equals(value);
+		};
+		c.invoke("string");
+	}
+	
 	public void methodWithInnerSameClassInLambdaBlock(Collection<String> list) {
 		list.forEach(s -> { 
 			ClassWithInnerClassDefinedInLambda e = new ClassWithInnerClassDefinedInLambda() {

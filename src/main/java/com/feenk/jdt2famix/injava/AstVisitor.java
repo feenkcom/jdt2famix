@@ -149,7 +149,15 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(AnonymousClassDeclaration node) {
-		Type type = importer.ensureTypeFromAnonymousDeclaration(node);
+		ITypeBinding binding = node.resolveBinding();
+		Type type;
+		if (binding != null)
+			type = importer.createTypeFromTypeBinding(binding);
+		else {
+			type = importer.createTypeNamedInUnknownNamespace("");
+			logNullBinding("anonymous type declaration", node.getParent().toString().replaceAll("\n", " "), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));			
+		}
+		importer.ensureTypeFromAnonymousDeclaration(type, node);
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, sourceFilePath, node, (CompilationUnit) node.getRoot());
 		importer.pushOnContainerStack(type);
