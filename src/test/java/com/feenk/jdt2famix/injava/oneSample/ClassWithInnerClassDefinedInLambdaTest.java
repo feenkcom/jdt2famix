@@ -15,12 +15,17 @@ public class ClassWithInnerClassDefinedInLambdaTest extends OneSampleTestCase {
 	
 	@Test
 	public void testMethodWithInnerClassInSimpleLambda() {
-		assertEquals(1, methodNamed("methodWithInnerClassInSimpleLambda").getTypes().size());
+		assertEquals(1, methodNamed("methodWithInnerEmptyClassInSimpleLambda").getTypes().size());
 	}
 
 	@Test
 	public void testMethodWithInnerClassInLambdaBlock() {
-		assertEquals(1, methodNamed("methodWithInnerClassInLambdaBlock").getTypes().size());
+		assertEquals(1, methodNamed("methodWithInnerEmptyClassInLambdaBlock").getTypes().size());
+	}
+
+	@Test
+	public void testMethodWithInnerSameClassInLambdaBlock() {
+		assertEquals(1, methodNamed("methodWithInnerSameClassInLambdaBlock").getTypes().size());
 	}
 	
 }
