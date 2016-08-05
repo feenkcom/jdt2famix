@@ -186,7 +186,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(EnumConstantDeclaration node) {
 		if (!node.arguments().isEmpty())
-			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
+			importer.pushOnContainerStack(importer.ensureInitializerMethod());
 		EnumValue enumValue = importer.ensureEnumValueFromDeclaration(node);
 		importer.createSourceAnchor(enumValue, sourceFilePath, node, (CompilationUnit) node.getRoot());
 		importer.ensureCommentFromBodyDeclaration(enumValue, node);
@@ -244,7 +244,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MarkerAnnotation node) {
-		return super.visit(node);
+		return true;
 	}
 	
 	/**
@@ -253,7 +253,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
-		return super.visit(node);
+		return true;
 	}
 	
 	/**
@@ -262,7 +262,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
-		return super.visit(node);
+		return true;
 	}
 	
 	////////METHODS
@@ -298,7 +298,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public boolean visit(Initializer node) {
-		Method method = importer.ensureMethodFromInitializer();
+		Method method = importer.ensureInitializerMethod();
 		importer.pushOnContainerStack(method);
 		importer.createSourceAnchor(method, sourceFilePath, node, (CompilationUnit) node.getRoot());
 		importer.ensureCommentFromBodyDeclaration(method, node);
@@ -317,7 +317,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(FieldDeclaration node) {
 		if (node.fragments().stream().anyMatch(f -> ((VariableDeclarationFragment) f).getInitializer() != null))
-			importer.pushOnContainerStack(importer.ensureMethodFromInitializer());
+			importer.pushOnContainerStack(importer.ensureInitializerMethod());
 		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f, node));
 		return true;
 	}

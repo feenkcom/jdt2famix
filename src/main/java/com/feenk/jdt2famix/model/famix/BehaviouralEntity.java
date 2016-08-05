@@ -129,6 +129,17 @@ public class BehaviouralEntity extends ContainerEntity {
     }
     
                 
+    private Number numberOfStatements;
+    
+    @FameProperty(name = "numberOfStatements")
+    public Number getNumberOfStatements() {
+        return numberOfStatements;
+    }
+
+    public void setNumberOfStatements(Number numberOfStatements) {
+        this.numberOfStatements = numberOfStatements;
+    }
+    
     private Collection<LocalVariable> localVariables; 
 
     @FameProperty(name = "localVariables", opposite = "parentBehaviouralEntity", derived = true)
@@ -183,15 +194,15 @@ public class BehaviouralEntity extends ContainerEntity {
     }
     
                 
-    private Number numberOfStatements;
+    private Number numberOfLinesOfCode;
     
-    @FameProperty(name = "numberOfStatements")
-    public Number getNumberOfStatements() {
-        return numberOfStatements;
+    @FameProperty(name = "numberOfLinesOfCode")
+    public Number getNumberOfLinesOfCode() {
+        return numberOfLinesOfCode;
     }
 
-    public void setNumberOfStatements(Number numberOfStatements) {
-        this.numberOfStatements = numberOfStatements;
+    public void setNumberOfLinesOfCode(Number numberOfLinesOfCode) {
+        this.numberOfLinesOfCode = numberOfLinesOfCode;
     }
     
     private Collection<Reference> outgoingReferences; 
@@ -248,17 +259,6 @@ public class BehaviouralEntity extends ContainerEntity {
     }
     
                 
-    private Number numberOfLinesOfCode;
-    
-    @FameProperty(name = "numberOfLinesOfCode")
-    public Number getNumberOfLinesOfCode() {
-        return numberOfLinesOfCode;
-    }
-
-    public void setNumberOfLinesOfCode(Number numberOfLinesOfCode) {
-        this.numberOfLinesOfCode = numberOfLinesOfCode;
-    }
-    
     private Collection<Invocation> outgoingInvocations; 
 
     @FameProperty(name = "outgoingInvocations", opposite = "sender", derived = true)
@@ -313,6 +313,17 @@ public class BehaviouralEntity extends ContainerEntity {
     }
     
                 
+    private Number numberOfConditionals;
+    
+    @FameProperty(name = "numberOfConditionals")
+    public Number getNumberOfConditionals() {
+        return numberOfConditionals;
+    }
+
+    public void setNumberOfConditionals(Number numberOfConditionals) {
+        this.numberOfConditionals = numberOfConditionals;
+    }
+    
     private Collection<Invocation> incomingInvocations; 
 
     @FameProperty(name = "incomingInvocations", opposite = "candidates", derived = true)
@@ -366,17 +377,6 @@ public class BehaviouralEntity extends ContainerEntity {
     }
     
                 
-    private Number numberOfConditionals;
-    
-    @FameProperty(name = "numberOfConditionals")
-    public Number getNumberOfConditionals() {
-        return numberOfConditionals;
-    }
-
-    public void setNumberOfConditionals(Number numberOfConditionals) {
-        this.numberOfConditionals = numberOfConditionals;
-    }
-    
     private Collection<Parameter> parameters; 
 
     @FameProperty(name = "parameters", opposite = "parentBehaviouralEntity", derived = true)

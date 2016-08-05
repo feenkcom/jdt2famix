@@ -100,17 +100,6 @@ public class File extends AbstractFile {
         this.numberOfLinesOfText = numberOfLinesOfText;
     }
     
-    private Number numberOfExternalClones;
-    
-    @FameProperty(name = "numberOfExternalClones")
-    public Number getNumberOfExternalClones() {
-        return numberOfExternalClones;
-    }
-
-    public void setNumberOfExternalClones(Number numberOfExternalClones) {
-        this.numberOfExternalClones = numberOfExternalClones;
-    }
-    
     private Number numberOfInternalMultiplications;
     
     @FameProperty(name = "numberOfInternalMultiplications")
@@ -120,6 +109,17 @@ public class File extends AbstractFile {
 
     public void setNumberOfInternalMultiplications(Number numberOfInternalMultiplications) {
         this.numberOfInternalMultiplications = numberOfInternalMultiplications;
+    }
+    
+    private Number numberOfExternalClones;
+    
+    @FameProperty(name = "numberOfExternalClones")
+    public Number getNumberOfExternalClones() {
+        return numberOfExternalClones;
+    }
+
+    public void setNumberOfExternalClones(Number numberOfExternalClones) {
+        this.numberOfExternalClones = numberOfExternalClones;
     }
     
     private Number numberOfBytes;

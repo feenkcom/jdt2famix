@@ -9,4 +9,5 @@ import java.lang.annotation.Target;
 @Target( { ElementType.TYPE})
 public @interface AnnotationTypeWithValueAttributeForType {
 	String value() default "";
+	public static final String DEFAUlT_FOR_TYPE = "default"; 
 }

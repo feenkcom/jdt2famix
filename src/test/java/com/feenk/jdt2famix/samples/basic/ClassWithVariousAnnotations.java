@@ -1,6 +1,6 @@
 package com.feenk.jdt2famix.samples.basic;
 
-@AnnotationTypeWithoutAttributesForType
+@AnnotationTypeWithValueAttributeForType(AnnotationTypeWithValueAttributeForType.DEFAUlT_FOR_TYPE + "type")
 public class ClassWithVariousAnnotations {
 	
 	@AnnotationTypeWithoutAttributesForAll
@@ -8,6 +8,9 @@ public class ClassWithVariousAnnotations {
 
 	@AnnotationTypeWithoutAttributesForAll
 	public int intAttribute;
+
+	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = "attribute" + AnnotationTypeWithOneAttributeForAll.DEFAULT)
+	public int intAttributeWithExpressionAnnotationValue;
 	
 	@AnnotationTypeWithoutAttributesForAll
 	public void method() {}
@@ -15,7 +18,7 @@ public class ClassWithVariousAnnotations {
 	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = AnnotationTypeWithOneAttributeForAll.DEFAULT)
 	public void methodWithConstantAnnotationValue() {}
 
-	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = "string" + AnnotationTypeWithOneAttributeForAll.DEFAULT)
+	@AnnotationTypeWithOneAttributeForAll(stringAnnotationAttribute = "method" + AnnotationTypeWithOneAttributeForAll.DEFAULT)
 	public void methodWithExpressionAnnotationValue() {}
 
 	@AnnotationTypeWithoutAttributesForAll

@@ -193,60 +193,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    private Collection<Inheritance> superInheritances; 
-
-    @FameProperty(name = "superInheritances", opposite = "subclass", derived = true)
-    public Collection<Inheritance> getSuperInheritances() {
-        if (superInheritances == null) {
-            superInheritances = new MultivalueSet<Inheritance>() {
-                @Override
-                protected void clearOpposite(Inheritance e) {
-                    e.setSubclass(null);
-                }
-                @Override
-                protected void setOpposite(Inheritance e) {
-                    e.setSubclass(Type.this);
-                }
-            };
-        }
-        return superInheritances;
-    }
-    
-    public void setSuperInheritances(Collection<? extends Inheritance> superInheritances) {
-        this.getSuperInheritances().clear();
-        this.getSuperInheritances().addAll(superInheritances);
-    }                    
-    
-        
-    public void addSuperInheritances(Inheritance one) {
-        this.getSuperInheritances().add(one);
-    }   
-    
-    public void addSuperInheritances(Inheritance one, Inheritance... many) {
-        this.getSuperInheritances().add(one);
-        for (Inheritance each : many)
-            this.getSuperInheritances().add(each);
-    }   
-    
-    public void addSuperInheritances(Iterable<? extends Inheritance> many) {
-        for (Inheritance each : many)
-            this.getSuperInheritances().add(each);
-    }   
-                
-    public void addSuperInheritances(Inheritance[] many) {
-        for (Inheritance each : many)
-            this.getSuperInheritances().add(each);
-    }
-    
-    public int numberOfSuperInheritances() {
-        return getSuperInheritances().size();
-    }
-
-    public boolean hasSuperInheritances() {
-        return !getSuperInheritances().isEmpty();
-    }
-    
-                
     private Collection<Inheritance> subInheritances; 
 
     @FameProperty(name = "subInheritances", opposite = "superclass", derived = true)
@@ -298,6 +244,60 @@ public class Type extends ContainerEntity {
 
     public boolean hasSubInheritances() {
         return !getSubInheritances().isEmpty();
+    }
+    
+                
+    private Collection<Inheritance> superInheritances; 
+
+    @FameProperty(name = "superInheritances", opposite = "subclass", derived = true)
+    public Collection<Inheritance> getSuperInheritances() {
+        if (superInheritances == null) {
+            superInheritances = new MultivalueSet<Inheritance>() {
+                @Override
+                protected void clearOpposite(Inheritance e) {
+                    e.setSubclass(null);
+                }
+                @Override
+                protected void setOpposite(Inheritance e) {
+                    e.setSubclass(Type.this);
+                }
+            };
+        }
+        return superInheritances;
+    }
+    
+    public void setSuperInheritances(Collection<? extends Inheritance> superInheritances) {
+        this.getSuperInheritances().clear();
+        this.getSuperInheritances().addAll(superInheritances);
+    }                    
+    
+        
+    public void addSuperInheritances(Inheritance one) {
+        this.getSuperInheritances().add(one);
+    }   
+    
+    public void addSuperInheritances(Inheritance one, Inheritance... many) {
+        this.getSuperInheritances().add(one);
+        for (Inheritance each : many)
+            this.getSuperInheritances().add(each);
+    }   
+    
+    public void addSuperInheritances(Iterable<? extends Inheritance> many) {
+        for (Inheritance each : many)
+            this.getSuperInheritances().add(each);
+    }   
+                
+    public void addSuperInheritances(Inheritance[] many) {
+        for (Inheritance each : many)
+            this.getSuperInheritances().add(each);
+    }
+    
+    public int numberOfSuperInheritances() {
+        return getSuperInheritances().size();
+    }
+
+    public boolean hasSuperInheritances() {
+        return !getSuperInheritances().isEmpty();
     }
     
                 
@@ -409,59 +409,6 @@ public class Type extends ContainerEntity {
     }
     
                 
-    private Collection<ParameterizedType> argumentsInParameterizedTypes; 
-
-    @FameProperty(name = "argumentsInParameterizedTypes", opposite = "arguments", derived = true)
-    public Collection<ParameterizedType> getArgumentsInParameterizedTypes() {
-        if (argumentsInParameterizedTypes == null) {
-            argumentsInParameterizedTypes = new MultivalueSet<ParameterizedType>() {
-                @Override
-                protected void clearOpposite(ParameterizedType e) {
-                    e.getArguments().remove(Type.this);
-                }
-                @Override
-                protected void setOpposite(ParameterizedType e) {
-                    e.getArguments().add(Type.this);
-                }
-            };
-        }
-        return argumentsInParameterizedTypes;
-    }
-    
-    public void setArgumentsInParameterizedTypes(Collection<? extends ParameterizedType> argumentsInParameterizedTypes) {
-        this.getArgumentsInParameterizedTypes().clear();
-        this.getArgumentsInParameterizedTypes().addAll(argumentsInParameterizedTypes);
-    }
-    
-    public void addArgumentsInParameterizedTypes(ParameterizedType one) {
-        this.getArgumentsInParameterizedTypes().add(one);
-    }   
-    
-    public void addArgumentsInParameterizedTypes(ParameterizedType one, ParameterizedType... many) {
-        this.getArgumentsInParameterizedTypes().add(one);
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }   
-    
-    public void addArgumentsInParameterizedTypes(Iterable<? extends ParameterizedType> many) {
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }   
-                
-    public void addArgumentsInParameterizedTypes(ParameterizedType[] many) {
-        for (ParameterizedType each : many)
-            this.getArgumentsInParameterizedTypes().add(each);
-    }
-    
-    public int numberOfArgumentsInParameterizedTypes() {
-        return getArgumentsInParameterizedTypes().size();
-    }
-
-    public boolean hasArgumentsInParameterizedTypes() {
-        return !getArgumentsInParameterizedTypes().isEmpty();
-    }
-    
-                
     private Collection<Attribute> attributes; 
 
     @FameProperty(name = "attributes", opposite = "parentType", derived = true)
@@ -513,6 +460,59 @@ public class Type extends ContainerEntity {
 
     public boolean hasAttributes() {
         return !getAttributes().isEmpty();
+    }
+    
+                
+    private Collection<ParameterizedType> argumentsInParameterizedTypes; 
+
+    @FameProperty(name = "argumentsInParameterizedTypes", opposite = "arguments", derived = true)
+    public Collection<ParameterizedType> getArgumentsInParameterizedTypes() {
+        if (argumentsInParameterizedTypes == null) {
+            argumentsInParameterizedTypes = new MultivalueSet<ParameterizedType>() {
+                @Override
+                protected void clearOpposite(ParameterizedType e) {
+                    e.getArguments().remove(Type.this);
+                }
+                @Override
+                protected void setOpposite(ParameterizedType e) {
+                    e.getArguments().add(Type.this);
+                }
+            };
+        }
+        return argumentsInParameterizedTypes;
+    }
+    
+    public void setArgumentsInParameterizedTypes(Collection<? extends ParameterizedType> argumentsInParameterizedTypes) {
+        this.getArgumentsInParameterizedTypes().clear();
+        this.getArgumentsInParameterizedTypes().addAll(argumentsInParameterizedTypes);
+    }
+    
+    public void addArgumentsInParameterizedTypes(ParameterizedType one) {
+        this.getArgumentsInParameterizedTypes().add(one);
+    }   
+    
+    public void addArgumentsInParameterizedTypes(ParameterizedType one, ParameterizedType... many) {
+        this.getArgumentsInParameterizedTypes().add(one);
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }   
+    
+    public void addArgumentsInParameterizedTypes(Iterable<? extends ParameterizedType> many) {
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }   
+                
+    public void addArgumentsInParameterizedTypes(ParameterizedType[] many) {
+        for (ParameterizedType each : many)
+            this.getArgumentsInParameterizedTypes().add(each);
+    }
+    
+    public int numberOfArgumentsInParameterizedTypes() {
+        return getArgumentsInParameterizedTypes().size();
+    }
+
+    public boolean hasArgumentsInParameterizedTypes() {
+        return !getArgumentsInParameterizedTypes().isEmpty();
     }
     
                 

@@ -481,15 +481,15 @@ public class InJavaImporter extends Importer {
 			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 	}
 	
-	public Method ensureMethodFromInitializer() {
+	public Method ensureInitializerMethod() {
 		return ensureBasicMethod(
 				INITIALIZER_NAME, 
 				INITIALIZER_NAME, 
 				(Type) topOfContainerStack(),
-				m -> setUpMethodFromInitializer(m));
+				m -> setUpInitializerMethod(m));
 	}
 
-	private void setUpMethodFromInitializer(Method method) {
+	private void setUpInitializerMethod(Method method) {
 		method.setKind(INITIALIZER_KIND);
 		method.setIsStub(false);
 	}
@@ -754,8 +754,10 @@ public class InJavaImporter extends Importer {
 		if (variable == null)
 			access.setVariable(unknownVariable());
 		access.setVariable(variable);
-		access.setAccessor((Method) topOfContainerStack());
-		access.setIsWrite(false);
+		if (topOfContainerStack() instanceof Method)
+			access.setAccessor((Method) topOfContainerStack());
+		if (topOfContainerStack() instanceof Type)
+			access.setAccessor(ensureInitializerMethod());
 		repository.add(access);
 		return access;
 	}

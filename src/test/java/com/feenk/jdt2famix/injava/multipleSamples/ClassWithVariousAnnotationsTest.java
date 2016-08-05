@@ -7,13 +7,14 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
+import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithOneAttributeForAll;
+import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithValueAttributeForType;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForAll;
-import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithoutAttributesForType;
 import com.feenk.jdt2famix.samples.basic.ClassWithVariousAnnotations;
 
 public class ClassWithVariousAnnotationsTest extends
@@ -22,7 +23,7 @@ public class ClassWithVariousAnnotationsTest extends
 	@Override
 	protected void sampleClassesIn(JavaFiles javaFiles) {
 		javaFiles.oneJavaFile(this.fileNameFor(ClassWithVariousAnnotations.class));
-		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForType.class));
+		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithValueAttributeForType.class));
 		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithoutAttributesForAll.class));
 		javaFiles.oneJavaFile(this.fileNameFor(AnnotationTypeWithOneAttributeForAll.class));
 	}
@@ -34,7 +35,7 @@ public class ClassWithVariousAnnotationsTest extends
 	
 	@Test
 	public void testAnnotationTypeForTypeSourceAnchor() {
-		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithoutAttributesForType.class.getName());
+		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithValueAttributeForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
 		assertNotNull(annotationType.getSourceAnchor());
 	}
@@ -61,7 +62,9 @@ public class ClassWithVariousAnnotationsTest extends
 	@Test
 	public void testAnnotationInstanceOnMethods() {
 		Type type = importer.types().named(ClassWithVariousAnnotations.class.getName());
-		type.getMethods().stream().forEach(m -> assertEquals(1, m.getAnnotationInstances().size()));
+		type.getMethods().stream()
+			.filter(m -> !m.getName().equals(InJavaImporter.INITIALIZER_NAME))
+			.forEach(m -> assertEquals(1, m.getAnnotationInstances().size()));
 	}
 	
 	@Test
@@ -83,11 +86,16 @@ public class ClassWithVariousAnnotationsTest extends
 	public void testMethodWithExpressionAnnotationValue() {
 		AnnotationInstance annotationInstance = methodNamed("methodWithExpressionAnnotationValue").getAnnotationInstances().stream().findAny().get();
 		assertEquals(1, annotationInstance.getAttributes().size());
-		assertEquals("stringstring", annotationInstance.getAttributes().stream().findAny().get().getValue());
+		assertEquals("methodstring", annotationInstance.getAttributes().stream().findAny().get().getValue());
 	}
 	
 	@Test
-	public void testAccessesToConstant() {
-		assertEquals(2, attributeNamed("DEFAULT").getIncomingAccesses().size());
+	public void testAccessesToAttributeMethodConstant() {
+		assertEquals(3, attributeNamed("DEFAULT").getIncomingAccesses().size());
+	}
+
+	@Test
+	public void testAccessesToTypeConstant() {
+		assertEquals(2, attributeNamed("DEFAUlT_FOR_TYPE").getIncomingAccesses().size());
 	}
 }
