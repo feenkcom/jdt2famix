@@ -92,6 +92,7 @@ import com.feenk.jdt2famix.model.java.JavaModel;
  * @author girba
  */
 public class InJavaImporter extends Importer {
+	private static final Logger logger = LogManager.getLogger(InJavaImporter.class);
 	
 	private static final char NAME_SEPARATOR = '.';
 	public static final String INITIALIZER_NAME = "<init>";
@@ -119,6 +120,10 @@ public class InJavaImporter extends Importer {
 	public NamedEntityAccumulator<Attribute> attributes() {return attributes;}
 
 	private NamedEntityAccumulator<Parameter> parameters;
+	
+	private String currentFilePath;
+	public String getCurrentFilePath() {return currentFilePath;}
+	public void setCurrentFilePath(String currentFilePath) {this.currentFilePath = currentFilePath;}
 	
 	/**
 	 * This is a structure that keeps track of the current stack of containers
@@ -463,7 +468,12 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
 			method.setHasClassScope(true);
-		createAnnotationInstancesToEntityFromAnnotationBinding(method, binding.getAnnotations());
+		try {
+			IAnnotationBinding[] annotations = binding.getAnnotations();
+			createAnnotationInstancesToEntityFromAnnotationBinding(method, annotations);
+		} catch(NullPointerException e) {
+			logNullBinding("annotation instances for method binding", Famix.qualifiedNameOf(method) , -1);
+		}
 	}
 	
 	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
@@ -796,11 +806,11 @@ public class InJavaImporter extends Importer {
 	 * We pass the compilationUnit because this is where the logic of getting the line number is.
 	 * We cannot complain about the sense of humor in this design :)
 	 */
-	public void createSourceAnchor(SourcedEntity sourcedEntity, String sourceFilePath, ASTNode node, CompilationUnit compilationUnit) {
+	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node, CompilationUnit compilationUnit) {
 		FileAnchor fileAnchor = new FileAnchor();
 		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
 		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-		fileAnchor.setFileName(pathWithoutIgnoredRootPath(sourceFilePath));
+		fileAnchor.setFileName(pathWithoutIgnoredRootPath(currentFilePath));
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}
@@ -865,5 +875,15 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	
+	public void logNullBinding(String string, Object extraData, int lineNumber) {
+		logger.error("unresolved " + string +
+				" - " + extraData +
+				" - " + currentFilePath +
+				" - line " + lineNumber);
+	}
+
 	
 }

@@ -26,7 +26,9 @@ public class AstRequestor extends FileASTRequestor {
 				+ String.format("%0"+ Integer.toString(allJavaFileCount).length() + "d", ++currentFileIndex)
 				+ "/" + allJavaFileCount + " - "
 				+ sourceFilePath);
-		ast.accept(new AstVisitor(importer, sourceFilePath));
+		importer.setCurrentFilePath(sourceFilePath);
+		ast.accept(new AstVisitor(importer));
+		importer.setCurrentFilePath(null);
 	}
 
 }
