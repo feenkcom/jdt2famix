@@ -472,6 +472,10 @@ public class InJavaImporter extends Importer {
 			IAnnotationBinding[] annotations = binding.getAnnotations();
 			createAnnotationInstancesToEntityFromAnnotationBinding(method, annotations);
 		} catch(NullPointerException e) {
+			/* This happens in some very strange circumstances, likely due to missing dependencies.
+			 * The only solution I found was to catch the exception and log it and provide people
+			 * with a way to solve it by adding the missing dependencies to the import.
+			 */
 			logNullBinding("annotation instances for method binding", Famix.qualifiedNameOf(method) , -1);
 		}
 	}
