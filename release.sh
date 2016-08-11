@@ -18,3 +18,4 @@ mvn dependency:copy-dependencies -DoutputDirectory=release -DoverWriteSnapshots=
 #4. copy the release script
 cp ./res/jdt2famix.sh ./release/
 chmod a+x ./release/jdt2famix.sh
+cp ./res/jdt2famix.cmd ./release/
