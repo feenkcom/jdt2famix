@@ -539,8 +539,11 @@ public class InJavaImporter extends Importer {
 		parameter.setParentBehaviouralEntity(method);
 		parameter.setDeclaredType(ensureTypeFromDomType(variableDeclaration.getType()));
 		IVariableBinding binding = variableDeclaration.resolveBinding();
-		if (binding != null)
+		if (binding != null) {
 			createAnnotationInstancesToEntityFromAnnotationBinding(parameter, binding.getAnnotations());
+			//We only recover the final modifier
+			if (Modifier.isFinal(binding.getModifiers())) parameter.addModifiers("final");
+		}
 		return parameter;
 	}
 

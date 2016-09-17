@@ -49,4 +49,12 @@ public class VoidMethodsWithOneParameterTest extends OneSampleTestCase {
 		assertEquals("int[]", parameter.getDeclaredType().getName());
 		assertTrue(parameter.getDeclaredType() instanceof PrimitiveType);
 	}
+	
+	@Test
+	public void publicVoidWithFinalStringParameter() {
+		assertEquals(1, methodNamed("publicVoidWithFinalStringParameter").getParameters().size());
+		Parameter parameter = methodNamed("publicVoidWithFinalStringParameter").getParameters().stream().findAny().get();
+		assertEquals(1, parameter.getModifiers().size());
+		assertTrue(parameter.getModifiers().stream().anyMatch(m -> m.equals("final")));
+	}
 }

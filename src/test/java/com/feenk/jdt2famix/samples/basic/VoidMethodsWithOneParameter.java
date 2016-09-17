@@ -6,4 +6,6 @@ public class VoidMethodsWithOneParameter {
 	static void packageStaticVoidWithStringArrayParameter(String[] s) {}
 
 	public void publicVoidWithIntArrayParameter(int[] i) {}
+
+	public void publicVoidWithFinalStringParameter(final String s) {}
 }
