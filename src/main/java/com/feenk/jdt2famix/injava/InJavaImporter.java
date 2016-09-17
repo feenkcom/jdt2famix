@@ -838,6 +838,8 @@ public class InJavaImporter extends Importer {
 			CompilationUnit root = (CompilationUnit) node.getRoot();
 			int firstLeadingCommentIndex = root.firstLeadingCommentIndex(node);
 			if (firstLeadingCommentIndex >= 0)  
+				//There seems to be a problem here: JDT does not seem to provide the contents of the comments.
+				//Only the types (one line or multi line).
 				createBasicComment(entity, root.getCommentList().get(firstLeadingCommentIndex).toString());
 		}
 	}

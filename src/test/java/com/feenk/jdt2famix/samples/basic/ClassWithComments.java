@@ -19,11 +19,21 @@ public class ClassWithComments {
 	 */
 	public void methodWithJavadoc() {}
 	
+	/**
+	 * Method Javadoc including a link:
+	 * http://feenk.com
+	 */
+	public void methodWithMultiLineCommentIncludingALink() {}
+
 	//Method one line comment
 	public void methodWithOneLineComment() {}
+
+	//Method one line comment and link: http://feenk.com
+	public void methodWithOneLineCommentIncludingALink() {}
 
 	/*
 	 * Method multi line comment
 	 */
 	public void methodWithMultiLineComment() {}
+
 }

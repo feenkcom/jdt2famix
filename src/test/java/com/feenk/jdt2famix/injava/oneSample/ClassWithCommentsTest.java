@@ -39,8 +39,26 @@ public class ClassWithCommentsTest extends OneSampleTestCase {
 		assertEquals(1, methodNamed("methodWithOneLineComment").getComments().size());
 	}
 
+	@Test(expected=AssertionError.class)
+	public void testMethodWithOneLineCommentIncludingALink() {
+		assertEquals(1, methodNamed("methodWithOneLineCommentIncludingALink").getComments().size());
+		assertEquals("//Method one line comment and link: http://feenk.com", methodNamed("methodWithOneLineCommentIncludingALink").getComments().stream().findAny().get().getContent());
+	}
+
 	@Test
 	public void testMethodWithMultiLineComment() {
 		assertEquals(1, methodNamed("methodWithMultiLineComment").getComments().size());
+	}
+
+	@Test
+	public void testMethodWithMultiLineCommentIncludingALink() {
+		assertEquals(1, methodNamed("methodWithMultiLineCommentIncludingALink").getComments().size());
+		assertTrue(methodNamed("methodWithMultiLineCommentIncludingALink").
+					getComments().
+					stream().
+					findAny().
+					get().
+					getContent().
+					contains("feenk.com"));
 	}
 }
