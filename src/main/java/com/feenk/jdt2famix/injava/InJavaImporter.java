@@ -24,6 +24,7 @@ import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
 import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
+import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
 import org.eclipse.jdt.core.dom.FileASTRequestor;
 import org.eclipse.jdt.core.dom.IAnnotationBinding;
@@ -752,6 +753,11 @@ public class InJavaImporter extends Importer {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
 				return createAccessFromVariableBinding(variableBinding);
 			}
+		}
+		if (expression instanceof FieldAccess) {
+			FieldAccess access = (FieldAccess) expression;
+			IVariableBinding variableBinding = access.resolveFieldBinding();
+			return createAccessFromVariableBinding(variableBinding);
 		}
 		return new Access();
 	}

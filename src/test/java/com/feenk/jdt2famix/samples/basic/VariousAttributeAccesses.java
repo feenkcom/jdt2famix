@@ -37,6 +37,10 @@ public class VariousAttributeAccesses {
 	public void writeAccessThroughAssignment(String argument) {
 		attribute = argument;
 	}
+
+	public void writeAccessThroughThisAssignment(String argument) {
+		this.attribute = argument;
+	}
 	
 	public void readAccessThroughIfLeftCondition() {
 		if (attribute == "attribute")
