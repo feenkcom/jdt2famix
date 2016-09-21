@@ -1,7 +1,9 @@
 package com.feenk.jdt2famix.injava;
 
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -22,7 +24,6 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -42,9 +43,6 @@ import org.eclipse.jdt.core.dom.SimpleName;
 import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
-
-import ch.akuhn.fame.MetaRepository;
-import ch.akuhn.fame.Repository;
 
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
@@ -81,96 +79,130 @@ import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.model.famix.UnknownVariable;
 import com.feenk.jdt2famix.model.java.JavaModel;
 
+import ch.akuhn.fame.MetaRepository;
+import ch.akuhn.fame.Repository;
+
 /**
- * The core class that holds the logic of creating the model
- * It looks like a god class, but it is convenient to have most of the logic here
+ * The core class that holds the logic of creating the model It looks like a god
+ * class, but it is convenient to have most of the logic here
  * 
- * There are two main kinds of methods
- * 1. ensure methods are those that always return the same instance of a named entity for the same qualified name.
- *    These are important for creating the graph.
- * 2. create methods always create new instances entities (both named and other types, such as associations)
+ * There are two main kinds of methods 1. ensure methods are those that always
+ * return the same instance of a named entity for the same qualified name. These
+ * are important for creating the graph. 2. create methods always create new
+ * instances entities (both named and other types, such as associations)
  * 
  * @author girba
  */
 public class InJavaImporter extends Importer {
 	private static final Logger logger = LogManager.getLogger(InJavaImporter.class);
-	
+
 	private static final char NAME_SEPARATOR = '.';
 	public static final String INITIALIZER_NAME = "<init>";
 	public static final String UNKNOWN_NAME = "__UNKNOWN__";
 	public static final String CONSTRUCTOR_KIND = "constructor";
 	private static final String INITIALIZER_KIND = "initializer";
-	
+
 	private Namespace unknownNamespace;
 	private Type unknownType;
 	private UnknownVariable unknownVariable;
-	
-	private Repository repository;
-	public Repository repository() { return repository; }
-	
-	private NamedEntityAccumulator<Namespace> namespaces;
-	public NamedEntityAccumulator<Namespace> namespaces() {return namespaces;}
 
-	private NamedEntityAccumulator<Type> types; 
-	public NamedEntityAccumulator<Type> types() {return types;}
+	private Repository repository;
+
+	public Repository repository() {
+		return repository;
+	}
+
+	private NamedEntityAccumulator<Namespace> namespaces;
+
+	public NamedEntityAccumulator<Namespace> namespaces() {
+		return namespaces;
+	}
+
+	private NamedEntityAccumulator<Type> types;
+
+	public NamedEntityAccumulator<Type> types() {
+		return types;
+	}
 
 	private NamedEntityAccumulator<Method> methods;
-	public NamedEntityAccumulator<Method> methods() {return methods;}
+
+	public NamedEntityAccumulator<Method> methods() {
+		return methods;
+	}
 
 	private NamedEntityAccumulator<Attribute> attributes;
-	public NamedEntityAccumulator<Attribute> attributes() {return attributes;}
+
+	public NamedEntityAccumulator<Attribute> attributes() {
+		return attributes;
+	}
 
 	private NamedEntityAccumulator<Parameter> parameters;
-	
+
 	private String currentFilePath;
-	public String getCurrentFilePath() {return currentFilePath;}
-	public void setCurrentFilePath(String currentFilePath) {this.currentFilePath = currentFilePath;}
-	
+
+	public String getCurrentFilePath() {
+		return currentFilePath;
+	}
+
+	public void setCurrentFilePath(String currentFilePath) {
+		this.currentFilePath = currentFilePath;
+	}
+
 	/**
 	 * This is a structure that keeps track of the current stack of containers
 	 * It is particularly useful when we deal with inner or anonymous classes
-	 */ 
+	 */
 	private Deque<ContainerEntity> containerStack = new ArrayDeque<ContainerEntity>();
-	public void pushOnContainerStack(ContainerEntity namespace) {this.containerStack.push(namespace);}
-	public ContainerEntity popFromContainerStack() {return this.containerStack.pop();}
-	public ContainerEntity topOfContainerStack() {return this.containerStack.peek();}
+
+	public void pushOnContainerStack(ContainerEntity namespace) {
+		this.containerStack.push(namespace);
+	}
+
+	public ContainerEntity popFromContainerStack() {
+		return this.containerStack.pop();
+	}
+
+	public ContainerEntity topOfContainerStack() {
+		return this.containerStack.peek();
+	}
+
 	@SuppressWarnings("unchecked")
-	public <T> T topFromContainerStack(java.lang.Class<T> clazz) { 
+	public <T> T topFromContainerStack(java.lang.Class<T> clazz) {
 		for (Iterator<ContainerEntity> iterator = containerStack.iterator(); iterator.hasNext();) {
 			ContainerEntity next = iterator.next();
-			if (clazz.isInstance(next)) return (T) next;
+			if (clazz.isInstance(next))
+				return (T) next;
 		}
 		return null;
 	}
-	
+
 	public InJavaImporter() {
 		MetaRepository metaRepository = new MetaRepository();
 		FAMIXModel.importInto(metaRepository);
 		JavaModel.importInto(metaRepository);
 		repository = new Repository(metaRepository);
 		repository.add(new JavaSourceLanguage());
-		
+
 		namespaces = new NamedEntityAccumulator<Namespace>(repository);
 		types = new NamedEntityAccumulator<Type>(repository);
 		methods = new NamedEntityAccumulator<Method>(repository);
 		attributes = new NamedEntityAccumulator<Attribute>(repository);
 		parameters = new NamedEntityAccumulator<Parameter>(repository);
 	}
-	
+
 	@Override
 	protected FileASTRequestor getRequestor(JavaFiles allJavaFiles) {
 		return new AstRequestor(this, allJavaFiles);
 	}
 
-	
-	//NAMESPACE
-	
+	// NAMESPACE
+
 	public Namespace ensureNamespaceFromPackageBinding(IPackageBinding binding) {
 		return ensureNamespaceNamed(binding.getName());
 	}
-	
+
 	Namespace ensureNamespaceNamed(String packageName) {
-		if (namespaces.has(packageName)) 
+		if (namespaces.has(packageName))
 			return namespaces.named(packageName);
 		else
 			return namespaces.add(packageName, createNamespaceNamed(packageName));
@@ -183,16 +215,18 @@ public class InJavaImporter extends Importer {
 		if (lastIndexOfDot <= 0)
 			namespace.setName(qualifiedName);
 		else {
-			/* Java packages are not nested, even though they look like they are.
-			 * But, in Famix, namespaces are nested. So we create nesting based on the . separator
+			/*
+			 * Java packages are not nested, even though they look like they
+			 * are. But, in Famix, namespaces are nested. So we create nesting
+			 * based on the . separator
 			 */
-			namespace.setName(qualifiedName.substring(lastIndexOfDot+1));
+			namespace.setName(qualifiedName.substring(lastIndexOfDot + 1));
 			Namespace parentNamespace = ensureNamespaceNamed(qualifiedName.substring(0, lastIndexOfDot));
 			namespace.setParentScope(parentNamespace);
 		}
 		return namespace;
 	}
-	
+
 	private ContainerEntity ensureContainerEntityForTypeBinding(ITypeBinding binding) {
 		if (binding.getDeclaringClass() != null)
 			return ensureTypeFromTypeBinding(binding.getDeclaringClass());
@@ -210,38 +244,43 @@ public class InJavaImporter extends Importer {
 		}
 		return unknownNamespace;
 	}
-	
-	
-	//TYPE
-	
+
+	// TYPE
+
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
 		String qualifiedName = binding.getQualifiedName();
-		if (types.has(qualifiedName)) return types.named(qualifiedName);
+		if (types.has(qualifiedName))
+			return types.named(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
 		type.setName(binding.getName());
 		types.add(qualifiedName, type);
 		type.setIsStub(true);
 		extractBasicModifiersFromBinding(binding.getModifiers(), type);
 		type.setContainer(ensureContainerEntityForTypeBinding(binding));
-		if (binding.getSuperclass() != null) 
+		if (binding.getSuperclass() != null)
 			createInheritanceFromSubtypeToSuperTypeBinding(type, binding.getSuperclass());
 		for (ITypeBinding interfaceBinding : binding.getInterfaces()) {
 			createInheritanceFromSubtypeToSuperTypeBinding(type, interfaceBinding);
 		}
 		if (binding.isParameterizedType()) {
-			/* This if duplicates the condition from the create method because we want to break
-			 * possible infinite loops induced by the below ensure calls.
-			 * This is achieved by having this condition after the addition of the type in the types map.
+			/*
+			 * This if duplicates the condition from the create method because
+			 * we want to break possible infinite loops induced by the below
+			 * ensure calls. This is achieved by having this condition after the
+			 * addition of the type in the types map.
 			 */
 			ParameterizedType parameterizedType = ((ParameterizedType) type);
-			if (ensureTypeFromTypeBinding(binding.getErasure()) instanceof ParameterizableClass) 
-				parameterizedType.setParameterizableClass((ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
-			List<Type> arguments = Stream.of(binding.getTypeArguments()).map(arg -> ensureTypeFromTypeBinding(arg)).collect(Collectors.toList());
+			if (ensureTypeFromTypeBinding(binding.getErasure()) instanceof ParameterizableClass)
+				parameterizedType.setParameterizableClass(
+						(ParameterizableClass) ensureTypeFromTypeBinding(binding.getErasure()));
+			List<Type> arguments = Stream.of(binding.getTypeArguments()).map(arg -> ensureTypeFromTypeBinding(arg))
+					.collect(Collectors.toList());
 			parameterizedType.setArguments(arguments);
 		}
 		if (binding.isGenericType()) {
 			ParameterizableClass parameterizableClass = (ParameterizableClass) type;
-			Stream.of(binding.getTypeParameters()).forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
+			Stream.of(binding.getTypeParameters())
+					.forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
 		createAnnotationInstancesToEntityFromAnnotationBinding(type, binding.getAnnotations());
 		return type;
@@ -250,7 +289,8 @@ public class InJavaImporter extends Importer {
 	/**
 	 * Main method for creating annotation instances
 	 */
-	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity entity, IAnnotationBinding[] annotations) {
+	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity entity,
+			IAnnotationBinding[] annotations) {
 		for (IAnnotationBinding annotationInstanceBinding : annotations) {
 			ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
 			AnnotationInstance annotationInstance = new AnnotationInstance();
@@ -262,9 +302,9 @@ public class InJavaImporter extends Importer {
 			repository.add(annotationInstance);
 		}
 	}
+
 	private void createAnnotationInstanceFromAnnotationInstanceBinding(IAnnotationBinding annotationInstanceBinding,
-			ITypeBinding annotationTypeBinding,
-			AnnotationInstance annotationInstance) {
+			ITypeBinding annotationTypeBinding, AnnotationInstance annotationInstance) {
 		AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(annotationTypeBinding);
 		annotationInstance.setAnnotationType(annotationType);
 		IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
@@ -274,30 +314,32 @@ public class InJavaImporter extends Importer {
 			annotationInstance.addAttributes(annotationInstanceAttribute);
 			repository.add(annotationInstanceAttribute);
 
-			annotationInstanceAttribute.setAnnotationTypeAttribute(ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
+			annotationInstanceAttribute.setAnnotationTypeAttribute(
+					ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
 		}
 	}
+
 	private String annotationInstanceAttributeValueString(Object value) {
 		if (value == null)
 			/*
-			 * Theoretically, this should not happen because the Java compiler prevents you from setting null to an enum constant.
-			 * However, we can still get a null during import.
-			 * For example, when referencing something like attribute=MyClass.class, without MyClass being available,
-			 * we get a null as value.   
+			 * Theoretically, this should not happen because the Java compiler
+			 * prevents you from setting null to an enum constant. However, we
+			 * can still get a null during import. For example, when referencing
+			 * something like attribute=MyClass.class, without MyClass being
+			 * available, we get a null as value.
 			 */
 			return "null";
 		if (value instanceof ITypeBinding)
-			return ((ITypeBinding)value).getName() + ".class";
+			return ((ITypeBinding) value).getName() + ".class";
 		if (value instanceof Object[]) {
 			Object[] array = (Object[]) value;
 			StringJoiner signatureJoiner = new StringJoiner(", ", "{", "}");
-			Arrays
-			.stream(array)
-			.forEach( object -> signatureJoiner.add(annotationInstanceAttributeValueString(object)) );
+			Arrays.stream(array).forEach(object -> signatureJoiner.add(annotationInstanceAttributeValueString(object)));
 			return signatureJoiner.toString();
 		}
 		return value.toString();
 	}
+
 	private AnnotationTypeAttribute ensureAnnotationTypeAttribute(Type parentType, String name) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;
 		if (attributes().has(qualifiedName))
@@ -308,7 +350,7 @@ public class InJavaImporter extends Importer {
 		attributes.add(qualifiedName, attribute);
 		return attribute;
 	}
-	
+
 	Type createTypeFromTypeBinding(ITypeBinding binding) {
 		if (binding.isPrimitive())
 			return new PrimitiveType();
@@ -329,7 +371,7 @@ public class InJavaImporter extends Importer {
 		clazz.setIsInterface(binding.isInterface());
 		return clazz;
 	}
-	
+
 	private ParameterType createParameterType(String name, Type container) {
 		ParameterType parameterType = new ParameterType();
 		parameterType.setName(name);
@@ -338,11 +380,11 @@ public class InJavaImporter extends Importer {
 	}
 
 	/**
-	 * All types should be ensured first via this method.
-	 * We first check to see if the binding is resolvable (not null)
-	 * If it is not null we ensure the type from the binding (the happy case)
-	 * If the type is null we recover what we know (for example, the name of a simple type)
-	 * In the worst case we return the {@link #unknownType()} 
+	 * All types should be ensured first via this method. We first check to see
+	 * if the binding is resolvable (not null) If it is not null we ensure the
+	 * type from the binding (the happy case) If the type is null we recover
+	 * what we know (for example, the name of a simple type) In the worst case
+	 * we return the {@link #unknownType()}
 	 */
 	private Type ensureTypeFromDomType(org.eclipse.jdt.core.dom.Type domType) {
 		ITypeBinding binding = domType.resolveBinding();
@@ -351,12 +393,14 @@ public class InJavaImporter extends Importer {
 		if (domType.isSimpleType())
 			return ensureTypeNamedInUnknownNamespace(((SimpleType) domType).getName().toString());
 		if (domType.isParameterizedType())
-			return ensureTypeNamedInUnknownNamespace(((org.eclipse.jdt.core.dom.ParameterizedType) domType).getType().toString());
+			return ensureTypeNamedInUnknownNamespace(
+					((org.eclipse.jdt.core.dom.ParameterizedType) domType).getType().toString());
 		return unknownType();
 	}
-	
+
 	/**
-	 * This is the type we used as a null object whenever we need to reference a type  
+	 * This is the type we used as a null object whenever we need to reference a
+	 * type
 	 */
 	public Type unknownType() {
 		if (unknownType == null) {
@@ -364,7 +408,7 @@ public class InJavaImporter extends Importer {
 		}
 		return unknownType;
 	}
-	
+
 	public Type ensureTypeNamedInUnknownNamespace(String name) {
 		Type type = createTypeNamedInUnknownNamespace(name);
 		String qualifiedName = Famix.qualifiedNameOf(type);
@@ -384,8 +428,7 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	public Type ensureTypeFromAnonymousDeclaration(
-			Type type, AnonymousClassDeclaration node) {
+	public Type ensureTypeFromAnonymousDeclaration(Type type, AnonymousClassDeclaration node) {
 		type.setContainer(topOfContainerStack());
 		type.setName("$" + topOfContainerStack().getTypes().size());
 		if (node.getParent() instanceof ClassInstanceCreation)
@@ -396,75 +439,70 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	
-	//INHERITANCE
-	
+	// INHERITANCE
+
 	/**
 	 * We use this one when we have the super type binding
 	 */
-	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType,
-			ITypeBinding superBinding) {
-		return createInheritanceFromSubtypeToSuperType(subType, ensureTypeFromTypeBinding(superBinding)); 
+	private Inheritance createInheritanceFromSubtypeToSuperTypeBinding(Type subType, ITypeBinding superBinding) {
+		return createInheritanceFromSubtypeToSuperType(subType, ensureTypeFromTypeBinding(superBinding));
 	}
 
 	/**
-	 * When we cannot resolve the binding of the superclass of a class declaration,
-	 * we still want to create a {@link Type} with the best available information
-	 * from {@link org.eclipse.jdt.core.dom.Type}  
+	 * When we cannot resolve the binding of the superclass of a class
+	 * declaration, we still want to create a {@link Type} with the best
+	 * available information from {@link org.eclipse.jdt.core.dom.Type}
 	 */
-	public Inheritance createInheritanceFromSubtypeToSuperDomType(Type subType,
-			org.eclipse.jdt.core.dom.Type type) {
+	public Inheritance createInheritanceFromSubtypeToSuperDomType(Type subType, org.eclipse.jdt.core.dom.Type type) {
 		return createInheritanceFromSubtypeToSuperType(subType, ensureTypeFromDomType(type));
 	}
 
 	/**
-	 * We use this one when we have the super type 
+	 * We use this one when we have the super type
 	 */
-	private Inheritance createInheritanceFromSubtypeToSuperType(Type subType,
-			Type superType) {
+	private Inheritance createInheritanceFromSubtypeToSuperType(Type subType, Type superType) {
 		Inheritance inheritance = new Inheritance();
-		inheritance.setSuperclass(superType); 
+		inheritance.setSuperclass(superType);
 		inheritance.setSubclass(subType);
 		repository.add(inheritance);
 		return inheritance;
 	}
 
-		
-	//METHOD
-	
+	// METHOD
+
 	/**
-	 * We use this one when we know that we are aiming for the top of the container stack
-	 * This is important in the case of anonymous classes which have empty names in JDT
+	 * We use this one when we know that we are aiming for the top of the
+	 * container stack This is important in the case of anonymous classes which
+	 * have empty names in JDT
 	 */
 	public Method ensureMethodFromMethodBindingToCurrentContainer(IMethodBinding binding) {
 		return ensureMethodFromMethodBinding(binding, (Type) topOfContainerStack());
 	}
-	
+
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
-		/*	binding.getDeclaringClass() might be null when you invoke a method from a class that is not in the path
-			It looks like calling getMethodDeclaration is more robust. */
-		return ensureMethodFromMethodBinding(binding.getMethodDeclaration(), ensureTypeFromTypeBinding(binding.getMethodDeclaration().getDeclaringClass()));
+		/*
+		 * binding.getDeclaringClass() might be null when you invoke a method
+		 * from a class that is not in the path It looks like calling
+		 * getMethodDeclaration is more robust.
+		 */
+		return ensureMethodFromMethodBinding(binding.getMethodDeclaration(),
+				ensureTypeFromTypeBinding(binding.getMethodDeclaration().getDeclaringClass()));
 	}
 
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding, Type parentType) {
 		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
-		Arrays
-			.stream(binding.getParameterTypes())
-			.forEach( p -> signatureJoiner.add((String) p.getQualifiedName()) );
+		Arrays.stream(binding.getParameterTypes()).forEach(p -> signatureJoiner.add((String) p.getQualifiedName()));
 		String methodName = binding.getName();
 		String signature = methodName + signatureJoiner.toString();
-		return ensureBasicMethod(
-				methodName, 
-				signature, 
-				parentType,
-				m -> setUpMethodFromMethodBinding(m, binding));
+		return ensureBasicMethod(methodName, signature, parentType, m -> setUpMethodFromMethodBinding(m, binding));
 	}
+
 	private void setUpMethodFromMethodBinding(Method method, IMethodBinding binding) {
-		if (binding.isConstructor()) 
+		if (binding.isConstructor())
 			method.setKind(CONSTRUCTOR_KIND);
 		ITypeBinding returnType = binding.getReturnType();
 		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void")))
-			//we do not want to set void as a return type
+			// we do not want to set void as a return type
 			method.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
@@ -472,38 +510,34 @@ public class InJavaImporter extends Importer {
 		try {
 			IAnnotationBinding[] annotations = binding.getAnnotations();
 			createAnnotationInstancesToEntityFromAnnotationBinding(method, annotations);
-		} catch(NullPointerException e) {
-			/* This happens in some very strange circumstances, likely due to missing dependencies.
-			 * The only solution I found was to catch the exception and log it and provide people
-			 * with a way to solve it by adding the missing dependencies to the import.
+		} catch (NullPointerException e) {
+			/*
+			 * This happens in some very strange circumstances, likely due to
+			 * missing dependencies. The only solution I found was to catch the
+			 * exception and log it and provide people with a way to solve it by
+			 * adding the missing dependencies to the import.
 			 */
-			logNullBinding("annotation instances for method binding", Famix.qualifiedNameOf(method) , -1);
+			logNullBinding("annotation instances for method binding", Famix.qualifiedNameOf(method), -1);
 		}
 	}
-	
+
 	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
 		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
-		Arrays
-			.stream(node.parameters().toArray())
-			.forEach( p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()) );
+		Arrays.stream(node.parameters().toArray())
+				.forEach(p -> signatureJoiner.add((String) ((SingleVariableDeclaration) p).getType().toString()));
 		String methodName = node.getName().toString();
-		String signature = methodName + signatureJoiner.toString();		
-		return ensureBasicMethod(
-				methodName, 
-				signature, 
-				(Type) topOfContainerStack(),
+		String signature = methodName + signatureJoiner.toString();
+		return ensureBasicMethod(methodName, signature, (Type) topOfContainerStack(),
 				m -> setUpMethodFromMethodDeclaration(m, node));
 	}
+
 	private void setUpMethodFromMethodDeclaration(Method method, MethodDeclaration node) {
 		if (node.getReturnType2() != null)
 			method.setDeclaredType(ensureTypeFromDomType(node.getReturnType2()));
 	}
-	
+
 	public Method ensureInitializerMethod() {
-		return ensureBasicMethod(
-				INITIALIZER_NAME, 
-				INITIALIZER_NAME, 
-				(Type) topOfContainerStack(),
+		return ensureBasicMethod(INITIALIZER_NAME, INITIALIZER_NAME, (Type) topOfContainerStack(),
 				m -> setUpInitializerMethod(m));
 	}
 
@@ -511,10 +545,10 @@ public class InJavaImporter extends Importer {
 		method.setKind(INITIALIZER_KIND);
 		method.setIsStub(false);
 	}
-	
+
 	public Method ensureBasicMethod(String methodName, String signature, Type parentType, Consumer<Method> ifAbsent) {
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + signature;
-		if(methods.has(qualifiedName))
+		if (methods.has(qualifiedName))
 			return methods.named(qualifiedName);
 		Method method = new Method();
 		method.setName(methodName);
@@ -525,14 +559,14 @@ public class InJavaImporter extends Importer {
 		ifAbsent.accept(method);
 		return method;
 	}
-	
-	//PARAMETER
-	
+
+	// PARAMETER
+
 	public Parameter ensureParameterFromSingleVariableDeclaration(SingleVariableDeclaration variableDeclaration,
 			Method method) {
 		String name = variableDeclaration.getName().toString();
 		String qualifiedName = Famix.qualifiedNameOf(method) + NAME_SEPARATOR + name;
-		if (parameters.has(qualifiedName)) 
+		if (parameters.has(qualifiedName))
 			return parameters.named(qualifiedName);
 		Parameter parameter = new Parameter();
 		parameters.add(qualifiedName, parameter);
@@ -542,34 +576,34 @@ public class InJavaImporter extends Importer {
 		IVariableBinding binding = variableDeclaration.resolveBinding();
 		if (binding != null) {
 			createAnnotationInstancesToEntityFromAnnotationBinding(parameter, binding.getAnnotations());
-			//We only recover the final modifier
-			if (Modifier.isFinal(binding.getModifiers())) parameter.addModifiers("final");
+			// We only recover the final modifier
+			if (Modifier.isFinal(binding.getModifiers()))
+				parameter.addModifiers("final");
 		}
 		return parameter;
 	}
 
 	public Parameter ensureParameterWithinCurrentMethodFromVariableBinding(IVariableBinding binding) {
 		Method method = (Method) topOfContainerStack();
-		Optional<Parameter> possibleParameter = method.getParameters()
-			.stream()
-			.filter(p -> p.getName().equals(binding.getName()))
-			.findAny();
+		Optional<Parameter> possibleParameter = method.getParameters().stream()
+				.filter(p -> p.getName().equals(binding.getName())).findAny();
 		if (possibleParameter.isPresent())
 			return possibleParameter.get();
 		return null;
 	}
 
-	
-	//ATTRIBUTE
-	
+	// ATTRIBUTE
+
 	/**
-	 * We pass both the fragment and the field because we need the field type when the binding cannot be resolved
+	 * We pass both the fragment and the field because we need the field type
+	 * when the binding cannot be resolved
 	 */
 	public Attribute ensureAttributeForFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		IVariableBinding binding = fragment.resolveBinding();
 		Attribute attribute;
 		if (binding == null)
-			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field, this.topFromContainerStack(Type.class));
+			attribute = ensureAttributeFromFragmentIntoParentType(fragment, field,
+					this.topFromContainerStack(Type.class));
 		else {
 			attribute = ensureAttributeForVariableBinding(binding);
 			extractBasicModifiersFromBinding(binding.getModifiers(), attribute);
@@ -579,22 +613,21 @@ public class InJavaImporter extends Importer {
 		attribute.setIsStub(true);
 		return attribute;
 	}
-	
+
 	Attribute ensureAttributeForVariableBinding(IVariableBinding binding) {
 		String name = binding.getName();
 		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
 		Type parentType;
 		if (parentTypeBinding == null)
-			/* for example
-			 * 		String[] args;
-			 * 		args.length
-			 * appears like an attribute, but the declaring class is not present
+			/*
+			 * for example String[] args; args.length appears like an attribute,
+			 * but the declaring class is not present
 			 */
 			parentType = unknownType();
-		else 
+		else
 			parentType = ensureTypeFromTypeBinding(parentTypeBinding);
 		String qualifiedName = Famix.qualifiedNameOf(parentType) + NAME_SEPARATOR + name;
-		if (attributes.has(qualifiedName)) 
+		if (attributes.has(qualifiedName))
 			return attributes.named(qualifiedName);
 		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,
 				ensureTypeFromTypeBinding(binding.getType()));
@@ -602,20 +635,18 @@ public class InJavaImporter extends Importer {
 		return attribute;
 	}
 
-	private Attribute ensureAttributeFromFragmentIntoParentType(
-			VariableDeclarationFragment fragment,
-			FieldDeclaration field,
-			Type parentType) {
+	private Attribute ensureAttributeFromFragmentIntoParentType(VariableDeclarationFragment fragment,
+			FieldDeclaration field, Type parentType) {
 		String name = fragment.getName().toString();
 		String qualifiedName = Famix.qualifiedNameOf(parentType);
-		if (attributes.has(qualifiedName)) 
+		if (attributes.has(qualifiedName))
 			return attributes.named(qualifiedName);
 		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,
 				ensureTypeFromDomType(field.getType()));
 		return attribute;
 	}
-	private Attribute ensureBasicAttribute(Type parentType, String name,
-			String qualifiedName, Type declaredType) {
+
+	private Attribute ensureBasicAttribute(Type parentType, String name, String qualifiedName, Type declaredType) {
 		Attribute attribute = new Attribute();
 		attribute.setName(name);
 		attribute.setParentType(parentType);
@@ -623,28 +654,26 @@ public class InJavaImporter extends Importer {
 		attributes.add(qualifiedName, attribute);
 		return attribute;
 	}
-	
 
-	//LOCAL VARIABLE
-	
+	// LOCAL VARIABLE
+
 	/**
-	 * We pass the dom type here because of the funny types of JDT 
+	 * We pass the dom type here because of the funny types of JDT
 	 */
-	public LocalVariable ensureLocalVariableFromFragment(
-			VariableDeclarationFragment fragment,
+	public LocalVariable ensureLocalVariableFromFragment(VariableDeclarationFragment fragment,
 			org.eclipse.jdt.core.dom.Type type) {
 		LocalVariable localVariable = new LocalVariable();
 		localVariable.setName(fragment.getName().toString());
 		localVariable.setDeclaredType(ensureTypeFromDomType(type));
-		//CHECK: We might want to recover the modifiers (e.g., final) 
+		// CHECK: We might want to recover the modifiers (e.g., final)
 		localVariable.setIsStub(true);
 		((Method) topOfContainerStack()).addLocalVariables(localVariable);
 		repository.add(localVariable);
 		return localVariable;
 	}
-	
-	//ENUM VALUE
-	
+
+	// ENUM VALUE
+
 	public EnumValue ensureEnumValueFromDeclaration(EnumConstantDeclaration node) {
 		Enum parentEnum = topFromContainerStack(Enum.class);
 		String enumValueName = node.getName().toString();
@@ -656,7 +685,7 @@ public class InJavaImporter extends Importer {
 		String enumValueName = binding.getName().toString();
 		return ensureBasicEnumValue(parentEnum, enumValueName);
 	}
-	
+
 	private EnumValue ensureBasicEnumValue(Enum parentEnum, String enumValueName) {
 		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
@@ -668,60 +697,56 @@ public class InJavaImporter extends Importer {
 		return enumValue;
 	}
 
-	
-	//ANNOTATION TYPE ATTRIBUTE
-	
-	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(
-			AnnotationTypeMemberDeclaration node) {
+	// ANNOTATION TYPE ATTRIBUTE
+
+	public AnnotationTypeAttribute ensureAnnotationTypeAttributeFromDeclaration(AnnotationTypeMemberDeclaration node) {
 		IMethodBinding binding = node.resolveBinding();
 		if (binding != null)
 			return ensureAnnotationTypeAttributeFromBinding(binding);
 		return new AnnotationTypeAttribute();
 	}
-	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(
-			IMethodBinding binding) {
+
+	private AnnotationTypeAttribute ensureAnnotationTypeAttributeFromBinding(IMethodBinding binding) {
 		ITypeBinding parentTypeBinding = binding.getDeclaringClass();
-		if (parentTypeBinding == null) { return null; }
-		AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(parentTypeBinding);		
+		if (parentTypeBinding == null) {
+			return null;
+		}
+		AnnotationType annotationType = (AnnotationType) ensureTypeFromTypeBinding(parentTypeBinding);
 		AnnotationTypeAttribute attribute = ensureAnnotationTypeAttribute(annotationType, binding.getName());
 		ITypeBinding returnType = binding.getReturnType();
 		if ((returnType != null) && !(returnType.isPrimitive() && returnType.getName().equals("void"))) {
-			//we do not want to set void as a return type
+			// we do not want to set void as a return type
 			attribute.setDeclaredType(ensureTypeFromTypeBinding(returnType));
 		}
 		return attribute;
 	}
-	
-	
-	//INVOCATION
-	
+
+	// INVOCATION
+
 	/**
-	 * We pass the signature because we want to get it from the node,
-	 * but there can be different types of nodes (funny JDT).
+	 * We pass the signature because we want to get it from the node, but there
+	 * can be different types of nodes (funny JDT).
 	 */
-	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
-			String signature) {		
+	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, String signature) {
 		Invocation invocation = new Invocation();
-		invocation.setSender((Method) topOfContainerStack()); 
+		invocation.setSender((Method) topOfContainerStack());
 		if (binding != null)
-			invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
+			invocation.addCandidates(ensureMethodFromMethodBinding(binding));
 		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;
 	}
 
-	public Invocation createInvocationToMethod(Method method,
-			String signature) {
+	public Invocation createInvocationToMethod(Method method, String signature) {
 		Invocation invocation = new Invocation();
-		invocation.setSender((Method) topOfContainerStack()); 
-		invocation.addCandidates(method);  
+		invocation.setSender((Method) topOfContainerStack());
+		invocation.addCandidates(method);
 		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;
 	}
-	
-	public StructuralEntity ensureStructuralEntityFromExpression(
-			Expression expression) {
+
+	public StructuralEntity ensureStructuralEntityFromExpression(Expression expression) {
 		if (expression instanceof SimpleName) {
 			IBinding simpleNameBinding = ((SimpleName) expression).resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
@@ -736,17 +761,16 @@ public class InJavaImporter extends Importer {
 		}
 		return null;
 	}
-	
-	
-	//ACCESS
-	
+
+	// ACCESS
+
 	public Access createAccessFromExpression(Expression expression) {
-		//is this not horrible?
+		// is this not horrible?
 		if (expression instanceof Name) {
 			SimpleName simpleName;
 			if (expression instanceof SimpleName)
 				simpleName = (SimpleName) expression;
-			else 
+			else
 				simpleName = ((QualifiedName) expression).getName();
 			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
@@ -761,7 +785,7 @@ public class InJavaImporter extends Importer {
 		}
 		return new Access();
 	}
-	
+
 	private Access createAccessFromVariableBinding(IVariableBinding binding) {
 		Access access = new Access();
 		StructuralEntity variable = null;
@@ -769,9 +793,9 @@ public class InJavaImporter extends Importer {
 		boolean isParameter = binding.isParameter();
 		boolean isEnumConstant = binding.isEnumConstant();
 		if (!isField && !isParameter && !isEnumConstant)
-			//we only consider fields, parameters and enum constants
+			// we only consider fields, parameters and enum constants
 			return access;
-		if (isField) 
+		if (isField)
 			variable = ensureAttributeForVariableBinding(binding);
 		if (isParameter)
 			variable = ensureParameterWithinCurrentMethodFromVariableBinding(binding);
@@ -784,15 +808,17 @@ public class InJavaImporter extends Importer {
 		if (topOfContainerStack() instanceof Method)
 			access.setAccessor((Method) topOfContainerStack());
 		if (topOfContainerStack() instanceof Type)
-			/* This is ugly, but it happens when we have an access from within an annotation
-			 * around a type or attribute like:
-			 * 		@Annotation(name="something" + AClass.DEFAULT)
+			/*
+			 * This is ugly, but it happens when we have an access from within
+			 * an annotation around a type or attribute like:
+			 * 
+			 * @Annotation(name="something" + AClass.DEFAULT)
 			 */
 			access.setAccessor(ensureInitializerMethod());
 		repository.add(access);
 		return access;
 	}
-	
+
 	public UnknownVariable unknownVariable() {
 		if (unknownVariable == null) {
 			unknownVariable = new UnknownVariable();
@@ -801,9 +827,8 @@ public class InJavaImporter extends Importer {
 		return unknownVariable;
 	}
 
-	
 	// EXCEPTION
-	
+
 	public DeclaredException createDeclaredExceptionFromTypeBinding(ITypeBinding binding, Method method) {
 		DeclaredException declaredException = new DeclaredException();
 		method.addDeclaredExceptions(declaredException);
@@ -811,13 +836,13 @@ public class InJavaImporter extends Importer {
 		repository.add(declaredException);
 		return declaredException;
 	}
-	
-	
-	//SOURCE ANCHOR
-	
+
+	// SOURCE ANCHOR
+
 	/**
-	 * We pass the compilationUnit because this is where the logic of getting the line number is.
-	 * We cannot complain about the sense of humor in this design :)
+	 * We pass the compilationUnit because this is where the logic of getting
+	 * the line number is. We cannot complain about the sense of humor in this
+	 * design :)
 	 */
 	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node, CompilationUnit compilationUnit) {
 		FileAnchor fileAnchor = new FileAnchor();
@@ -828,35 +853,71 @@ public class InJavaImporter extends Importer {
 		repository.add(fileAnchor);
 	}
 
-	//COMMENT
-	
+	// COMMENT
+
 	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {
 		if (node.getJavadoc() != null)
 			createBasicComment(entity, node.getJavadoc().toString());
 		else {
-			//if there is no javadoc, we look for single line or multi line comments before the node
+			// if there is no javadoc, we look for single line or multi line
+			// comments before the node
+			RandomAccessFile source;
+			try {
+				source = new RandomAccessFile(this.currentFilePath, "r");
+			} catch (FileNotFoundException e) {
+				source = null;
+				e.printStackTrace();
+			}
+
 			CompilationUnit root = (CompilationUnit) node.getRoot();
 			int firstLeadingCommentIndex = root.firstLeadingCommentIndex(node);
-			if (firstLeadingCommentIndex >= 0)  
-				//There seems to be a problem here: JDT does not seem to provide the contents of the comments.
-				//Only the types (one line or multi line).
-				createBasicComment(entity, root.getCommentList().get(firstLeadingCommentIndex).toString());
+			if (firstLeadingCommentIndex >= 0)
+				// There seems to be a problem here: JDT does not seem to
+				// provide the contents of the comments.
+				// Only the types (one line or multi line).
+				createBasicComment(entity,
+						(org.eclipse.jdt.core.dom.Comment) root.getCommentList().get(firstLeadingCommentIndex), source);
+
 		}
 	}
+
 	private void createBasicComment(SourcedEntity entity, String content) {
 		Comment comment = new Comment();
 		comment.setContent(content);
 		entity.addComments(comment);
 		repository.add(comment);
 	}
-	
-	//UTILS
-	
+
+	public void createBasicComment(SourcedEntity entity, org.eclipse.jdt.core.dom.Comment javaComment,
+			RandomAccessFile source) {
+		String commentContent = null;
+		if (javaComment != null) {
+			if (javaComment.isDocComment()) {
+				commentContent = javaComment.toString();
+			} else {
+				byte[] buffer = new byte[javaComment.getLength()];
+				try {
+					source.seek(javaComment.getStartPosition());
+					source.read(buffer, 0, javaComment.getLength());
+					commentContent = new String(buffer);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+
+			}
+			createBasicComment(entity, commentContent);
+
+		}
+	}
+
+	// UTILS
+
 	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
 		Boolean publicModifier = Modifier.isPublic(modifiers);
 		Boolean protectedModifier = Modifier.isProtected(modifiers);
 		Boolean privateModifier = Modifier.isPrivate(modifiers);
-		if (publicModifier )
+		if (publicModifier)
 			entity.addModifiers("public");
 		if (protectedModifier)
 			entity.addModifiers("protected");
@@ -876,13 +937,15 @@ public class InJavaImporter extends Importer {
 			entity.addModifiers("transient");
 		if (Modifier.isVolatile(modifiers))
 			entity.addModifiers("volatile");
-		/*	We do not extract the static modifier here because we want to set the hasClassScope property
-			and we do that specifically only for attributes and methods */  
+		/*
+		 * We do not extract the static modifier here because we want to set the
+		 * hasClassScope property and we do that specifically only for
+		 * attributes and methods
+		 */
 	}
 
-	
-	//EXPORT
-	
+	// EXPORT
+
 	public void exportMSE(String fileName) {
 		try {
 			repository.exportMSE(new FileWriter(fileName));
@@ -890,15 +953,9 @@ public class InJavaImporter extends Importer {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
+
 	public void logNullBinding(String string, Object extraData, int lineNumber) {
-		logger.error("unresolved " + string +
-				" - " + extraData +
-				" - " + currentFilePath +
-				" - line " + lineNumber);
+		logger.error("unresolved " + string + " - " + extraData + " - " + currentFilePath + " - line " + lineNumber);
 	}
 
-	
 }
