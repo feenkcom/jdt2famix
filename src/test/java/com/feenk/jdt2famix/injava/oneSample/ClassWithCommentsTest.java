@@ -1,6 +1,7 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -39,10 +40,12 @@ public class ClassWithCommentsTest extends OneSampleTestCase {
 		assertEquals(1, methodNamed("methodWithOneLineComment").getComments().size());
 	}
 
-	@Test(expected=AssertionError.class)
+	@Test
 	public void testMethodWithOneLineCommentIncludingALink() {
 		assertEquals(1, methodNamed("methodWithOneLineCommentIncludingALink").getComments().size());
-		assertEquals("//Method one line comment and link: http://feenk.com", methodNamed("methodWithOneLineCommentIncludingALink").getComments().stream().findAny().get().getContent());
+		assertEquals("//Method one line comment and link: http://feenk.com",
+				methodNamed("methodWithOneLineCommentIncludingALink").getComments().stream().findAny().get()
+						.getContent());
 	}
 
 	@Test
@@ -53,12 +56,7 @@ public class ClassWithCommentsTest extends OneSampleTestCase {
 	@Test
 	public void testMethodWithMultiLineCommentIncludingALink() {
 		assertEquals(1, methodNamed("methodWithMultiLineCommentIncludingALink").getComments().size());
-		assertTrue(methodNamed("methodWithMultiLineCommentIncludingALink").
-					getComments().
-					stream().
-					findAny().
-					get().
-					getContent().
-					contains("feenk.com"));
+		assertTrue(methodNamed("methodWithMultiLineCommentIncludingALink").getComments().stream().findAny().get()
+				.getContent().contains("feenk.com"));
 	}
 }
