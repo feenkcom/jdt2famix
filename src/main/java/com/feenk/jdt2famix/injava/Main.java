@@ -28,19 +28,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		InJavaImporter importer = new InJavaImporter();
-		String pathName;
-		if (args.length > 0)
-			pathName = args[0];
-		else
-			pathName = ".";
-		Path path = Paths.get(pathName).toAbsolutePath().normalize();
-		String mseFileName = path.getName(path.getNameCount() - 1) + ".mse";
-		JavaFiles javaFiles = new JavaFiles();
-		javaFiles.deepJavaFiles(path.toString());
-		Classpath classpath = new Classpath();
-		classpath.deepJarFiles(path.toString());
-
+	
 		// Manage options
 		// https://commons.apache.org/proper/commons-cli/usage.html
 		// create Options object
@@ -51,6 +39,19 @@ public class Main {
 		options.addOption("filecp", true,
 				"Add in the parsing CP all the absolute paths contained in the file in arg (one by line)");
 
+		
+		
+	InJavaImporter importer = new InJavaImporter();
+		
+		
+	
+		
+	
+		Classpath classpath = new Classpath();
+		
+
+		
+		
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine cmd = parser.parse(options, args);
@@ -60,19 +61,31 @@ public class Main {
 			if (cmd.hasOption("filecp")) {
 				classpath.addAll(readAllJars(cmd.getOptionValue("filecp")));
 			}
+			String pathName;
+			
+			if ( cmd.getArgList().size() > 0)
+				pathName = cmd.getArgList().get(0);
+			else
+				pathName = ".";
+			Path path = Paths.get(pathName).toAbsolutePath().normalize();
+			String mseFileName = path.getName(path.getNameCount() - 1) + ".mse";
+			JavaFiles javaFiles = new JavaFiles();
+			javaFiles.deepJavaFiles(path.toString());
+			classpath.deepJarFiles(path.toString());
+			
+			// Run the parsing
 
+			logger.trace("importing root folder - " + path.toString());
+			importer.run(javaFiles, classpath);
+			logger.trace("exporting - " + mseFileName);
+			importer.exportMSE(mseFileName);
+			logger.trace("done");
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		// Run the parsing
-
-		logger.trace("importing root folder - " + path.toString());
-		importer.run(javaFiles, classpath);
-		logger.trace("exporting - " + mseFileName);
-		importer.exportMSE(mseFileName);
-		logger.trace("done");
+	
 	}
 
 	/**
