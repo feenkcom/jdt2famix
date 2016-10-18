@@ -12,24 +12,27 @@ public class Classpath {
 		classpath.add(".");
 	}
 
+	public void addAll(Collection<String> toAdd) {
+		classpath.addAll(toAdd);
+	}
+
 	public void deepJarFiles(String rootPath) {
 		classpath.addAll(deepJarFilesIn(new File(rootPath)));
 	}
-	
+
 	public String[] paths() {
 		return classpath.toArray(new String[0]);
 	}
-	
+
 	private Collection<String> deepJarFilesIn(File root) {
 		Collection<String> all = new ArrayList<String>();
 		for (File child : root.listFiles()) {
 			if (child.isDirectory()) {
 				all.addAll(deepJarFilesIn(child));
-			}
-			else {
+			} else {
 				if (child.getName().endsWith(".jar"))
 					all.add(child.getAbsolutePath());
-			} 
+			}
 		}
 		return all;
 	}
