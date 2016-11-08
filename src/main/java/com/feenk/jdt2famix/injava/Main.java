@@ -28,7 +28,6 @@ public class Main {
 
 	public static void main(String[] args) {
 
-	
 		// Manage options
 		// https://commons.apache.org/proper/commons-cli/usage.html
 		// create Options object
@@ -38,23 +37,12 @@ public class Main {
 		options.addOption("autocp", true, "Add in the parsing CP all the .jar of the folder in arg ");
 		options.addOption("filecp", true,
 				"Add in the parsing CP all the absolute paths contained in the file in arg (one by line)");
+		options.addOption("o", true, "Relative path to the mse output file");
 
-		
-		
-	InJavaImporter importer = new InJavaImporter();
-		
-		
-	
-		
-	
-		Classpath classpath = new Classpath();
-		
-
-		
-		
 		CommandLineParser parser = new DefaultParser();
 		try {
 			CommandLine cmd = parser.parse(options, args);
+			Classpath classpath = new Classpath();
 			if (cmd.hasOption("autocp")) {
 				classpath.addAll(collectAllJars(cmd.getOptionValue("autocp")));
 			}
@@ -62,30 +50,42 @@ public class Main {
 				classpath.addAll(readAllJars(cmd.getOptionValue("filecp")));
 			}
 			String pathName;
-			
-			if ( cmd.getArgList().size() > 0)
+			JavaFiles javaFiles = new JavaFiles();
+			if (cmd.getArgList().size() > 0) {
 				pathName = cmd.getArgList().get(0);
-			else
+				for (String filePath : cmd.getArgList()) {
+					javaFiles.deepJavaFiles(filePath);
+				}
+			} else
 				pathName = ".";
 			Path path = Paths.get(pathName).toAbsolutePath().normalize();
-			String mseFileName = path.getName(path.getNameCount() - 1) + ".mse";
-			JavaFiles javaFiles = new JavaFiles();
+
 			javaFiles.deepJavaFiles(path.toString());
 			classpath.deepJarFiles(path.toString());
-			
-			// Run the parsing
 
+			String mseFileName;
+			if (cmd.hasOption("o")) {
+				mseFileName = Paths.get(path.toString(), cmd.getOptionValue("o")).toString();
+			} else {
+				mseFileName = path.getName(path.getNameCount() - 1) + ".mse";
+			}
+
+			// Run the parsing
+			InJavaImporter importer = new InJavaImporter();
 			logger.trace("importing root folder - " + path.toString());
 			importer.run(javaFiles, classpath);
 			logger.trace("exporting - " + mseFileName);
 			importer.exportMSE(mseFileName);
 			logger.trace("done");
-		} catch (ParseException e) {
+		} catch (
+
+		ParseException e)
+
+		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-	
 	}
 
 	/**
@@ -115,7 +115,6 @@ public class Main {
 		return jarPaths;
 	}
 
-
 	public static List<String> collectAllJars(String sDir) {
 		File[] listOfFiles = new File(sDir).listFiles();
 		List<String> jarPaths = new ArrayList<String>();
@@ -130,5 +129,4 @@ public class Main {
 		return jarPaths;
 	}
 
-	
 }
