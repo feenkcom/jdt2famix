@@ -9,3 +9,5 @@ target
 /release/
 /gen/
 tmp/
+
+.metadata
