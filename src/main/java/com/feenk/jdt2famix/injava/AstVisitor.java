@@ -2,6 +2,7 @@ package com.feenk.jdt2famix.injava;
 
 import java.util.Arrays;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -9,6 +10,7 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.Block;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -45,6 +47,7 @@ import org.eclipse.jdt.core.dom.TypeDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
+import org.eclipse.jdt.internal.core.dom.NaiveASTFlattener;
 
 import com.feenk.jdt2famix.model.famix.Access;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
@@ -59,46 +62,45 @@ import com.feenk.jdt2famix.model.famix.Namespace;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
 
-
 /**
- * Responsible for visiting the AST of one Java file.
- * It works in close relationship with the {@link InJavaImporter} which
- * - provides ensure and create methods, and
- * - keeps track of the overall model.
+ * Responsible for visiting the AST of one Java file. It works in close
+ * relationship with the {@link InJavaImporter} which - provides ensure and
+ * create methods, and - keeps track of the overall model.
  * 
- * Each method that visits a container entity (e.g., Type, Method ...), 
- * - we push the resulting Famix entity in the importer stack, and
- * - we pop it in a corresponding endVisit method   
+ * Each method that visits a container entity (e.g., Type, Method ...), - we
+ * push the resulting Famix entity in the importer stack, and - we pop it in a
+ * corresponding endVisit method
+ * 
  * @author girba
  *
  */
 public class AstVisitor extends ASTVisitor {
 
 	private InJavaImporter importer;
-	
+
 	public AstVisitor(InJavaImporter importer) {
 		this.importer = importer;
 	}
-		
+
 	public void logNullBinding(String string, Object extraData, int lineNumber) {
 		importer.logNullBinding(string, extraData, lineNumber);
 	}
 
-	
-	////////PACKAGES
-	
+	//////// PACKAGES
+
 	@Override
 	public boolean visit(CompilationUnit node) {
 		Namespace namespace;
 		if (node.getPackage() == null)
 			/* This is the default package */
 			namespace = importer.ensureNamespaceNamed("");
-		else 
+		else
 			namespace = importer.ensureNamespaceFromPackageBinding(node.getPackage().resolveBinding());
 		namespace.setIsStub(false);
 		importer.pushOnContainerStack(namespace);
 		return true;
 	}
+
 	/**
 	 * Needed for keeping track of the current container
 	 */
@@ -106,34 +108,37 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(CompilationUnit node) {
 		importer.popFromContainerStack();
 	}
-	
-	
-	////////TYPES
-	
+
+	//////// TYPES
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(TypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("type declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
+			logNullBinding("type declaration", node.getName(),
+					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
 		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
-		/* This is an ugly patch. When the binding to the superclass or super interfaces cannot be resolved,
-		 * we try to recover as much info as possible
-		 * We do it here because it is hard to pass around the dom type */
+		/*
+		 * This is an ugly patch. When the binding to the superclass or super
+		 * interfaces cannot be resolved, we try to recover as much info as
+		 * possible We do it here because it is hard to pass around the dom type
+		 */
 		if (binding.getSuperclass() == null && superclassType != null)
 			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
-			node.superInterfaceTypes().stream().forEach(t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
+			node.superInterfaceTypes().stream().forEach(
+					t -> importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t));
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, node, (CompilationUnit) node.getRoot());
 		importer.ensureCommentFromBodyDeclaration(type, node);
 		importer.pushOnContainerStack(type);
 		return true;
 	}
-	
+
 	@Override
 	public void endVisit(TypeDeclaration node) {
 		if (importer.topOfContainerStack() instanceof Type)
@@ -148,7 +153,8 @@ public class AstVisitor extends ASTVisitor {
 			type = importer.createTypeFromTypeBinding(binding);
 		else {
 			type = importer.createTypeNamedInUnknownNamespace("");
-			logNullBinding("anonymous type declaration", node.getParent().toString().replaceAll("\n", " "), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));			
+			logNullBinding("anonymous type declaration", node.getParent().toString().replaceAll("\n", " "),
+					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 		}
 		importer.ensureTypeFromAnonymousDeclaration(type, node);
 		type.setIsStub(false);
@@ -156,18 +162,18 @@ public class AstVisitor extends ASTVisitor {
 		importer.pushOnContainerStack(type);
 		return true;
 	}
-	
+
 	@Override
 	public void endVisit(AnonymousClassDeclaration node) {
 		importer.popFromContainerStack();
 	}
 
-	
 	@Override
 	public boolean visit(EnumDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("enum declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
+			logNullBinding("enum declaration", node.getName(),
+					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Enum famixEnum = (Enum) importer.ensureTypeFromTypeBinding(binding);
@@ -177,7 +183,7 @@ public class AstVisitor extends ASTVisitor {
 		importer.pushOnContainerStack(famixEnum);
 		return true;
 	}
-	
+
 	@Override
 	public void endVisit(EnumDeclaration node) {
 		if (importer.topOfContainerStack() instanceof Enum)
@@ -199,14 +205,15 @@ public class AstVisitor extends ASTVisitor {
 		if (importer.topOfContainerStack().getName().equals(InJavaImporter.INITIALIZER_NAME))
 			importer.popFromContainerStack();
 	}
-	
-	////////ANNOTATIONS
-	
+
+	//////// ANNOTATIONS
+
 	@Override
 	public boolean visit(AnnotationTypeDeclaration node) {
 		ITypeBinding binding = node.resolveBinding();
 		if (binding == null) {
-			logNullBinding("annotation type declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
+			logNullBinding("annotation type declaration", node.getName(),
+					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
@@ -216,13 +223,13 @@ public class AstVisitor extends ASTVisitor {
 		importer.ensureCommentFromBodyDeclaration(type, node);
 		return true;
 	}
-	
+
 	@Override
 	public void endVisit(AnnotationTypeDeclaration node) {
 		if (importer.topOfContainerStack() instanceof AnnotationType)
 			importer.popFromContainerStack();
 	}
-	
+
 	@Override
 	public boolean visit(AnnotationTypeMemberDeclaration node) {
 		AnnotationTypeAttribute attribute = importer.ensureAnnotationTypeAttributeFromDeclaration(node);
@@ -230,44 +237,44 @@ public class AstVisitor extends ASTVisitor {
 		importer.ensureCommentFromBodyDeclaration(attribute, node);
 		return super.visit(node);
 	}
-	
+
 	@Override
 	public void endVisit(AnnotationTypeMemberDeclaration node) {
 		super.endVisit(node);
 	}
-	
+
 	/**
-	 * handles: @ TypeName
-	 * We do not use this one because we want to tie the creation of annotation instances with
-	 * the ensuring of bindings (e.g., {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}).
-	 * Thus, we prefer to call the annotation creation explicitly from the other visit methods
-	 * (e.g., {link {@link #visit(TypeDeclaration)}   
+	 * handles: @ TypeName We do not use this one because we want to tie the
+	 * creation of annotation instances with the ensuring of bindings (e.g.,
+	 * {@link InJavaImporter#ensureTypeFromTypeBinding(ITypeBinding)}). Thus, we
+	 * prefer to call the annotation creation explicitly from the other visit
+	 * methods (e.g., {link {@link #visit(TypeDeclaration)}
 	 */
 	@Override
 	public boolean visit(MarkerAnnotation node) {
 		return true;
 	}
-	
+
 	/**
-	 * handles: @ TypeName ( [ MemberValuePair { , MemberValuePair } ] )
-	 * see comment from {@link #visit(MarkerAnnotation)}
+	 * handles: @ TypeName ( [ MemberValuePair { , MemberValuePair } ] ) see
+	 * comment from {@link #visit(MarkerAnnotation)}
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
 		return true;
 	}
-	
+
 	/**
-	 * handles: @ TypeName ( Expression )
-	 * see comment from {@link #visit(MarkerAnnotation)}
+	 * handles: @ TypeName ( Expression ) see comment from
+	 * {@link #visit(MarkerAnnotation)}
 	 */
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
 		return true;
 	}
-	
-	////////METHODS
-	
+
+	//////// METHODS
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodDeclaration node) {
@@ -275,28 +282,39 @@ public class AstVisitor extends ASTVisitor {
 		Method method;
 		if (binding != null) {
 			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
-			Arrays.stream(binding.getExceptionTypes()).forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));			
-		}
-		else {
-			logNullBinding("method declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
+			Arrays.stream(binding.getExceptionTypes())
+					.forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));
+		} else {
+			logNullBinding("method declaration", node.getName(),
+					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		}
 		method.setIsStub(false);
+		method.setBodyHash(this.computeHashForMethodBody(node));
 		importer.pushOnContainerStack(method);
-		node.parameters().
-			stream().
-			forEach(p -> 
-				importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
+		node.parameters().stream().forEach(
+				p -> importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
 		importer.createSourceAnchor(method, node, (CompilationUnit) node.getRoot());
 		importer.ensureCommentFromBodyDeclaration(method, node);
 		return true;
 	}
-	
+
+	private String computeHashForMethodBody(MethodDeclaration node) {
+		if (importer.isComputingHashForBehaviouralEntities()) {
+			// not optimized but will work in a first version
+			Block body = node.getBody();
+			if (body == null)
+				return "0";
+			return DigestUtils.md5Hex(node.getBody().toString().replaceAll("\\r|\\n|\\t", ""));
+		}
+		return "";
+	}
+
 	@Override
 	public void endVisit(MethodDeclaration node) {
 		importer.popFromContainerStack();
 	}
-	
+
 	@Override
 	public boolean visit(Initializer node) {
 		Method method = importer.ensureInitializerMethod();
@@ -310,10 +328,9 @@ public class AstVisitor extends ASTVisitor {
 	public void endVisit(Initializer node) {
 		importer.popFromContainerStack();
 	}
-	
-	
-	////////ATTRIBUTES
-	
+
+	//////// ATTRIBUTES
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(FieldDeclaration node) {
@@ -322,16 +339,21 @@ public class AstVisitor extends ASTVisitor {
 		node.fragments().stream().forEach(f -> visitFragment((VariableDeclarationFragment) f, node));
 		return true;
 	}
-	
+
 	private void visitFragment(VariableDeclarationFragment fragment, FieldDeclaration field) {
 		Attribute attribute = importer.ensureAttributeForFragment(fragment, field);
 		importer.createSourceAnchor(attribute, fragment, (CompilationUnit) field.getRoot());
 		importer.ensureCommentFromBodyDeclaration(attribute, field);
 
-		/* only the last fragment of a field contains the initializer code.
-		 * thus, to create the access to each variable in the fragment we need to ask that last fragment
-		 * we do not have to check the existence of that last fragment, because we already know that the field has at least one fragment */
-		VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) field.fragments().get(field.fragments().size() - 1);
+		/*
+		 * only the last fragment of a field contains the initializer code.
+		 * thus, to create the access to each variable in the fragment we need
+		 * to ask that last fragment we do not have to check the existence of
+		 * that last fragment, because we already know that the field has at
+		 * least one fragment
+		 */
+		VariableDeclarationFragment lastFragment = (VariableDeclarationFragment) field.fragments()
+				.get(field.fragments().size() - 1);
 		if (lastFragment.getInitializer() != null) {
 			Access access = importer.createAccessFromExpression(fragment.getName());
 			access.setIsWrite(true);
@@ -345,35 +367,34 @@ public class AstVisitor extends ASTVisitor {
 		if (importer.topOfContainerStack().getName().equals(InJavaImporter.INITIALIZER_NAME))
 			importer.popFromContainerStack();
 	}
-	
-	////////LOCAL VARIABLES
-	
-//  I do not know when this one is triggered
-//	public boolean visit(VariableDeclarationExpression node) {
-//		node.fragments().stream().forEach(
-//				fragment -> 
-//				importer.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
-//		return true;
-//	}
+
+	//////// LOCAL VARIABLES
+
+	// I do not know when this one is triggered
+	// public boolean visit(VariableDeclarationExpression node) {
+	// node.fragments().stream().forEach(
+	// fragment ->
+	// importer.ensureLocalVariableFromFragment((VariableDeclarationFragment)
+	// fragment, node.getType()));
+	// return true;
+	// }
 	@SuppressWarnings("unchecked")
 	public boolean visit(VariableDeclarationStatement node) {
-		node.fragments().stream().forEach(
-				fragment -> 
-				importer.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
+		node.fragments().stream().forEach(fragment -> importer
+				.ensureLocalVariableFromFragment((VariableDeclarationFragment) fragment, node.getType()));
 		return true;
 	}
-	
-	
-	////////INVOCATIONS
-	
+
+	//////// INVOCATIONS
+
 	/**
-	 * handles
-	 * 		object.method(parameter)
+	 * handles object.method(parameter)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodInvocation node) {
-		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
+				node.toString().trim());
 		importer.createAccessFromExpression(node.getExpression());
 		invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
@@ -381,8 +402,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * handles
-	 * 		super.method(parameter)
+	 * handles super.method(parameter)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -391,10 +411,9 @@ public class AstVisitor extends ASTVisitor {
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
-	
+
 	/**
-	 * handles
-	 * 		this(parameter)
+	 * handles this(parameter)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -403,10 +422,9 @@ public class AstVisitor extends ASTVisitor {
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
-	
+
 	/**
-	 * handles
-	 * 		super(parameter)
+	 * handles super(parameter)
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -417,8 +435,7 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * handles
-	 * 		new Class()
+	 * handles new Class()
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
@@ -428,26 +445,23 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
 		else {
 			String name = node.getType().toString();
-			importer.ensureBasicMethod(
-					name, 
-					name, 
-					importer.ensureTypeNamedInUnknownNamespace(name), 
+			importer.ensureBasicMethod(name, name, importer.ensureTypeNamedInUnknownNamespace(name),
 					m -> importer.createInvocationToMethod(m, node.toString().trim()));
 		}
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
 
-	////////ACCESSES
-	
+	//////// ACCESSES
+
 	/**
-	 * This one looks highly interesting, but I do not know in which situation this is invoked. Funny, no?
+	 * This one looks highly interesting, but I do not know in which situation
+	 * this is invoked. Funny, no?
 	 */
 	@Override
 	public boolean visit(FieldAccess node) {
 		return true;
 	}
-
 
 	@Override
 	public boolean visit(Assignment node) {
@@ -456,7 +470,7 @@ public class AstVisitor extends ASTVisitor {
 		importer.createAccessFromExpression((Expression) node.getRightHandSide());
 		return true;
 	}
-	
+
 	@Override
 	public boolean visit(ReturnStatement node) {
 		importer.createAccessFromExpression((Expression) node.getExpression());
@@ -464,90 +478,99 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	/**
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(WhileStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
-	
+
 	/**
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(DoStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
-	
+
 	/**
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(IfStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
 
 	/**
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(SwitchStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
 
 	/**
-	 * Handles
-	 * 		for (int i = init; i < n; i++)
+	 * Handles for (int i = init; i < n; i++)
 	 * 
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(ForStatement node) {
 		importer.createAccessFromExpression((Expression) node.getExpression());
-//		for (Iterator<?> iterator = node.initializers().iterator(); iterator.hasNext();) {
-//			VariableDeclarationExpression initializerExpression = (VariableDeclarationExpression) iterator.next();
-//			for (Iterator<?> iterator2 = initializerExpression.fragments().iterator(); iterator2.hasNext();) {
-//				VariableDeclarationFragment fragment = (VariableDeclarationFragment) iterator2.next();
-//				importer.createAccessFromExpression((Expression) fragment.getInitializer());
-//			}
-//		}
+		// for (Iterator<?> iterator = node.initializers().iterator();
+		// iterator.hasNext();) {
+		// VariableDeclarationExpression initializerExpression =
+		// (VariableDeclarationExpression) iterator.next();
+		// for (Iterator<?> iterator2 =
+		// initializerExpression.fragments().iterator(); iterator2.hasNext();) {
+		// VariableDeclarationFragment fragment = (VariableDeclarationFragment)
+		// iterator2.next();
+		// importer.createAccessFromExpression((Expression)
+		// fragment.getInitializer());
+		// }
+		// }
 		return true;
 	}
 
 	/**
-	 * Handles 
-	 * 		for ( Object x : list )
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * Handles for ( Object x : list ) We create this access explicitly to catch
+	 * a boolean variable used in condition. Complicated expressions are handled
+	 * in {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(EnhancedForStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
 
 	/**
-	 * We create this access explicitly to catch a boolean variable used in condition.
-	 * Complicated expressions are handled in {@link #visit(InfixExpression)}
+	 * We create this access explicitly to catch a boolean variable used in
+	 * condition. Complicated expressions are handled in
+	 * {@link #visit(InfixExpression)}
 	 */
 	@Override
 	public boolean visit(ConditionalExpression node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
 
 	/**
-	 * This one also takes care of expanded expressions like 
-	 * 		true || (41 == 42) && booleanAttribute
+	 * This one also takes care of expanded expressions like true || (41 == 42)
+	 * && booleanAttribute
 	 */
 	@Override
 	public boolean visit(InfixExpression node) {
@@ -555,31 +578,30 @@ public class AstVisitor extends ASTVisitor {
 		importer.createAccessFromExpression((Expression) node.getRightOperand());
 		return true;
 	}
-	
+
 	/**
-	 * Handles expressions like
-	 * 		(a && b || c)
+	 * Handles expressions like (a && b || c)
 	 */
 	@Override
 	public boolean visit(ParenthesizedExpression node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
-	
+
 	/**
-	 * Handles
-	 * 		synchronized(a) {}
+	 * Handles synchronized(a) {}
 	 */
 	@Override
 	public boolean visit(SynchronizedStatement node) {
-		importer.createAccessFromExpression((Expression) node.getExpression());		
+		importer.createAccessFromExpression((Expression) node.getExpression());
 		return true;
 	}
-	
+
 	/**
 	 * It would be ideal to find a way to use this method for creating accesses.
-	 * However without having the context, we do not know whether this is actually an access.
-	 * That is why we have to resort to spreading these createAccessFromExpression calls everywhere.
+	 * However without having the context, we do not know whether this is
+	 * actually an access. That is why we have to resort to spreading these
+	 * createAccessFromExpression calls everywhere.
 	 */
 	@Override
 	public boolean visit(SimpleName node) {
@@ -598,7 +620,7 @@ public class AstVisitor extends ASTVisitor {
 		}
 		return true;
 	}
-	
+
 	@Override
 	public boolean visit(ThrowStatement node) {
 		ITypeBinding binding = node.getExpression().resolveTypeBinding();
@@ -611,6 +633,5 @@ public class AstVisitor extends ASTVisitor {
 		}
 		return true;
 	}
-	
-	
+
 }

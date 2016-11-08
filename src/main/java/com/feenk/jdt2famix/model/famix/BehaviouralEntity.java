@@ -22,14 +22,14 @@ public class BehaviouralEntity extends ContainerEntity {
 		this.signature = signature;
 	}
 
-	private Number bodyHash;
+	private String bodyHash;
 
 	@FameProperty(name = "bodyHash")
-	public Number getBodyHash() {
+	public String getBodyHash() {
 		return bodyHash;
 	}
 
-	public void setBodyHash(Number bodyHash) {
+	public void setBodyHash(String bodyHash) {
 		this.bodyHash = bodyHash;
 	}
 

@@ -106,6 +106,16 @@ public class InJavaImporter extends Importer {
 	private Type unknownType;
 	private UnknownVariable unknownVariable;
 
+	public boolean shouldComputeHashForBehaviouralEntities = true; //TODO
+
+	public boolean isComputingHashForBehaviouralEntities() {
+		return shouldComputeHashForBehaviouralEntities;
+	}
+
+	public void setComputeHashForBehaviouralEntities(boolean shouldComputeHashForBehaviouralEntities) {
+		this.shouldComputeHashForBehaviouralEntities = shouldComputeHashForBehaviouralEntities;
+	}
+
 	private Repository repository;
 
 	public Repository repository() {
@@ -493,6 +503,7 @@ public class InJavaImporter extends Importer {
 		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
 		Arrays.stream(binding.getParameterTypes()).forEach(p -> signatureJoiner.add((String) p.getQualifiedName()));
 		String methodName = binding.getName();
+		
 		String signature = methodName + signatureJoiner.toString();
 		return ensureBasicMethod(methodName, signature, parentType, m -> setUpMethodFromMethodBinding(m, binding));
 	}
