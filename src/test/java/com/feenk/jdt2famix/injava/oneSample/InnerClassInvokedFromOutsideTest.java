@@ -18,7 +18,7 @@ public class InnerClassInvokedFromOutsideTest extends OneSampleTestCase {
 	public void testInnerConstructor() {
 		Method innerConstructor = methodNamed("InnerClass");
 		assertNotNull(innerConstructor);
-		assertEquals(1, innerConstructor.getIncomingInvocations().size());
+		assertEquals(2, innerConstructor.getIncomingInvocations().size());
 		assertTrue(innerConstructor.getIsStub());
 	}
 
@@ -26,7 +26,7 @@ public class InnerClassInvokedFromOutsideTest extends OneSampleTestCase {
 	public void testOuterConstructor() {
 		Method innerConstructor = methodNamed("OuterClass");
 		assertNotNull(innerConstructor);
-		assertEquals(1, innerConstructor.getIncomingInvocations().size());
+		assertEquals(2, innerConstructor.getIncomingInvocations().size());
 		assertTrue(innerConstructor.getIsStub());
 	}
 
@@ -34,13 +34,19 @@ public class InnerClassInvokedFromOutsideTest extends OneSampleTestCase {
 	public void testInnerMethod() {
 		Method innerConstructor = methodNamed("innerMethod");
 		assertNotNull(innerConstructor);
-		assertEquals(1, innerConstructor.getIncomingInvocations().size());
+		assertEquals(2, innerConstructor.getIncomingInvocations().size());
 		assertFalse(innerConstructor.getIsStub());
 	}
 	
 	@Test
 	public void testMethod() {
 		Method method = methodNamed("method");
+		assertEquals(3, method.getOutgoingInvocations().size());
+	}
+
+	@Test
+	public void testMethodCallingThroughLocalVariable() {
+		Method method = methodNamed("methodCallingThroughLocalVariable");
 		assertEquals(3, method.getOutgoingInvocations().size());
 	}
 	

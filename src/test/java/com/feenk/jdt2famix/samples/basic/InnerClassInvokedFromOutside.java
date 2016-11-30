@@ -4,6 +4,10 @@ public class InnerClassInvokedFromOutside {
 	public static void method() {
 		new OuterClass().new InnerClass().innerMethod();
 	}
+	public static void methodCallingThroughLocalVariable() {
+		OuterClass outerClass = new OuterClass();
+		outerClass.new InnerClass().innerMethod();
+	}
 }
 
 class OuterClass {
