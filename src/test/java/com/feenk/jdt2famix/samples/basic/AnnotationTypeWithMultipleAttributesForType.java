@@ -12,4 +12,5 @@ public @interface AnnotationTypeWithMultipleAttributesForType {
 	String stringAnnotationAttribute() default "";
 	Class <?> classAnnotationAttribute() default Object.class;
 	Class <?>[] classCollectionAnnotationAttribute() default {};
+	AnnotationTypeWithoutAttributesForAll annotationAnnotationAttribute() default @AnnotationTypeWithoutAttributesForAll;
 }

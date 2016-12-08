@@ -20,6 +20,12 @@ public class ClassWithExceptionsTest extends OneSampleTestCase {
 	}
 
 	@Test
+	public void testThrownExceptionsFromMethodWithTryWithResource() {
+		assertEquals(1, methodNamed("methodWithTryWithResource").getThrownExceptions().size());
+		assertEquals(RuntimeException.class.getSimpleName(), methodNamed("methodWithTryWithResource").getThrownExceptions().stream().findAny().get().getExceptionClass().getName());
+	}
+
+	@Test
 	public void testMethodThrowingInstantiatedException() {
 		assertEquals(1, methodNamed("methodThrowingInstantiatedException").getThrownExceptions().size());
 		assertEquals(RuntimeException.class.getSimpleName(), methodNamed("methodThrowingInstantiatedException").getThrownExceptions().stream().findAny().get().getExceptionClass().getName());
