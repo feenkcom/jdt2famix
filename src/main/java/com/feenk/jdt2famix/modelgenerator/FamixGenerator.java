@@ -16,6 +16,9 @@ import ch.akuhn.fame.parser.InputSource;
 /**
  * This is a utility class that generates the code of FAMIX out of a specification serialized in an MSE
  * that is typically obtained from the Pharo implementation
+ * 
+ * The mse file may be generated in Pharo from the meta model:
+ *       'famix30.mse' asFileReference writeStreamDo: [:stream | MooseModel meta exportOn: stream]
  */
 public class FamixGenerator {
 	public static void main(String... args) {
