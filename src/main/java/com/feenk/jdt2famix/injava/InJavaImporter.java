@@ -764,26 +764,24 @@ public class InJavaImporter extends Importer {
 	
 	private Access createAccessFromVariableBinding(IVariableBinding binding) {
 		Access access = new Access();
-		if (binding == null)
+		StructuralEntity variable = unknownVariable();
+		if (binding != null) {
 			/* It sometimes happen that the binding is null.
 			 * Unfortunately, I was not able to isolate and reproduce the case,
 			 * but we still need the guard condition. */
-			return access;
-		StructuralEntity variable = null;
-		boolean isField = binding.isField();
-		boolean isParameter = binding.isParameter();
-		boolean isEnumConstant = binding.isEnumConstant();
-		if (!isField && !isParameter && !isEnumConstant)
-			//we only consider fields, parameters and enum constants
-			return access;
-		if (isField) 
-			variable = ensureAttributeForVariableBinding(binding);
-		if (isParameter)
-			variable = ensureParameterWithinCurrentMethodFromVariableBinding(binding);
-		if (isEnumConstant)
-			variable = ensureEnumValueFromVariableBinding(binding);
-		if (variable == null)
-			access.setVariable(unknownVariable());
+			boolean isField = binding.isField();
+			boolean isParameter = binding.isParameter();
+			boolean isEnumConstant = binding.isEnumConstant();
+			if (!isField && !isParameter && !isEnumConstant)
+				//we only consider fields, parameters and enum constants
+				return access;
+			if (isField) 
+				variable = ensureAttributeForVariableBinding(binding);
+			if (isParameter)
+				variable = ensureParameterWithinCurrentMethodFromVariableBinding(binding);
+			if (isEnumConstant)
+				variable = ensureEnumValueFromVariableBinding(binding);
+		}
 		access.setVariable(variable);
 		access.setIsWrite(false);
 		if (topOfContainerStack() instanceof Method)
