@@ -3,6 +3,7 @@ package com.feenk.jdt2famix.injava.oneSample;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.model.famix.Access;
@@ -18,6 +19,7 @@ public class ComplexInnerClassTest extends OneSampleTestCase {
 	}
 
 	@Test
+	@Ignore
 	public void testAccessFromInnerClass() {
 		assertEquals(1, type.getMethods().size());
 		Method method = (Method) type.getMethods().toArray()[0];
