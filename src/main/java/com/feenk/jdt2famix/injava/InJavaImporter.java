@@ -764,6 +764,11 @@ public class InJavaImporter extends Importer {
 	
 	private Access createAccessFromVariableBinding(IVariableBinding binding) {
 		Access access = new Access();
+		if (binding == null)
+			/* It sometimes happen that the binding is null.
+			 * Unfortunately, I was not able to isolate and reproduce the case,
+			 * but we still need the guard condition. */
+			return access;
 		StructuralEntity variable = null;
 		boolean isField = binding.isField();
 		boolean isParameter = binding.isParameter();
