@@ -8,18 +8,18 @@ This project offers the mechanism for producing MSE files out of Java code. It i
 
 ##Run a release
 1. [Download a binary release](https://github.com/girba/jdt2famix/releases)
-2. The downloaded folder contains all jar files and a `jdt2famix.sh` script
+2. The downloaded folder contains all jar files and a `jdt2famix.sh` script (`jdt2famix.cmd` for Windows)
 
 ##Create a binary release from sources
 1. Clone or download this repository
 2. Make sure you have [Maven](https://maven.apache.org/download.cgi) installed and that `mvn` is in the execution path (i.e., change `$PATH`) 
 3. Execute in the root folder: `release.sh`
-4. This created a `./release` folder that includes all jar files and a `jdt2famix.sh` script
+4. This created a `./release` folder that includes all jar files and a `jdt2famix.sh` script (`jdt2famix.cmd` for Windows)
 
 #How to create an MSE model from a target system
 Suppose you have a `mysystem` root folder in which you have the sources and all jar dependencies of your target Java system.
 
-After having created the release, go to `mysystem`, and execute `/path/to/jdt2famix.sh`. This will result in an MSE file named like the folder of your target system (in our case `mysystem.mse`).
+After having created the release, go to `mysystem`, and execute `/path/to/jdt2famix.sh` (`/path/to/jdt2famix.cmd` for Windows). This will result in an MSE file named like the folder of your target system (in our case `mysystem.mse`).
 
 You can now import the `mysystem.mse` file into [Moose](http://moosetechnology.org). 
 
