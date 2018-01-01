@@ -1,7 +1,9 @@
 package com.feenk.jdt2famix.injava;
 
-import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -888,9 +890,9 @@ public class InJavaImporter extends Importer {
 	
 	public void exportMSE(String fileName) {
 		try {
-			repository.exportMSE(new FileWriter(fileName));
+			repository.exportMSE(Files.newBufferedWriter(Paths.get(fileName), StandardCharsets.UTF_8));
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new IllegalStateException(e);
 		}
 	}
 	
