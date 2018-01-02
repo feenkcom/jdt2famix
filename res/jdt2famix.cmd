@@ -8,5 +8,5 @@ for %%a in (!BASEPATH!\*.jar) do (
  )
 set CLASSPATH=!CLASSPATH!"
 echo !CLASSPATH!
-java -cp !CLASSPATH! com.feenk.jdt2famix.injava.Main
+java -Dfile.encoding=UTF-8 -cp !CLASSPATH! com.feenk.jdt2famix.injava.Main
  
