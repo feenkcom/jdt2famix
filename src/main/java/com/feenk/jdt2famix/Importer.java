@@ -1,5 +1,6 @@
 package com.feenk.jdt2famix;
 
+import java.util.Arrays;
 import java.util.Map;
 
 import org.eclipse.jdt.core.JavaCore;
@@ -36,7 +37,10 @@ public abstract class Importer {
 		parser.setCompilerOptions(options);
 		
 		parser.setEnvironment(classpath.paths(), new String[]{}, new String[]{}, true);
-		parser.createASTs(javaFiles.paths(), null, new String[0], getRequestor(javaFiles), null);
+
+		String[] paths = javaFiles.paths();
+		String[] encodings = Arrays.stream(paths).map(path -> "UTF-8").toArray(String[]::new);
+		parser.createASTs(paths, encodings, new String[0], getRequestor(javaFiles), null);
 	}
 
 	public void run(JavaFiles javaFiles) {
