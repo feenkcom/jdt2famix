@@ -1,4 +1,7 @@
-This project offers the mechanism for producing MSE files out of Java code. It is based on [JDT Core](https://projects.eclipse.org/projects/eclipse.jdt.core) and [Fame for Java](https://github.com/girba/FameJava), and it requires Java 8.
+This project offers the mechanism for producing MSE files out of Java code.
+It is based on [JDT Core](https://projects.eclipse.org/projects/eclipse.jdt.core)
+and [Fame for Java](https://github.com/feenkcom/FameJava),
+and it requires Java 8.
 
 [![Build Status](https://api.travis-ci.org/feenkcom/jdt2famix.svg?branch=master)](https://api.travis-ci.org/girba/jdt2famix)
 [![Coverage Status](https://coveralls.io/repos/feenkcom/jdt2famix/badge.svg?branch=master)](https://coveralls.io/r/girba/jdt2famix?branch=master)
