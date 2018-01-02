@@ -12,8 +12,15 @@ public class Classpath {
 		classpath.add(".");
 	}
 
+	public void addAll(Collection<String> toAdd) {
+		classpath.addAll(toAdd);
+	}
+
 	public void deepJarFiles(String rootPath) {
-		classpath.addAll(deepJarFilesIn(new File(rootPath)));
+		File rootFile = new File(rootPath);
+		if (rootFile.isDirectory())
+			classpath.addAll(deepJarFilesIn(new File(rootPath)));
+		//else , we maybe need to found the relative .class
 	}
 	
 	public String[] paths() {

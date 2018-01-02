@@ -18,7 +18,11 @@ public class JavaFiles {
 	
 	public void deepJavaFiles(String rootPath) {
 		ignoredRootPath = rootPath;
-		javaFilePaths = deepJavaFilesIn(new File(rootPath));
+		File rootFile = new File(rootPath);
+		if (rootFile.isFile())
+			this.oneJavaFile(rootPath);
+		else
+			javaFilePaths = deepJavaFilesIn(rootFile);
 	}
 	
 	public void oneJavaFile(String filePath) {
