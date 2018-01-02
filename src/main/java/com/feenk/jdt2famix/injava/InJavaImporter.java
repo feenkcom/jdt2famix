@@ -607,7 +607,7 @@ public class InJavaImporter extends Importer {
 			FieldDeclaration field,
 			Type parentType) {
 		String name = fragment.getName().toString();
-		String qualifiedName = Famix.qualifiedNameOf(parentType);
+		String qualifiedName = Famix.qualifiedNameOf(parentType) + "." + name;
 		if (attributes.has(qualifiedName)) 
 			return attributes.named(qualifiedName);
 		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,

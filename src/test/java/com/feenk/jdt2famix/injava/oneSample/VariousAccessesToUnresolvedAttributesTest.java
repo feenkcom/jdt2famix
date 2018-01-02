@@ -4,10 +4,10 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.samples.basic.VariousAccessesToUnresolvedAttributes;
 
-public class VariousAccessesToUnresolvedAttributesTest extends
-		OneSampleTestCase {
+public class VariousAccessesToUnresolvedAttributesTest extends OneSampleTestCase {
 
 	@Override
 	protected Class<?> sampleClass() {
@@ -16,7 +16,10 @@ public class VariousAccessesToUnresolvedAttributesTest extends
 
 	@Test
 	public void test() {
-		assertEquals(1, type.getAttributes().size());
+		assertEquals(2, type.getAttributes().size());
+		for (Attribute attr : type.getAttributes()) {
+			assertEquals(type, attr.getParentType());
+		}
 	}
-	
+
 }
