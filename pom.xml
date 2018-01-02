@@ -68,6 +68,34 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
+			<plugin>
+			    <!-- CODE COVERAGE -->
+			    <groupId>org.jacoco</groupId>
+			    <artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.7.201606060606</version>
+			    <executions>
+			        <!-- Prepare execution with Surefire -->
+			        <execution>
+			            <id>pre-unit-test</id>
+			            <goals>
+			                <goal>prepare-agent</goal>
+			            </goals>
+			        </execution>
+			        <!-- Generate report after tests are run -->
+			        <execution>
+			            <id>post-unit-test</id>
+			            <phase>test</phase>
+			            <goals>
+			                <goal>report</goal>
+			            </goals>
+			        </execution>
+			    </executions>
+			</plugin>
+			<plugin>
+			    <groupId>org.eluder.coveralls</groupId>
+			    <artifactId>coveralls-maven-plugin</artifactId>
+			    <version>3.1.0</version>
+			</plugin>
 		</plugins>
 	</build>
 </project>
