@@ -1,7 +1,9 @@
 package com.feenk.jdt2famix.injava;
 
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -22,7 +24,6 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -837,13 +838,25 @@ public class InJavaImporter extends Importer {
 		if (node.getJavadoc() != null)
 			createBasicComment(entity, node.getJavadoc().toString());
 		else {
-			//if there is no javadoc, we look for single line or multi line comments before the node
+			// if there is no javadoc, we look for single line or multi line
+			// comments before the node
+			RandomAccessFile source;
+			try {
+				source = new RandomAccessFile(this.currentFilePath, "r");
+			} catch (FileNotFoundException e) {
+				source = null;
+				e.printStackTrace();
+			}
+
 			CompilationUnit root = (CompilationUnit) node.getRoot();
 			int firstLeadingCommentIndex = root.firstLeadingCommentIndex(node);
-			if (firstLeadingCommentIndex >= 0)  
-				//There seems to be a problem here: JDT does not seem to provide the contents of the comments.
-				//Only the types (one line or multi line).
-				createBasicComment(entity, root.getCommentList().get(firstLeadingCommentIndex).toString());
+			if (firstLeadingCommentIndex >= 0)
+				// There seems to be a problem here: JDT does not seem to
+				// provide the contents of the comments.
+				// Only the types (one line or multi line).
+				createBasicComment(entity,
+						(org.eclipse.jdt.core.dom.Comment) root.getCommentList().get(firstLeadingCommentIndex), source);
+
 		}
 	}
 	private void createBasicComment(SourcedEntity entity, String content) {
@@ -852,14 +865,37 @@ public class InJavaImporter extends Importer {
 		entity.addComments(comment);
 		repository.add(comment);
 	}
-	
-	//UTILS
-	
+
+	public void createBasicComment(SourcedEntity entity, org.eclipse.jdt.core.dom.Comment javaComment,
+			RandomAccessFile source) {
+		String commentContent = null;
+		if (javaComment != null) {
+			if (javaComment.isDocComment()) {
+				commentContent = javaComment.toString();
+			} else {
+				byte[] buffer = new byte[javaComment.getLength()];
+				try {
+					source.seek(javaComment.getStartPosition());
+					source.read(buffer, 0, javaComment.getLength());
+					commentContent = new String(buffer);
+				} catch (IOException e) {
+					e.printStackTrace();
+					return;
+				}
+
+			}
+			createBasicComment(entity, commentContent);
+
+		}
+	}
+
+	// UTILS
+
 	private void extractBasicModifiersFromBinding(int modifiers, NamedEntity entity) {
 		Boolean publicModifier = Modifier.isPublic(modifiers);
 		Boolean protectedModifier = Modifier.isProtected(modifiers);
 		Boolean privateModifier = Modifier.isPrivate(modifiers);
-		if (publicModifier )
+		if (publicModifier)
 			entity.addModifiers("public");
 		if (protectedModifier)
 			entity.addModifiers("protected");
