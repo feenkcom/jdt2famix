@@ -6,5 +6,12 @@
 #- execute /path/to/jdt2famix.sh
 #- the result is an MSE file with the name of the folder from which the script was executed
 
-BASE_PATH="$(cd "$(dirname "$0")" && pwd)"
-java -cp "$BASE_PATH/*:$BASE_PATH" com.feenk.jdt2famix.injava.Main
+basedir="$(cd "$(dirname "$0")" && pwd)"
+pathsep=":"
+case $(uname) in
+CYGWIN*)
+  basedir="$(cygpath -w "$basedir")"
+  pathsep=";"
+esac
+
+exec java -cp "$basedir/*$pathsep$basedir" com.feenk.jdt2famix.injava.Main
