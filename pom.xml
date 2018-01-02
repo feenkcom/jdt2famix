@@ -67,7 +67,7 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-
+      
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -91,7 +91,14 @@
 						</goals>
 					</execution>
 				</executions>
-			</plugin>
+      </plugin>
+      
+			<plugin>
+			  <groupId>org.eluder.coveralls</groupId>
+			  <artifactId>coveralls-maven-plugin</artifactId>
+			  <version>3.1.0</version>
+      </plugin>
+      
 		</plugins>
 	</build>
 </project>
