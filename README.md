@@ -1,7 +1,7 @@
 This project offers the mechanism for producing MSE files out of Java code. It is based on [JDT Core](https://projects.eclipse.org/projects/eclipse.jdt.core) and [Fame for Java](https://github.com/girba/FameJava), and it requires Java 8.
 
-[![Build Status](https://api.travis-ci.org/girba/jdt2famix.svg?branch=master)](https://api.travis-ci.org/girba/jdt2famix)
-[![Coverage Status](https://coveralls.io/repos/girba/jdt2famix/badge.svg?branch=master)](https://coveralls.io/r/girba/jdt2famix?branch=master)
+[![Build Status](https://api.travis-ci.org/feenkcom/jdt2famix.svg?branch=master)](https://api.travis-ci.org/girba/jdt2famix)
+[![Coverage Status](https://coveralls.io/repos/feenkcom/jdt2famix/badge.svg?branch=master)](https://coveralls.io/r/girba/jdt2famix?branch=master)
 
 # Overview
 
@@ -10,7 +10,7 @@ This project offers the mechanism for producing MSE files out of Java code. It i
 # Installation
 
 ## Run a release
-1. [Download a binary release](https://github.com/girba/jdt2famix/releases)
+1. [Download a binary release](https://github.com/feenkcom/jdt2famix/releases)
 2. The downloaded folder contains all jar files and a `jdt2famix.sh` script (`jdt2famix.cmd` for Windows)
 
 ## Create a binary release from sources
