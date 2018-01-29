@@ -14,4 +14,4 @@ CYGWIN*)
   pathsep=";"
 esac
 
-exec java -cp "$basedir/*$pathsep$basedir" com.feenk.jdt2famix.injava.Main
+exec java -cp "$basedir/*$pathsep$basedir" com.feenk.jdt2famix.injava.Main "$@"
