@@ -281,6 +281,11 @@ public class AstVisitor extends ASTVisitor {
 			logNullBinding("method declaration", node.getName(), ((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		}
+		//setting the cyclomatic complexity value. 
+		CCVisitor visitor = new CCVisitor();
+		node.accept(visitor);
+		method.setCyclomaticComplexity(visitor.getComplexity());
+		//
 		method.setIsStub(false);
 		importer.pushOnContainerStack(method);
 		node.parameters().
