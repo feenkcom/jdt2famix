@@ -75,8 +75,6 @@ import com.feenk.jdt2famix.model.famix.Type;
 public class AstVisitor extends ASTVisitor {
 
 	private InJavaImporter importer;
-	private int complexity = 0; 
-	Method method; 
 	
 	public AstVisitor(InJavaImporter importer) {
 		this.importer = importer;
@@ -274,7 +272,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(MethodDeclaration node) {
 		IMethodBinding binding = node.resolveBinding();
-		complexity = 1; 
+		Method method; 
 		if (binding != null) {
 			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
 			Arrays.stream(binding.getExceptionTypes()).forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));			
@@ -284,6 +282,7 @@ public class AstVisitor extends ASTVisitor {
 			method = importer.ensureMethodFromMethodDeclaration(node);
 		}
 		method.setIsStub(false);
+		method.setCyclomaticComplexity(1);
 		importer.pushOnContainerStack(method);
 		node.parameters().
 			stream().
@@ -296,7 +295,6 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override
 	public void endVisit(MethodDeclaration node) {
-		method.setCyclomaticComplexity(complexity);
 		importer.popFromContainerStack();
 	}
 	
@@ -472,7 +470,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(WhileStatement node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
@@ -483,7 +481,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(DoStatement node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
@@ -494,7 +492,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(IfStatement node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
@@ -518,7 +516,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(ForStatement node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());
 //		for (Iterator<?> iterator = node.initializers().iterator(); iterator.hasNext();) {
 //			VariableDeclarationExpression initializerExpression = (VariableDeclarationExpression) iterator.next();
@@ -538,7 +536,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(EnhancedForStatement node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
@@ -549,7 +547,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(ConditionalExpression node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		importer.createAccessFromExpression((Expression) node.getExpression());		
 		return true;
 	}
@@ -561,7 +559,7 @@ public class AstVisitor extends ASTVisitor {
 	@Override
 	public boolean visit(InfixExpression node) {
 		if(node.getOperator().equals(Operator.AND) || node.getOperator().equals(Operator.OR)) {
-			complexity++;
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		}
 		importer.createAccessFromExpression((Expression) node.getLeftOperand());
 		importer.createAccessFromExpression((Expression) node.getRightOperand());
@@ -600,7 +598,7 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(CatchClause node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		CaughtException caughtException = new CaughtException();
 		ITypeBinding binding = node.getException().getType().resolveBinding();
 		if (binding != null) {
@@ -627,7 +625,7 @@ public class AstVisitor extends ASTVisitor {
 	
 	@Override 
 	public boolean visit(SwitchCase node) {
-		complexity++;
+		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();;
 		return true;
 	}
 }

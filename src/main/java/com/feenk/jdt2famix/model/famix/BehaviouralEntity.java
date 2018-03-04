@@ -64,6 +64,10 @@ public class BehaviouralEntity extends ContainerEntity {
         this.cyclomaticComplexity = cyclomaticComplexity;
     }
     
+    public void incCyclomaticComplexity() {
+    	cyclomaticComplexity = cyclomaticComplexity.intValue() + 1 ;
+    }
+    
     private Number numberOfComments;
     
     @FameProperty(name = "numberOfComments")
