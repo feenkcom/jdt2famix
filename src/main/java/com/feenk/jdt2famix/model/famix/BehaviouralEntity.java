@@ -53,7 +53,7 @@ public class BehaviouralEntity extends ContainerEntity {
         declaredType.getBehavioursWithDeclaredType().add(this);
     }
     
-    private Number cyclomaticComplexity;
+    private Number cyclomaticComplexity = 1;
     
     @FameProperty(name = "cyclomaticComplexity")
     public Number getCyclomaticComplexity() {
