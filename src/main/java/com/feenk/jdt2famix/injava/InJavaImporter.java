@@ -701,13 +701,13 @@ public class InJavaImporter extends Importer {
 	 * We pass the signature because we want to get it from the node,
 	 * but there can be different types of nodes (funny JDT).
 	 */
-	public Invocation createInvocationFromMethodBinding(IMethodBinding binding,
-			String signature) {		
+	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, ASTNode node) {		
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack()); 
 		if (binding != null)
-			invocation.addCandidates(ensureMethodFromMethodBinding(binding));  
-		invocation.setSignature(signature);
+			invocation.addCandidates(ensureMethodFromMethodBinding(binding));
+		createSourceAnchor(invocation, node, (CompilationUnit) node.getRoot());
+		invocation.setSignature(node.toString().trim());
 		repository.add(invocation);
 		return invocation;
 	}
@@ -753,18 +753,18 @@ public class InJavaImporter extends Importer {
 			IBinding simpleNameBinding = simpleName.resolveBinding();
 			if (simpleNameBinding instanceof IVariableBinding) {
 				IVariableBinding variableBinding = ((IVariableBinding) simpleNameBinding).getVariableDeclaration();
-				return createAccessFromVariableBinding(variableBinding);
+				return createAccessFromVariableBinding(variableBinding, simpleName);
 			}
 		}
 		if (expression instanceof FieldAccess) {
 			FieldAccess access = (FieldAccess) expression;
 			IVariableBinding variableBinding = access.resolveFieldBinding();
-			return createAccessFromVariableBinding(variableBinding);
+			return createAccessFromVariableBinding(variableBinding, access);
 		}
 		return new Access();
 	}
 	
-	private Access createAccessFromVariableBinding(IVariableBinding binding) {
+	private Access createAccessFromVariableBinding(IVariableBinding binding, ASTNode node) {
 		Access access = new Access();
 		StructuralEntity variable = unknownVariable();
 		if (binding != null) {
@@ -794,6 +794,7 @@ public class InJavaImporter extends Importer {
 			 * 		@Annotation(name="something" + AClass.DEFAULT)
 			 */
 			access.setAccessor(ensureInitializerMethod());
+		createSourceAnchor(access, node, (CompilationUnit) node.getRoot());
 		repository.add(access);
 		return access;
 	}
@@ -817,7 +818,6 @@ public class InJavaImporter extends Importer {
 		return declaredException;
 	}
 	
-	
 	//SOURCE ANCHOR
 	
 	/**
@@ -828,11 +828,13 @@ public class InJavaImporter extends Importer {
 		FileAnchor fileAnchor = new FileAnchor();
 		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
 		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+		fileAnchor.setStartColumn(compilationUnit.getColumnNumber(node.getStartPosition() + 1));
+		fileAnchor.setEndColumn(compilationUnit.getColumnNumber(node.getStartPosition() + node.getLength() + 1));
 		fileAnchor.setFileName(pathWithoutIgnoredRootPath(currentFilePath));
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}
-
+	
 	//COMMENT
 	
 	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {

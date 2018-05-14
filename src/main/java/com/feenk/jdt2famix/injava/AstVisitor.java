@@ -374,7 +374,7 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodInvocation node) {
-		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node);
 		importer.createAccessFromExpression(node.getExpression());
 		invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
@@ -388,7 +388,7 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperMethodInvocation node) {
-		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node.toString().trim());
+		importer.createInvocationFromMethodBinding(node.resolveMethodBinding(), node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -400,7 +400,7 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(ConstructorInvocation node) {
-		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -412,7 +412,7 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(SuperConstructorInvocation node) {
-		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node.toString().trim());
+		importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(), node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -426,7 +426,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(ClassInstanceCreation node) {
 		IMethodBinding binding = node.resolveConstructorBinding();
 		if (binding != null)
-			importer.createInvocationFromMethodBinding(binding, node.toString().trim());
+			importer.createInvocationFromMethodBinding(binding, node);
 		else {
 			String name = node.getType().toString();
 			importer.ensureBasicMethod(
