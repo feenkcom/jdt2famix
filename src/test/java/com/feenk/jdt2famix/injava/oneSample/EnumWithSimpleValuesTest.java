@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import org.junit.Test;
 
+import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
@@ -40,8 +41,8 @@ public class EnumWithSimpleValuesTest extends OneSampleTestCase {
 	@Test
 	public void testEnumValueSourceAnchor() {
 		Collection<EnumValue> values = ((Enum) type).getValues();
-		FileAnchor typeAnchor = (FileAnchor) type.getSourceAnchor(); 
+		AbstractFileAnchor typeAnchor = (AbstractFileAnchor) type.getSourceAnchor(); 
 		values.stream().forEach(value -> assertNotNull(value.getSourceAnchor()));
-		values.stream().forEach(value -> assertEquals(typeAnchor.getFileName(), ((FileAnchor) value.getSourceAnchor()).getFileName()));
+		values.stream().forEach(value -> assertEquals(typeAnchor.getFileName(), ((AbstractFileAnchor) value.getSourceAnchor()).getFileName()));
 	}
 }

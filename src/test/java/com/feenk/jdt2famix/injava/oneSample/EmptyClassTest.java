@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
+import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.Namespace;
 import com.feenk.jdt2famix.samples.basic.EmptyClass;
 
@@ -18,10 +20,10 @@ public class EmptyClassTest extends OneSampleTestCase {
 	@Test
 	public void testSourceAnchor() {
 		assertNotNull(type.getSourceAnchor());
-		assertTrue(type.getSourceAnchor() instanceof FileAnchor);
-		assertEquals(3, ((FileAnchor) type.getSourceAnchor()).getStartLine());
-		assertEquals(4, ((FileAnchor) type.getSourceAnchor()).getEndLine());
-		assertFalse(((FileAnchor) type.getSourceAnchor()).getFileName().isEmpty());
+		assertTrue(type.getSourceAnchor() instanceof IndexedFileAnchor);
+		assertEquals(45, ((IndexedFileAnchor) type.getSourceAnchor()).getStartPos());
+		assertEquals(72, ((IndexedFileAnchor) type.getSourceAnchor()).getEndPos());
+		assertFalse(((IndexedFileAnchor) type.getSourceAnchor()).getFileName().isEmpty());
 	}
 	
 	@Test

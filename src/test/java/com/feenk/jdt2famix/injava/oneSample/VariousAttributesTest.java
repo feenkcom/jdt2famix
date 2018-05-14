@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.PrimitiveType;
@@ -62,9 +63,9 @@ public class VariousAttributesTest extends OneSampleTestCase {
 	
 	@Test
 	public void testAttributeSourceAnchorFileNameIsLikeForItsClass() {
-		FileAnchor fileAnchor = (FileAnchor) type.getSourceAnchor();
+		AbstractFileAnchor fileAnchor = (AbstractFileAnchor) type.getSourceAnchor();
 		type.getAttributes().stream()
-			.forEach(a -> assertEquals(fileAnchor.getFileName(), ((FileAnchor) a.getSourceAnchor()).getFileName())); 
+			.forEach(a -> assertEquals(fileAnchor.getFileName(), ((AbstractFileAnchor) a.getSourceAnchor()).getFileName())); 
 	}
 
 }

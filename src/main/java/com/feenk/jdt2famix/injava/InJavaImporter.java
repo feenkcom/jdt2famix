@@ -65,6 +65,7 @@ import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.FAMIXModel;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
+import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.JavaSourceLanguage;
@@ -825,11 +826,13 @@ public class InJavaImporter extends Importer {
 	 * We cannot complain about the sense of humor in this design :)
 	 */
 	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node, CompilationUnit compilationUnit) {
-		FileAnchor fileAnchor = new FileAnchor();
-		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
-		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-		fileAnchor.setStartColumn(compilationUnit.getColumnNumber(node.getStartPosition() + 1));
-		fileAnchor.setEndColumn(compilationUnit.getColumnNumber(node.getStartPosition() + node.getLength() + 1));
+		IndexedFileAnchor fileAnchor = new IndexedFileAnchor();
+		fileAnchor.setStartPos(node.getStartPosition()+1);
+		fileAnchor.setEndPos(node.getStartPosition()+node.getLength()+1);
+//		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
+//		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
+//		fileAnchor.setStartColumn(compilationUnit.getColumnNumber(node.getStartPosition() + 1));
+//		fileAnchor.setEndColumn(compilationUnit.getColumnNumber(node.getStartPosition() + node.getLength() + 1));
 		fileAnchor.setFileName(pathWithoutIgnoredRootPath(currentFilePath));
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);

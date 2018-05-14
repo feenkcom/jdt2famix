@@ -7,6 +7,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.Famix;
+import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Type;
@@ -45,9 +46,9 @@ public class NestedAnnonymousClassesTest extends OneSampleTestCase {
 	
 	@Test
 	public void testAllNonStubTypesHaveSourceAnchor() {
-		FileAnchor typeAnchor = (FileAnchor) type.getSourceAnchor(); 		
+		AbstractFileAnchor typeAnchor = (AbstractFileAnchor) type.getSourceAnchor(); 		
 		importer.types().stream()
 			.filter(t -> ! t.getIsStub())
-			.forEach( t -> assertEquals(typeAnchor.getFileName(), ((FileAnchor) t.getSourceAnchor()).getFileName()));
+			.forEach( t -> assertEquals(typeAnchor.getFileName(), ((AbstractFileAnchor) t.getSourceAnchor()).getFileName()));
 	}
 }

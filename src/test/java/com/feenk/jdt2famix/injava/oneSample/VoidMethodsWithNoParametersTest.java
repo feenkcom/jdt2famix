@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.samples.basic.VoidMethodsWithNoParameters;
@@ -69,8 +70,8 @@ public class VoidMethodsWithNoParametersTest extends OneSampleTestCase {
 	
 	@Test
 	public void testMethodSourceAnchorFileNameIsLikeForItsClass() {
-		FileAnchor fileAnchor = (FileAnchor) type.getSourceAnchor();
+		AbstractFileAnchor fileAnchor = (AbstractFileAnchor) type.getSourceAnchor();
 		type.getMethods().stream()
-			.forEach(m -> assertEquals(fileAnchor.getFileName(), ((FileAnchor) m.getSourceAnchor()).getFileName())); 
+			.forEach(m -> assertEquals(fileAnchor.getFileName(), ((AbstractFileAnchor) m.getSourceAnchor()).getFileName())); 
 	}
 }
