@@ -24,7 +24,6 @@ import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
 import org.eclipse.jdt.core.dom.EnumConstantDeclaration;
-import org.eclipse.jdt.core.dom.EnumDeclaration;
 import org.eclipse.jdt.core.dom.Expression;
 import org.eclipse.jdt.core.dom.FieldAccess;
 import org.eclipse.jdt.core.dom.FieldDeclaration;
@@ -45,9 +44,6 @@ import org.eclipse.jdt.core.dom.SimpleType;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.VariableDeclarationFragment;
 
-import ch.akuhn.fame.MetaRepository;
-import ch.akuhn.fame.Repository;
-
 import com.feenk.jdt2famix.Famix;
 import com.feenk.jdt2famix.Importer;
 import com.feenk.jdt2famix.JavaFiles;
@@ -64,7 +60,6 @@ import com.feenk.jdt2famix.model.famix.DeclaredException;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.FAMIXModel;
-import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
@@ -83,6 +78,9 @@ import com.feenk.jdt2famix.model.famix.StructuralEntity;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.model.famix.UnknownVariable;
 import com.feenk.jdt2famix.model.java.JavaModel;
+
+import ch.akuhn.fame.MetaRepository;
+import ch.akuhn.fame.Repository;
 
 /**
  * The core class that holds the logic of creating the model
@@ -828,7 +826,6 @@ public class InJavaImporter extends Importer {
 		this.createSourceAnchor(sourcedEntity,node.getStartPosition() + 1, node.getStartPosition() + node.getLength());
 	}
 	
-	
 	public void createSourceAnchor(SourcedEntity sourcedEntity, int start, int stop) {
 		IndexedFileAnchor fileAnchor = new IndexedFileAnchor();
 		fileAnchor.setStartPos(start);
@@ -837,6 +834,7 @@ public class InJavaImporter extends Importer {
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}
+	
 	//COMMENT
 	
 	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {
@@ -900,14 +898,11 @@ public class InJavaImporter extends Importer {
 		}
 	}
 	
-	
-	
 	public void logNullBinding(String string, Object extraData, int lineNumber) {
 		logger.error("unresolved " + string +
 				" - " + extraData +
 				" - " + currentFilePath +
 				" - line " + lineNumber);
 	}
-
 	
 }
