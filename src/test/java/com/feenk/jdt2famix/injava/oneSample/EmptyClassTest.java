@@ -1,11 +1,12 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.feenk.jdt2famix.model.famix.AbstractFileAnchor;
-import com.feenk.jdt2famix.model.famix.FileAnchor;
 import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.Namespace;
 import com.feenk.jdt2famix.samples.basic.EmptyClass;
@@ -22,7 +23,7 @@ public class EmptyClassTest extends OneSampleTestCase {
 		assertNotNull(type.getSourceAnchor());
 		assertTrue(type.getSourceAnchor() instanceof IndexedFileAnchor);
 		assertEquals(45, ((IndexedFileAnchor) type.getSourceAnchor()).getStartPos());
-		assertEquals(72, ((IndexedFileAnchor) type.getSourceAnchor()).getEndPos());
+		assertEquals(71, ((IndexedFileAnchor) type.getSourceAnchor()).getEndPos());
 		assertFalse(((IndexedFileAnchor) type.getSourceAnchor()).getFileName().isEmpty());
 	}
 	

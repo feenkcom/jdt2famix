@@ -702,13 +702,12 @@ public class InJavaImporter extends Importer {
 	 * We pass the signature because we want to get it from the node,
 	 * but there can be different types of nodes (funny JDT).
 	 */
-	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, ASTNode node) {		
+	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, String signature) {		
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack()); 
 		if (binding != null)
 			invocation.addCandidates(ensureMethodFromMethodBinding(binding));
-		createSourceAnchor(invocation, node, (CompilationUnit) node.getRoot());
-		invocation.setSignature(node.toString().trim());
+		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;
 	}
@@ -795,7 +794,7 @@ public class InJavaImporter extends Importer {
 			 * 		@Annotation(name="something" + AClass.DEFAULT)
 			 */
 			access.setAccessor(ensureInitializerMethod());
-		createSourceAnchor(access, node, (CompilationUnit) node.getRoot());
+		createSourceAnchor(access, node);
 		repository.add(access);
 		return access;
 	}
@@ -825,19 +824,19 @@ public class InJavaImporter extends Importer {
 	 * We pass the compilationUnit because this is where the logic of getting the line number is.
 	 * We cannot complain about the sense of humor in this design :)
 	 */
-	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node, CompilationUnit compilationUnit) {
+	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node) {
+		this.createSourceAnchor(sourcedEntity,node.getStartPosition() + 1, node.getStartPosition() + node.getLength());
+	}
+	
+	
+	public void createSourceAnchor(SourcedEntity sourcedEntity, int start, int stop) {
 		IndexedFileAnchor fileAnchor = new IndexedFileAnchor();
-		fileAnchor.setStartPos(node.getStartPosition()+1);
-		fileAnchor.setEndPos(node.getStartPosition()+node.getLength()+1);
-//		fileAnchor.setStartLine(compilationUnit.getLineNumber(node.getStartPosition()));
-//		fileAnchor.setEndLine(compilationUnit.getLineNumber(node.getStartPosition() + node.getLength() - 1));
-//		fileAnchor.setStartColumn(compilationUnit.getColumnNumber(node.getStartPosition() + 1));
-//		fileAnchor.setEndColumn(compilationUnit.getColumnNumber(node.getStartPosition() + node.getLength() + 1));
+		fileAnchor.setStartPos(start);
+		fileAnchor.setEndPos(stop);
 		fileAnchor.setFileName(pathWithoutIgnoredRootPath(currentFilePath));
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}
-	
 	//COMMENT
 	
 	public void ensureCommentFromBodyDeclaration(SourcedEntity entity, BodyDeclaration node) {
