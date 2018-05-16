@@ -59,6 +59,7 @@ import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.Namespace;
+import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
 
@@ -131,7 +132,8 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
 
 		if (superclassType != null)
-			type.getSuperInheritances().stream().filter(inheritance -> inheritance.getSuperclass() instanceof Class && !((Class)inheritance.getSuperclass()).getIsInterface())
+			type.getSuperInheritances().stream().filter(inheritance -> (inheritance.getSuperclass() instanceof Class && !((Class)inheritance.getSuperclass()).getIsInterface())
+					|| (inheritance.getSuperclass() instanceof ParameterizedType && !((ParameterizedType)inheritance.getSuperclass()).getParameterizableClass().getIsInterface()))
 					.findFirst().ifPresent(in -> importer.createSourceAnchor(in, superclassType));
 
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
@@ -139,7 +141,7 @@ public class AstVisitor extends ASTVisitor {
 				importer.createInheritanceFromSubtypeToSuperDomType(type, (org.eclipse.jdt.core.dom.Type) t);
 			});
 
-		// create source anchors
+		// create source anchors for implemented interfaces references
 		createSourceAnchorsForInterfaceInheritance(node, type);
 
 		type.setIsStub(false);
