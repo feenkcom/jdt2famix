@@ -22,8 +22,8 @@ public class EmptyClassTest extends OneSampleTestCase {
 	public void testSourceAnchor() {
 		assertNotNull(type.getSourceAnchor());
 		assertTrue(type.getSourceAnchor() instanceof IndexedFileAnchor);
-		assertEquals(45, ((IndexedFileAnchor) type.getSourceAnchor()).getStartPos());
-		assertEquals(71, ((IndexedFileAnchor) type.getSourceAnchor()).getEndPos());
+		assertEquals(47, ((IndexedFileAnchor) type.getSourceAnchor()).getStartPos());
+		assertEquals(74, ((IndexedFileAnchor) type.getSourceAnchor()).getEndPos());
 		assertFalse(((IndexedFileAnchor) type.getSourceAnchor()).getFileName().isEmpty());
 	}
 	
