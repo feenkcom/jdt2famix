@@ -329,16 +329,15 @@ public class AstVisitor extends ASTVisitor {
 			namedEntity = importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) parent,
 					(Method) importer.topOfContainerStack());
 
-		if (namedEntity != null) {
-			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity,
-					node.resolveAnnotationBinding());
+		if (namedEntity != null && node.resolveAnnotationBinding() != null) {
+			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity, node.resolveAnnotationBinding());
 			importer.createSourceAnchor(annotationInstance, node);
 		}
 
 		if (parent instanceof FieldDeclaration) {
 			List fragments = ((FieldDeclaration) parent).fragments();
 			for (Object object : fragments) {
-				if (((VariableDeclarationFragment) object).resolveBinding() != null) {
+				if (((VariableDeclarationFragment) object).resolveBinding() != null && node.resolveAnnotationBinding() != null) {
 					Attribute attribute = importer
 							.ensureAttributeForVariableBinding(((VariableDeclarationFragment) object).resolveBinding());
 					AnnotationInstance annotationInstance = importer
