@@ -1,14 +1,18 @@
 package com.feenk.jdt2famix.injava;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
+import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
+import org.eclipse.jdt.core.dom.Annotation;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
+import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -49,6 +53,7 @@ import org.eclipse.jdt.core.dom.VariableDeclarationStatement;
 import org.eclipse.jdt.core.dom.WhileStatement;
 
 import com.feenk.jdt2famix.model.famix.Access;
+import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
 import com.feenk.jdt2famix.model.famix.AnnotationTypeAttribute;
 import com.feenk.jdt2famix.model.famix.Attribute;
@@ -59,7 +64,9 @@ import com.feenk.jdt2famix.model.famix.EnumValue;
 import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
+import com.feenk.jdt2famix.model.famix.NamedEntity;
 import com.feenk.jdt2famix.model.famix.Namespace;
+import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
@@ -292,6 +299,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(MarkerAnnotation node) {
+		addTypeAnnotationSourceAnchor(node);
 		return true;
 	}
 
@@ -301,16 +309,44 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
+		addTypeAnnotationSourceAnchor(node);
+		return true;
+	}
+
+	private void addTypeAnnotationSourceAnchor(Annotation node) {
 		ASTNode parent = node.getParent();
-		if (parent instanceof TypeDeclaration) {
-			if (((TypeDeclaration) parent).resolveBinding() != null) {
-				Type type = importer.ensureTypeFromTypeBinding(((TypeDeclaration) parent).resolveBinding());
-				type.getAnnotationInstances().stream()
-						.filter(ann -> ann.getAnnotationType().getName().equals(node.getTypeName().getFullyQualifiedName())).findFirst()
-						.ifPresent(ann -> importer.createSourceAnchor(ann, node));
+		NamedEntity namedEntity = null;
+		if ((parent instanceof AbstractTypeDeclaration)
+				&& (((AbstractTypeDeclaration) parent).resolveBinding() != null)) {
+			namedEntity = importer.ensureTypeFromTypeBinding(((AbstractTypeDeclaration) parent).resolveBinding());
+		}
+
+		if ((parent instanceof MethodDeclaration) && (((MethodDeclaration) parent).resolveBinding() != null)) {
+			namedEntity = importer.ensureMethodFromMethodBinding(((MethodDeclaration) parent).resolveBinding());
+		}
+
+		if ((parent instanceof SingleVariableDeclaration) && (importer.topOfContainerStack() instanceof Method))
+			namedEntity = importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) parent,
+					(Method) importer.topOfContainerStack());
+
+		if (namedEntity != null) {
+			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity,
+					node.resolveAnnotationBinding());
+			importer.createSourceAnchor(annotationInstance, node);
+		}
+
+		if (parent instanceof FieldDeclaration) {
+			List fragments = ((FieldDeclaration) parent).fragments();
+			for (Object object : fragments) {
+				if (((VariableDeclarationFragment) object).resolveBinding() != null) {
+					Attribute attribute = importer
+							.ensureAttributeForVariableBinding(((VariableDeclarationFragment) object).resolveBinding());
+					AnnotationInstance annotationInstance = importer
+							.createAnnotationInstanceFromAnnotationBinding(attribute, node.resolveAnnotationBinding());
+					importer.createSourceAnchor(annotationInstance, node);
+				}
 			}
 		}
-		return true;
 	}
 
 	/**
@@ -319,6 +355,7 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(SingleMemberAnnotation node) {
+		addTypeAnnotationSourceAnchor(node);
 		return true;
 	}
 

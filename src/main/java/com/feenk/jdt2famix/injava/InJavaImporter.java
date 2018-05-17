@@ -281,26 +281,19 @@ public class InJavaImporter extends Importer {
 			Stream.of(binding.getTypeParameters())
 					.forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
-		
-		createAnnotationInstancesToEntityFromAnnotationBinding(type, binding.getAnnotations());
 		return type;
 	}
 
-	/**
-	 * Main method for creating annotation instances
-	 */
-	private void createAnnotationInstancesToEntityFromAnnotationBinding(NamedEntity entity,
-			IAnnotationBinding[] annotations) {
-		for (IAnnotationBinding annotationInstanceBinding : annotations) {
-			ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
-			AnnotationInstance annotationInstance = new AnnotationInstance();
-			annotationInstance.setAnnotatedEntity(entity);
-			if (annotationInstanceBinding != null) {
-				createAnnotationInstanceFromAnnotationInstanceBinding(annotationInstanceBinding, annotationTypeBinding,
-						annotationInstance);
-			}
-			repository.add(annotationInstance);
+	public AnnotationInstance createAnnotationInstanceFromAnnotationBinding(NamedEntity entity, IAnnotationBinding annotationInstanceBinding) {
+		ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
+		AnnotationInstance annotationInstance = new AnnotationInstance();
+		annotationInstance.setAnnotatedEntity(entity);
+		if (annotationInstanceBinding != null) {
+			createAnnotationInstanceFromAnnotationInstanceBinding(annotationInstanceBinding, annotationTypeBinding,
+					annotationInstance);
 		}
+		repository.add(annotationInstance);
+		return annotationInstance;
 	}
 
 	private void createAnnotationInstanceFromAnnotationInstanceBinding(IAnnotationBinding annotationInstanceBinding,
@@ -507,18 +500,6 @@ public class InJavaImporter extends Importer {
 		extractBasicModifiersFromBinding(binding.getModifiers(), method);
 		if (Modifier.isStatic(binding.getModifiers()))
 			method.setHasClassScope(true);
-		try {
-			IAnnotationBinding[] annotations = binding.getAnnotations();
-			createAnnotationInstancesToEntityFromAnnotationBinding(method, annotations);
-		} catch (NullPointerException e) {
-			/*
-			 * This happens in some very strange circumstances, likely due to missing
-			 * dependencies. The only solution I found was to catch the exception and log it
-			 * and provide people with a way to solve it by adding the missing dependencies
-			 * to the import.
-			 */
-			logNullBinding("annotation instances for method binding", Famix.qualifiedNameOf(method), -1);
-		}
 	}
 
 	public Method ensureMethodFromMethodDeclaration(MethodDeclaration node) {
@@ -575,7 +556,6 @@ public class InJavaImporter extends Importer {
 		parameter.setDeclaredType(ensureTypeFromDomType(variableDeclaration.getType()));
 		IVariableBinding binding = variableDeclaration.resolveBinding();
 		if (binding != null) {
-			createAnnotationInstancesToEntityFromAnnotationBinding(parameter, binding.getAnnotations());
 			// We only recover the final modifier
 			if (Modifier.isFinal(binding.getModifiers()))
 				parameter.addModifiers("final");
@@ -631,7 +611,6 @@ public class InJavaImporter extends Importer {
 			return attributes.named(qualifiedName);
 		Attribute attribute = ensureBasicAttribute(parentType, name, qualifiedName,
 				ensureTypeFromTypeBinding(binding.getType()));
-		createAnnotationInstancesToEntityFromAnnotationBinding(attribute, binding.getAnnotations());
 		return attribute;
 	}
 
