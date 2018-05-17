@@ -1,0 +1,5 @@
+# Set the default behavior, in case people don't have core.autocrlf set.
+* text=auto
+
+# Java files should always have LF line endings, even on Windows because we have tests that count characters.
+*.java text eol=lf

@@ -3,6 +3,7 @@ package com.feenk.jdt2famix.injava;
 import java.util.Arrays;
 import java.util.function.Consumer;
 
+import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
@@ -122,6 +123,7 @@ public class AstVisitor extends ASTVisitor {
 			return false;
 		}
 		Type type = importer.ensureTypeFromTypeBinding(binding);
+
 		org.eclipse.jdt.core.dom.Type superclassType = node.getSuperclassType();
 		/*
 		 * This is an ugly patch. When the binding to the superclass or super interfaces
@@ -132,8 +134,12 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
 
 		if (superclassType != null)
-			type.getSuperInheritances().stream().filter(inheritance -> (inheritance.getSuperclass() instanceof Class && !((Class)inheritance.getSuperclass()).getIsInterface())
-					|| (inheritance.getSuperclass() instanceof ParameterizedType && !((ParameterizedType)inheritance.getSuperclass()).getParameterizableClass().getIsInterface()))
+			type.getSuperInheritances().stream()
+					.filter(inheritance -> (inheritance.getSuperclass() instanceof Class
+							&& !((Class) inheritance.getSuperclass()).getIsInterface())
+							|| (inheritance.getSuperclass() instanceof ParameterizedType
+									&& !((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass()
+											.getIsInterface()))
 					.findFirst().ifPresent(in -> importer.createSourceAnchor(in, superclassType));
 
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
@@ -152,15 +158,13 @@ public class AstVisitor extends ASTVisitor {
 	}
 
 	private void createSourceAnchorsForInterfaceInheritance(EnumDeclaration node, Type type) {
-		if (!node.superInterfaceTypes().isEmpty()) {
+		if (!node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(createSourceAnchorForInheritance(type));
-		}
 	}
-	
+
 	private void createSourceAnchorsForInterfaceInheritance(TypeDeclaration node, Type type) {
-		if (!node.superInterfaceTypes().isEmpty()) {
+		if (!node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(createSourceAnchorForInheritance(type));
-		}
 	}
 
 	private Consumer createSourceAnchorForInheritance(Type type) {
@@ -297,6 +301,15 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(NormalAnnotation node) {
+		ASTNode parent = node.getParent();
+		if (parent instanceof TypeDeclaration) {
+			if (((TypeDeclaration) parent).resolveBinding() != null) {
+				Type type = importer.ensureTypeFromTypeBinding(((TypeDeclaration) parent).resolveBinding());
+				type.getAnnotationInstances().stream()
+						.filter(ann -> ann.getAnnotationType().getName().equals(node.getTypeName().getFullyQualifiedName())).findFirst()
+						.ifPresent(ann -> importer.createSourceAnchor(ann, node));
+			}
+		}
 		return true;
 	}
 

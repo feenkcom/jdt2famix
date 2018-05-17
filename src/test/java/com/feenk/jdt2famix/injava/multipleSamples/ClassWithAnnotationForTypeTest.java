@@ -3,12 +3,14 @@ package com.feenk.jdt2famix.injava.multipleSamples;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.eclipse.core.runtime.Assert;
 import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.AnnotationInstance;
 import com.feenk.jdt2famix.model.famix.AnnotationInstanceAttribute;
 import com.feenk.jdt2famix.model.famix.AnnotationType;
+import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.NamedEntity;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.AnnotationTypeWithMultipleAttributesForType;
@@ -43,6 +45,8 @@ public class ClassWithAnnotationForTypeTest extends
 		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithMultipleAttributesForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
 		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
+		assertNotNull(annotationInstance.getSourceAnchor());
+		assertEquals(136,((IndexedFileAnchor)annotationInstance.getSourceAnchor()).getStartPos());
 		assertEquals(5, annotationInstance.getAttributes().size());
 		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
 	}

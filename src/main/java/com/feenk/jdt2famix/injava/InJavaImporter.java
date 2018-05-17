@@ -281,6 +281,7 @@ public class InJavaImporter extends Importer {
 			Stream.of(binding.getTypeParameters())
 					.forEach(p -> createParameterType(p.getName().toString(), parameterizableClass));
 		}
+		
 		createAnnotationInstancesToEntityFromAnnotationBinding(type, binding.getAnnotations());
 		return type;
 	}
