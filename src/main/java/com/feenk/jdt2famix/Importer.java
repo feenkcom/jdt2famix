@@ -40,6 +40,7 @@ public abstract class Importer {
 
 		String[] paths = javaFiles.paths();
 		String[] encodings = Arrays.stream(paths).map(path -> "UTF-8").toArray(String[]::new);
+		
 		parser.createASTs(paths, encodings, new String[0], getRequestor(javaFiles), null);
 	}
 

@@ -12,7 +12,6 @@ import org.eclipse.jdt.core.dom.AnnotationTypeDeclaration;
 import org.eclipse.jdt.core.dom.AnnotationTypeMemberDeclaration;
 import org.eclipse.jdt.core.dom.AnonymousClassDeclaration;
 import org.eclipse.jdt.core.dom.Assignment;
-import org.eclipse.jdt.core.dom.BodyDeclaration;
 import org.eclipse.jdt.core.dom.CatchClause;
 import org.eclipse.jdt.core.dom.ClassInstanceCreation;
 import org.eclipse.jdt.core.dom.CompilationUnit;
@@ -61,12 +60,10 @@ import com.feenk.jdt2famix.model.famix.CaughtException;
 import com.feenk.jdt2famix.model.famix.Class;
 import com.feenk.jdt2famix.model.famix.Enum;
 import com.feenk.jdt2famix.model.famix.EnumValue;
-import com.feenk.jdt2famix.model.famix.Inheritance;
 import com.feenk.jdt2famix.model.famix.Invocation;
 import com.feenk.jdt2famix.model.famix.Method;
 import com.feenk.jdt2famix.model.famix.NamedEntity;
 import com.feenk.jdt2famix.model.famix.Namespace;
-import com.feenk.jdt2famix.model.famix.Parameter;
 import com.feenk.jdt2famix.model.famix.ParameterizedType;
 import com.feenk.jdt2famix.model.famix.ThrownException;
 import com.feenk.jdt2famix.model.famix.Type;
@@ -141,12 +138,12 @@ public class AstVisitor extends ASTVisitor {
 			importer.createInheritanceFromSubtypeToSuperDomType(type, superclassType);
 
 		if (superclassType != null)
-			type.getSuperInheritances().stream()
-					.filter(inheritance -> (inheritance.getSuperclass() instanceof Class
-							&& !((Class) inheritance.getSuperclass()).getIsInterface())
-							|| (inheritance.getSuperclass() instanceof ParameterizedType
-									&& !((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass()
-											.getIsInterface()))
+			type.getSuperInheritances().stream().filter(inheritance -> (inheritance.getSuperclass() instanceof Class
+					&& !((Class) inheritance.getSuperclass()).getIsInterface())
+					|| (inheritance.getSuperclass() instanceof ParameterizedType
+							&& ((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass() != null
+							&& !((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass()
+									.getIsInterface()))
 					.findFirst().ifPresent(in -> importer.createSourceAnchor(in, superclassType));
 
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
@@ -330,14 +327,16 @@ public class AstVisitor extends ASTVisitor {
 					(Method) importer.topOfContainerStack());
 
 		if (namedEntity != null && node.resolveAnnotationBinding() != null) {
-			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity, node.resolveAnnotationBinding());
+			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity,
+					node.resolveAnnotationBinding());
 			importer.createSourceAnchor(annotationInstance, node);
 		}
 
 		if (parent instanceof FieldDeclaration) {
 			List fragments = ((FieldDeclaration) parent).fragments();
 			for (Object object : fragments) {
-				if (((VariableDeclarationFragment) object).resolveBinding() != null && node.resolveAnnotationBinding() != null) {
+				if (((VariableDeclarationFragment) object).resolveBinding() != null
+						&& node.resolveAnnotationBinding() != null) {
 					Attribute attribute = importer
 							.ensureAttributeForVariableBinding(((VariableDeclarationFragment) object).resolveBinding());
 					AnnotationInstance annotationInstance = importer

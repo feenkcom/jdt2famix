@@ -303,6 +303,7 @@ public class InJavaImporter extends Importer {
 		IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
 		for (IMemberValuePairBinding memberValueBinding : allMemberValuePairs) {
 			AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
+			
 			annotationInstanceAttribute.setValue(annotationInstanceAttributeValueString(memberValueBinding.getValue()));
 			annotationInstance.addAttributes(annotationInstanceAttribute);
 			repository.add(annotationInstanceAttribute);
