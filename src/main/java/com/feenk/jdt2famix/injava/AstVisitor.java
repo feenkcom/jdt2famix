@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
+import javax.tools.ToolProvider;
+
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;
@@ -219,12 +221,15 @@ public class AstVisitor extends ASTVisitor {
 					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 			return false;
 		}
-		Enum famixEnum = (Enum) importer.ensureTypeFromTypeBinding(binding);
-		createSourceAnchorsForInterfaceInheritance(node, famixEnum);
-		famixEnum.setIsStub(false);
-		importer.createSourceAnchor(famixEnum, node);
-		importer.ensureCommentFromBodyDeclaration(famixEnum, node);
-		importer.pushOnContainerStack(famixEnum);
+		Type ensureTypeFromTypeBinding = importer.ensureTypeFromTypeBinding(binding);
+		if (ensureTypeFromTypeBinding instanceof Enum) {
+			Enum famixEnum = (Enum) ensureTypeFromTypeBinding;
+			createSourceAnchorsForInterfaceInheritance(node, famixEnum);
+			famixEnum.setIsStub(false);
+			importer.createSourceAnchor(famixEnum, node);
+			importer.ensureCommentFromBodyDeclaration(famixEnum, node);
+			importer.pushOnContainerStack(famixEnum);
+		}
 		return true;
 	}
 
@@ -319,7 +324,10 @@ public class AstVisitor extends ASTVisitor {
 		}
 
 		if ((parent instanceof MethodDeclaration) && (((MethodDeclaration) parent).resolveBinding() != null)) {
-			namedEntity = importer.ensureMethodFromMethodBinding(((MethodDeclaration) parent).resolveBinding());
+			IMethodBinding resolveBinding = ((MethodDeclaration) parent).resolveBinding();
+			if (resolveBinding.getMethodDeclaration() != null)
+				namedEntity = importer.ensureMethodFromMethodBinding(resolveBinding,
+						importer.ensureTypeFromTypeBinding(resolveBinding.getMethodDeclaration().getDeclaringClass()));
 		}
 
 		if ((parent instanceof SingleVariableDeclaration) && (importer.topOfContainerStack() instanceof Method))
@@ -362,44 +370,50 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodDeclaration node) {
-		IMethodBinding binding = node.resolveBinding();
-		Method method;
-		if (binding != null) {
-			method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
-			Arrays.stream(binding.getExceptionTypes())
-					.forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));
-		} else {
-			logNullBinding("method declaration", node.getName(),
-					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
-			method = importer.ensureMethodFromMethodDeclaration(node);
+		if (importer.topOfContainerStack() instanceof Type) {
+			IMethodBinding binding = node.resolveBinding();
+			Method method;
+			if (binding != null) {
+				method = importer.ensureMethodFromMethodBindingToCurrentContainer(binding);
+				Arrays.stream(binding.getExceptionTypes())
+						.forEach(e -> importer.createDeclaredExceptionFromTypeBinding(e, method));
+			} else {
+				logNullBinding("method declaration", node.getName(),
+						((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
+				method = importer.ensureMethodFromMethodDeclaration(node);
+			}
+			method.setIsStub(false);
+			method.setCyclomaticComplexity(1);
+			importer.pushOnContainerStack(method);
+			node.parameters().stream().forEach(
+					p -> importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
+			importer.createSourceAnchor(method, node);
+			importer.ensureCommentFromBodyDeclaration(method, node);
 		}
-		method.setIsStub(false);
-		method.setCyclomaticComplexity(1);
-		importer.pushOnContainerStack(method);
-		node.parameters().stream().forEach(
-				p -> importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
-		importer.createSourceAnchor(method, node);
-		importer.ensureCommentFromBodyDeclaration(method, node);
 		return true;
 	}
 
 	@Override
 	public void endVisit(MethodDeclaration node) {
-		importer.popFromContainerStack();
+		if (importer.topOfContainerStack() instanceof Method)
+			importer.popFromContainerStack();
 	}
 
 	@Override
 	public boolean visit(Initializer node) {
-		Method method = importer.ensureInitializerMethod();
-		importer.pushOnContainerStack(method);
-		importer.createSourceAnchor(method, node);
-		importer.ensureCommentFromBodyDeclaration(method, node);
+		if (importer.topOfContainerStack() instanceof Type) {
+			Method method = importer.ensureInitializerMethod();
+			importer.pushOnContainerStack(method);
+			importer.createSourceAnchor(method, node);
+			importer.ensureCommentFromBodyDeclaration(method, node);
+		}
 		return true;
 	}
 
 	@Override
 	public void endVisit(Initializer node) {
-		importer.popFromContainerStack();
+		if (importer.topOfContainerStack() instanceof Method)
+			importer.popFromContainerStack();
 	}
 
 	//////// ATTRIBUTES
@@ -465,12 +479,14 @@ public class AstVisitor extends ASTVisitor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean visit(MethodInvocation node) {
-		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
-				node.toString().trim());
-		importer.createSourceAnchor(invocation, node.getName());
-		importer.createAccessFromExpression(node.getExpression());
-		invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
-		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
+		if (importer.topOfContainerStack() instanceof Method) {
+			Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
+					node.toString().trim());
+			importer.createSourceAnchor(invocation, node.getName());
+			importer.createAccessFromExpression(node.getExpression());
+			invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
+			node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
+		}
 		return true;
 	}
 
@@ -655,9 +671,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(ConditionalExpression node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 

@@ -284,7 +284,8 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	public AnnotationInstance createAnnotationInstanceFromAnnotationBinding(NamedEntity entity, IAnnotationBinding annotationInstanceBinding) {
+	public AnnotationInstance createAnnotationInstanceFromAnnotationBinding(NamedEntity entity,
+			IAnnotationBinding annotationInstanceBinding) {
 		ITypeBinding annotationTypeBinding = annotationInstanceBinding.getAnnotationType();
 		AnnotationInstance annotationInstance = new AnnotationInstance();
 		annotationInstance.setAnnotatedEntity(entity);
@@ -302,14 +303,21 @@ public class InJavaImporter extends Importer {
 		annotationInstance.setAnnotationType(annotationType);
 		IMemberValuePairBinding[] allMemberValuePairs = annotationInstanceBinding.getAllMemberValuePairs();
 		for (IMemberValuePairBinding memberValueBinding : allMemberValuePairs) {
-			AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
-			
-			annotationInstanceAttribute.setValue(annotationInstanceAttributeValueString(memberValueBinding.getValue()));
-			annotationInstance.addAttributes(annotationInstanceAttribute);
-			repository.add(annotationInstanceAttribute);
+			try {
+				Object value = memberValueBinding.getValue();
+				AnnotationInstanceAttribute annotationInstanceAttribute = new AnnotationInstanceAttribute();
 
-			annotationInstanceAttribute.setAnnotationTypeAttribute(
-					ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
+				annotationInstanceAttribute.setValue(annotationInstanceAttributeValueString(value));
+				annotationInstance.addAttributes(annotationInstanceAttribute);
+				repository.add(annotationInstanceAttribute);
+
+				annotationInstanceAttribute.setAnnotationTypeAttribute(
+						ensureAnnotationTypeAttribute(annotationType, memberValueBinding.getName()));
+			} catch (NullPointerException npe) {
+				logger.error(
+						"Null pointer exception in jdt core when getting the value of annotation instance attribute "
+								+ memberValueBinding.getKey());
+			}
 		}
 	}
 
@@ -473,16 +481,6 @@ public class InJavaImporter extends Importer {
 		return ensureMethodFromMethodBinding(binding, (Type) topOfContainerStack());
 	}
 
-	public Method ensureMethodFromMethodBinding(IMethodBinding binding) {
-		/*
-		 * binding.getDeclaringClass() might be null when you invoke a method from a
-		 * class that is not in the path It looks like calling getMethodDeclaration is
-		 * more robust.
-		 */
-		return ensureMethodFromMethodBinding(binding.getMethodDeclaration(),
-				ensureTypeFromTypeBinding(binding.getMethodDeclaration().getDeclaringClass()));
-	}
-
 	public Method ensureMethodFromMethodBinding(IMethodBinding binding, Type parentType) {
 		StringJoiner signatureJoiner = new StringJoiner(", ", "(", ")");
 		Arrays.stream(binding.getParameterTypes()).forEach(p -> signatureJoiner.add((String) p.getQualifiedName()));
@@ -565,11 +563,15 @@ public class InJavaImporter extends Importer {
 	}
 
 	public Parameter ensureParameterWithinCurrentMethodFromVariableBinding(IVariableBinding binding) {
-		Method method = (Method) topOfContainerStack();
-		Optional<Parameter> possibleParameter = method.getParameters().stream()
-				.filter(p -> p.getName().equals(binding.getName())).findAny();
-		if (possibleParameter.isPresent())
-			return possibleParameter.get();
+		if (topOfContainerStack() instanceof Method) {
+			Method method = (Method) topOfContainerStack();
+			if (method != null) {
+				Optional<Parameter> possibleParameter = method.getParameters().stream()
+						.filter(p -> p.getName().equals(binding.getName())).findAny();
+				if (possibleParameter.isPresent())
+					return possibleParameter.get();
+			}
+		}
 		return null;
 	}
 
@@ -640,16 +642,17 @@ public class InJavaImporter extends Importer {
 	/**
 	 * We pass the dom type here because of the funny types of JDT
 	 */
-	public LocalVariable ensureLocalVariableFromFragment(VariableDeclarationFragment fragment,
+	public void ensureLocalVariableFromFragment(VariableDeclarationFragment fragment,
 			org.eclipse.jdt.core.dom.Type type) {
-		LocalVariable localVariable = new LocalVariable();
-		localVariable.setName(fragment.getName().toString());
-		localVariable.setDeclaredType(ensureTypeFromDomType(type));
-		// CHECK: We might want to recover the modifiers (e.g., final)
-		localVariable.setIsStub(true);
-		((Method) topOfContainerStack()).addLocalVariables(localVariable);
-		repository.add(localVariable);
-		return localVariable;
+		if (topOfContainerStack() instanceof Method) {
+			LocalVariable localVariable = new LocalVariable();
+			localVariable.setName(fragment.getName().toString());
+			localVariable.setDeclaredType(ensureTypeFromDomType(type));
+			// CHECK: We might want to recover the modifiers (e.g., final)
+			localVariable.setIsStub(true);
+			((Method) topOfContainerStack()).addLocalVariables(localVariable);
+			repository.add(localVariable);
+		}
 	}
 
 	// ENUM VALUE
@@ -667,7 +670,7 @@ public class InJavaImporter extends Importer {
 	}
 
 	private EnumValue ensureBasicEnumValue(Enum parentEnum, String enumValueName) {
-		if (parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
+		if (parentEnum != null && parentEnum.getValues().stream().anyMatch(v -> v.getName().equals(enumValueName)))
 			return parentEnum.getValues().stream().filter(v -> v.getName().equals(enumValueName)).findAny().get();
 		EnumValue enumValue = new EnumValue();
 		enumValue.setName(enumValueName);
@@ -708,10 +711,13 @@ public class InJavaImporter extends Importer {
 	 * be different types of nodes (funny JDT).
 	 */
 	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, String signature) {
+		
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack());
-		if (binding != null)
-			invocation.addCandidates(ensureMethodFromMethodBinding(binding));
+		if (binding != null && binding.getDeclaringClass() != null) {
+			Type ensureTypeFromTypeBinding = ensureTypeFromTypeBinding(binding.getDeclaringClass());
+			invocation.addCandidates(ensureMethodFromMethodBinding(binding, ensureTypeFromTypeBinding));
+		}
 		invocation.setSignature(signature);
 		repository.add(invocation);
 		return invocation;
