@@ -711,12 +711,18 @@ public class InJavaImporter extends Importer {
 	 * be different types of nodes (funny JDT).
 	 */
 	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, String signature) {
-		
+
 		Invocation invocation = new Invocation();
 		invocation.setSender((Method) topOfContainerStack());
-		if (binding != null && binding.getDeclaringClass() != null) {
-			Type ensureTypeFromTypeBinding = ensureTypeFromTypeBinding(binding.getDeclaringClass());
-			invocation.addCandidates(ensureMethodFromMethodBinding(binding, ensureTypeFromTypeBinding));
+		if (binding != null && binding.getMethodDeclaration() != null) {
+			IMethodBinding methodDeclarationBinding = binding.getMethodDeclaration();
+			ITypeBinding declaringClass = null;
+			if (methodDeclarationBinding.getDeclaringClass() != null)
+				declaringClass = methodDeclarationBinding.getDeclaringClass();
+			else
+				declaringClass = binding.getDeclaringClass();
+			Type ensureTypeFromTypeBinding = ensureTypeFromTypeBinding(declaringClass);
+			invocation.addCandidates(ensureMethodFromMethodBinding(methodDeclarationBinding, ensureTypeFromTypeBinding));
 		}
 		invocation.setSignature(signature);
 		repository.add(invocation);

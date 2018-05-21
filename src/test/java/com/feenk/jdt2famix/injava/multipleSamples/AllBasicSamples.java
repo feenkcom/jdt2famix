@@ -6,6 +6,7 @@ import org.junit.Test;
 
 import com.feenk.jdt2famix.JavaFiles;
 import com.feenk.jdt2famix.model.famix.FileAnchor;
+import com.feenk.jdt2famix.model.famix.IndexedFileAnchor;
 import com.feenk.jdt2famix.model.famix.Type;
 import com.feenk.jdt2famix.samples.basic.EmptyClass;
 
@@ -19,6 +20,6 @@ public class AllBasicSamples extends MultipleSamplesTestCase {
 	@Test
 	public void testSourceAnchorIgnoresRoot() {
 		Type type = importer.types().named(EmptyClass.class.getName());
-		assertTrue(((FileAnchor) type.getSourceAnchor()).getFileName().equals(EmptyClass.class.getSimpleName()+".java"));
+		assertTrue(((IndexedFileAnchor) type.getSourceAnchor()).getFileName().equals(EmptyClass.class.getSimpleName()+".java"));
 	}
 }
