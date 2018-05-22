@@ -16,6 +16,7 @@ public class ClassWithSuperClassTest extends OneSampleTestCase {
 	@Test
 	public void testSuperConstructorInvocation() {
 		assertEquals(1, type.getSuperInheritances().size());
-		org.junit.Assert.assertNotNull(type.getSuperInheritances().stream().findFirst().get().getSourceAnchor());
+		org.junit.Assert.assertTrue(
+				type.getSuperInheritances().stream().findFirst().get().getAstStartPosition().intValue() > 0);
 	}
 }

@@ -45,8 +45,7 @@ public class ClassWithAnnotationForTypeTest extends
 		AnnotationType annotationType = (AnnotationType) importer.types().named(AnnotationTypeWithMultipleAttributesForType.class.getName());
 		assertEquals(1, annotationType.getInstances().size());
 		AnnotationInstance annotationInstance = annotationType.getInstances().stream().findAny().get();
-		assertNotNull(annotationInstance.getSourceAnchor());
-		assertEquals(136,((IndexedFileAnchor)annotationInstance.getSourceAnchor()).getStartPos());
+		assertEquals(136,annotationInstance.getAstStartPosition());
 		assertEquals(5, annotationInstance.getAttributes().size());
 		annotationInstance.getAttributes().forEach(a -> assertNotNull(a.getAnnotationTypeAttribute()));
 	}
