@@ -146,7 +146,7 @@ public class AstVisitor extends ASTVisitor {
 							&& ((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass() != null
 							&& !((ParameterizedType) inheritance.getSuperclass()).getParameterizableClass()
 									.getIsInterface()))
-					.findFirst().ifPresent(in -> importer.createSourceAnchor(in, superclassType));
+					.findFirst().ifPresent(in -> importer.createLightweightSourceAnchor(in, superclassType));
 
 		if (binding.getInterfaces().length == 0 && !node.superInterfaceTypes().isEmpty())
 			node.superInterfaceTypes().stream().forEach(t -> {
@@ -158,6 +158,7 @@ public class AstVisitor extends ASTVisitor {
 
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, node);
+		importer.createLightweightSourceAnchor(type, node.getName());
 		importer.ensureCommentFromBodyDeclaration(type, node);
 		importer.pushOnContainerStack(type);
 		return true;
@@ -180,7 +181,7 @@ public class AstVisitor extends ASTVisitor {
 					.filter(superInheritance -> currentInterface.resolveBinding() != null && superInheritance
 							.getSuperclass().getName().equals(currentInterface.resolveBinding().getName()))
 					.findFirst()
-					.ifPresent(superInheritance -> importer.createSourceAnchor(superInheritance, currentInterface));
+					.ifPresent(superInheritance -> importer.createLightweightSourceAnchor(superInheritance, currentInterface));
 		};
 	}
 
@@ -337,7 +338,7 @@ public class AstVisitor extends ASTVisitor {
 		if (namedEntity != null && node.resolveAnnotationBinding() != null) {
 			AnnotationInstance annotationInstance = importer.createAnnotationInstanceFromAnnotationBinding(namedEntity,
 					node.resolveAnnotationBinding());
-			importer.createSourceAnchor(annotationInstance, node);
+			importer.createLightweightSourceAnchor(annotationInstance, node);
 		}
 
 		if (parent instanceof FieldDeclaration) {
@@ -349,7 +350,7 @@ public class AstVisitor extends ASTVisitor {
 							.ensureAttributeForVariableBinding(((VariableDeclarationFragment) object).resolveBinding());
 					AnnotationInstance annotationInstance = importer
 							.createAnnotationInstanceFromAnnotationBinding(attribute, node.resolveAnnotationBinding());
-					importer.createSourceAnchor(annotationInstance, node);
+					importer.createLightweightSourceAnchor(annotationInstance, node);
 				}
 			}
 		}
@@ -388,6 +389,7 @@ public class AstVisitor extends ASTVisitor {
 			node.parameters().stream().forEach(
 					p -> importer.ensureParameterFromSingleVariableDeclaration((SingleVariableDeclaration) p, method));
 			importer.createSourceAnchor(method, node);
+			importer.createLightweightSourceAnchor(method, node.getName());
 			importer.ensureCommentFromBodyDeclaration(method, node);
 		}
 		return true;
@@ -482,7 +484,7 @@ public class AstVisitor extends ASTVisitor {
 		if (importer.topOfContainerStack() instanceof Method) {
 			Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
 					node.toString().trim());
-			importer.createSourceAnchor(invocation, node.getName());
+			importer.createLightweightSourceAnchor(invocation, node.getName());
 			importer.createAccessFromExpression(node.getExpression());
 			invocation.setReceiver(importer.ensureStructuralEntityFromExpression(node.getExpression()));
 			node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
@@ -498,7 +500,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(SuperMethodInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
 				node.toString().trim());
-		importer.createSourceAnchor(invocation, node.getName());
+		importer.createLightweightSourceAnchor(invocation, node.getName());
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -511,7 +513,8 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(ConstructorInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(),
 				node.toString().trim());
-		importer.createSourceAnchor(invocation, node.getStartPosition() + 1, node.getStartPosition() + "this".length());
+//		importer.createSourceAnchor(invocation, node.getStartPosition() + 1, node.getStartPosition() + "this".length());
+		invocation.setAstStartPosition(node.getStartPosition() + 1);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -524,8 +527,9 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(SuperConstructorInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(),
 				node.toString().trim());
-		importer.createSourceAnchor(invocation, node.getStartPosition() + 1,
-				node.getStartPosition() + "super".length());
+//		importer.createSourceAnchor(invocation, node.getStartPosition() + 1,
+//				node.getStartPosition() + "super".length());
+		invocation.setAstStartPosition(node.getStartPosition() + 1);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -539,7 +543,7 @@ public class AstVisitor extends ASTVisitor {
 		IMethodBinding binding = node.resolveConstructorBinding();
 		if (binding != null) {
 			Invocation invocation = importer.createInvocationFromMethodBinding(binding, node.toString().trim());
-			importer.createSourceAnchor(invocation, node.getType());
+			importer.createLightweightSourceAnchor(invocation, node.getType());
 		} else {
 			String name = node.getType().toString();
 			importer.ensureBasicMethod(name, name, importer.ensureTypeNamedInUnknownNamespace(name),

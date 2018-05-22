@@ -811,7 +811,7 @@ public class InJavaImporter extends Importer {
 			 * @Annotation(name="something" + AClass.DEFAULT)
 			 */
 			access.setAccessor(ensureInitializerMethod());
-		createSourceAnchor(access, node);
+		createLightweightSourceAnchor(access, node);
 		repository.add(access);
 		return access;
 	}
@@ -836,6 +836,11 @@ public class InJavaImporter extends Importer {
 
 	// SOURCE ANCHOR
 
+	public void createLightweightSourceAnchor(SourcedEntity sourcedEntity, ASTNode node) {
+		sourcedEntity.setAstStartPosition(node.getStartPosition() + 1);
+		sourcedEntity.setAstStopPosition(node.getStartPosition() + node.getLength());
+	}
+	
 	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node) {
 		this.createSourceAnchor(sourcedEntity, node.getStartPosition() + 1, node.getStartPosition() + node.getLength());
 	}
@@ -845,6 +850,8 @@ public class InJavaImporter extends Importer {
 		fileAnchor.setStartPos(start);
 		fileAnchor.setEndPos(stop);
 		fileAnchor.setFileName(pathWithoutIgnoredRootPath(currentFilePath));
+		sourcedEntity.setAstStartPosition(start);
+		sourcedEntity.setAstStopPosition(stop);
 		sourcedEntity.setSourceAnchor(fileAnchor);
 		repository.add(fileAnchor);
 	}

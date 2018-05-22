@@ -2,6 +2,7 @@
 package com.feenk.jdt2famix.model.famix;
 
 import ch.akuhn.fame.internal.MultivalueSet;
+import com.feenk.jdt2famix.model.file.File;
 import ch.akuhn.fame.FameProperty;
 import ch.akuhn.fame.FameDescription;
 import java.util.*;
@@ -16,7 +17,7 @@ public class SourcedEntity extends Entity {
 
     private SourceAnchor sourceAnchor;
     
-    @FameProperty(name = "sourceAnchor", opposite = "element")
+    @FameProperty(name = "sourceAnchor", opposite = "element", derived = true)
     public SourceAnchor getSourceAnchor() {
         return sourceAnchor;
     }
@@ -45,6 +46,17 @@ public class SourcedEntity extends Entity {
         this.declaredSourceLanguage = declaredSourceLanguage;
         if (declaredSourceLanguage == null) return;
         declaredSourceLanguage.getSourcedEntities().add(this);
+    }
+    
+    private Number astStartPosition;
+    
+    @FameProperty(name = "astStartPosition")
+    public Number getAstStartPosition() {
+        return astStartPosition;
+    }
+
+    public void setAstStartPosition(Number astStartPosition) {
+        this.astStartPosition = astStartPosition;
     }
     
     private Collection<Comment> comments; 
@@ -101,6 +113,70 @@ public class SourcedEntity extends Entity {
     }
     
                 
+    private Collection<File> containerFiles; 
+
+    @FameProperty(name = "containerFiles", opposite = "entities")
+    public Collection<File> getContainerFiles() {
+        if (containerFiles == null) {
+            containerFiles = new MultivalueSet<File>() {
+                @Override
+                protected void clearOpposite(File e) {
+                    e.getEntities().remove(SourcedEntity.this);
+                }
+                @Override
+                protected void setOpposite(File e) {
+                    e.getEntities().add(SourcedEntity.this);
+                }
+            };
+        }
+        return containerFiles;
+    }
+    
+    public void setContainerFiles(Collection<? extends File> containerFiles) {
+        this.getContainerFiles().clear();
+        this.getContainerFiles().addAll(containerFiles);
+    }
+    
+    public void addContainerFiles(File one) {
+        this.getContainerFiles().add(one);
+    }   
+    
+    public void addContainerFiles(File one, File... many) {
+        this.getContainerFiles().add(one);
+        for (File each : many)
+            this.getContainerFiles().add(each);
+    }   
+    
+    public void addContainerFiles(Iterable<? extends File> many) {
+        for (File each : many)
+            this.getContainerFiles().add(each);
+    }   
+                
+    public void addContainerFiles(File[] many) {
+        for (File each : many)
+            this.getContainerFiles().add(each);
+    }
+    
+    public int numberOfContainerFiles() {
+        return getContainerFiles().size();
+    }
+
+    public boolean hasContainerFiles() {
+        return !getContainerFiles().isEmpty();
+    }
+    
+                
+    private Number astStopPosition;
+    
+    @FameProperty(name = "astStopPosition")
+    public Number getAstStopPosition() {
+        return astStopPosition;
+    }
+
+    public void setAstStopPosition(Number astStopPosition) {
+        this.astStopPosition = astStopPosition;
+    }
+    
 
 
 }
