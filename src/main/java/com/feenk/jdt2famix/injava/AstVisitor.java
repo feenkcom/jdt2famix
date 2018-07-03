@@ -500,7 +500,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(SuperMethodInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveMethodBinding(),
 				node.toString().trim());
-		importer.createLightweightSourceAnchor(invocation, node.getName());
+		importer.createLightweightSourceAnchor(invocation, node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -513,8 +513,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(ConstructorInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(),
 				node.toString().trim());
-//		importer.createSourceAnchor(invocation, node.getStartPosition() + 1, node.getStartPosition() + "this".length());
-		invocation.setAstStartPosition(node.getStartPosition() + 1);
+		importer.createLightweightSourceAnchor(invocation, node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
@@ -527,9 +526,7 @@ public class AstVisitor extends ASTVisitor {
 	public boolean visit(SuperConstructorInvocation node) {
 		Invocation invocation = importer.createInvocationFromMethodBinding(node.resolveConstructorBinding(),
 				node.toString().trim());
-//		importer.createSourceAnchor(invocation, node.getStartPosition() + 1,
-//				node.getStartPosition() + "super".length());
-		invocation.setAstStartPosition(node.getStartPosition() + 1);
+		importer.createLightweightSourceAnchor(invocation, node);
 		node.arguments().stream().forEach(arg -> importer.createAccessFromExpression((Expression) arg));
 		return true;
 	}
