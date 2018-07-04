@@ -4,6 +4,7 @@
 #It should be run in the root folder of the jdt2famix project.
 
 #1. create release folder
+rm -rf ./target/
 rm -rf ./release/
 mkdir release
 
