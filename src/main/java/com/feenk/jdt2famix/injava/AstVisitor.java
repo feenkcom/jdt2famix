@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.tools.ToolProvider;
-
 import org.eclipse.jdt.core.dom.ASTNode;
 import org.eclipse.jdt.core.dom.ASTVisitor;
 import org.eclipse.jdt.core.dom.AbstractTypeDeclaration;

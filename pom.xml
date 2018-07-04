@@ -4,10 +4,10 @@
 
 	<groupId>com.feenk</groupId>
 	<artifactId>jdt2famix</artifactId>
-	<version>1.0.7-SNAPSHOT</version>
+	<version>1.0.11</version>
 	<packaging>jar</packaging>
 	<name>jdt2famix</name>
-	<url>https://github.com/girba/jdt2famix</url>
+	<url>https://github.com/feenkcom/jdt2famix</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

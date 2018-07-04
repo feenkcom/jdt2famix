@@ -713,7 +713,8 @@ public class InJavaImporter extends Importer {
 	public Invocation createInvocationFromMethodBinding(IMethodBinding binding, String signature) {
 
 		Invocation invocation = new Invocation();
-		invocation.setSender((Method) topOfContainerStack());
+		if (topOfContainerStack() instanceof Method)
+			invocation.setSender((Method) topOfContainerStack());
 		if (binding != null && binding.getMethodDeclaration() != null) {
 			IMethodBinding methodDeclarationBinding = binding.getMethodDeclaration();
 			ITypeBinding declaringClass = null;
@@ -722,7 +723,8 @@ public class InJavaImporter extends Importer {
 			else
 				declaringClass = binding.getDeclaringClass();
 			Type ensureTypeFromTypeBinding = ensureTypeFromTypeBinding(declaringClass);
-			invocation.addCandidates(ensureMethodFromMethodBinding(methodDeclarationBinding, ensureTypeFromTypeBinding));
+			invocation
+					.addCandidates(ensureMethodFromMethodBinding(methodDeclarationBinding, ensureTypeFromTypeBinding));
 		}
 		invocation.setSignature(signature);
 		repository.add(invocation);
@@ -731,7 +733,8 @@ public class InJavaImporter extends Importer {
 
 	public Invocation createInvocationToMethod(Method method, String signature) {
 		Invocation invocation = new Invocation();
-		invocation.setSender((Method) topOfContainerStack());
+		if (topOfContainerStack() instanceof Method)
+			invocation.setSender((Method) topOfContainerStack());
 		invocation.addCandidates(method);
 		invocation.setSignature(signature);
 		repository.add(invocation);
@@ -840,7 +843,7 @@ public class InJavaImporter extends Importer {
 		sourcedEntity.setAstStartPosition(node.getStartPosition() + 1);
 		sourcedEntity.setAstStopPosition(node.getStartPosition() + node.getLength());
 	}
-	
+
 	public void createSourceAnchor(SourcedEntity sourcedEntity, ASTNode node) {
 		this.createSourceAnchor(sourcedEntity, node.getStartPosition() + 1, node.getStartPosition() + node.getLength());
 	}
