@@ -180,8 +180,8 @@ public class AstVisitor extends ASTVisitor {
 			type.getSuperInheritances().stream()
 					.filter(superInheritance -> currentInterface.resolveBinding() != null && superInheritance
 							.getSuperclass().getName().equals(currentInterface.resolveBinding().getName()))
-					.findFirst()
-					.ifPresent(superInheritance -> importer.createLightweightSourceAnchor(superInheritance, currentInterface));
+					.findFirst().ifPresent(superInheritance -> importer.createLightweightSourceAnchor(superInheritance,
+							currentInterface));
 		};
 	}
 
@@ -583,9 +583,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(WhileStatement node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 
@@ -596,9 +597,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(DoStatement node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 
@@ -609,9 +611,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(IfStatement node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 
@@ -635,20 +638,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(ForStatement node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
-		// for (Iterator<?> iterator = node.initializers().iterator();
-		// iterator.hasNext();) {
-		// VariableDeclarationExpression initializerExpression =
-		// (VariableDeclarationExpression) iterator.next();
-		// for (Iterator<?> iterator2 = initializerExpression.fragments().iterator();
-		// iterator2.hasNext();) {
-		// VariableDeclarationFragment fragment = (VariableDeclarationFragment)
-		// iterator2.next();
-		// importer.createAccessFromExpression((Expression) fragment.getInitializer());
-		// }
-		// }
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 
@@ -659,9 +652,10 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(EnhancedForStatement node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
-		importer.createAccessFromExpression((Expression) node.getExpression());
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+			importer.createAccessFromExpression((Expression) node.getExpression());
+		}
 		return true;
 	}
 
@@ -685,9 +679,9 @@ public class AstVisitor extends ASTVisitor {
 	 */
 	@Override
 	public boolean visit(InfixExpression node) {
-		if (node.getOperator().equals(Operator.AND) || node.getOperator().equals(Operator.OR)) {
+		if ((node.getOperator().equals(Operator.AND) || node.getOperator().equals(Operator.OR))
+				&& importer.topFromContainerStack(Method.class) != null) {
 			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-			;
 		}
 		importer.createAccessFromExpression((Expression) node.getLeftOperand());
 		importer.createAccessFromExpression((Expression) node.getRightOperand());
@@ -725,8 +719,10 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(CatchClause node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
-		;
+		if (importer.topFromContainerStack(Method.class) != null) {
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+		}
+
 		CaughtException caughtException = new CaughtException();
 		ITypeBinding binding = node.getException().getType().resolveBinding();
 		if (binding != null) {
@@ -753,7 +749,8 @@ public class AstVisitor extends ASTVisitor {
 
 	@Override
 	public boolean visit(SwitchCase node) {
-		importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
+		if (importer.topFromContainerStack(Method.class) != null)
+			importer.topFromContainerStack(Method.class).incCyclomaticComplexity();
 		return true;
 	}
 }
