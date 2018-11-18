@@ -20,3 +20,5 @@ mvn dependency:copy-dependencies -DoutputDirectory=release -DoverWriteSnapshots=
 cp ./res/jdt2famix.sh ./release/
 chmod a+x ./release/jdt2famix.sh
 cp ./res/jdt2famix.cmd ./release/
+cp ./res/build.gradle ./release/
+

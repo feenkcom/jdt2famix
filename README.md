@@ -44,7 +44,18 @@ In order to describe completely `MyClass`, we need to extract information about 
 If you happen to have a Java project that defines dependencies through Maven, you can use the following command to copy all dependencies:
 
 	mvn dependency:copy-dependencies -DoutputDirectory=dependencies -DoverWriteSnapshots=true -DoverWriteReleases=false
+	
+## A note about Gradle projects
 
+If you happen to have a Java project that defines dependencies through Gradle, you can take the following steps to create the MSE model:
+1. In your project's build.gradle file include the build.gradle file from jdt2famix instalation:
+	
+	apply from: "../jdt2famix/build.gradle"
+
+2. In your project folder use the following command:
+	
+	gradle famix
+	
 ## Understanding import problems through logging
 
 jdt2famix logs the problems encountered during import.
