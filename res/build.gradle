@@ -1,0 +1,30 @@
+buildscript {
+    dependencies {
+        classpath fileTree(dir: buildscript.sourceFile.parent, include: '*.jar')
+    }
+}
+
+import com.feenk.jdt2famix.injava.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import com.feenk.jdt2famix.Classpath;
+import com.feenk.jdt2famix.JavaFiles;
+
+task famix() {
+	doFirst {
+		InJavaImporter importer = new InJavaImporter();
+		String pathName = projectDir;
+		Path path = Paths.get(pathName).toAbsolutePath().normalize();
+		JavaFiles javaFiles = new JavaFiles();
+		javaFiles.deepJavaFiles(path.toString());
+		Classpath classpath = new Classpath();
+		subprojects*.configurations*.findAll{ it.name == 'runtime' }*.each {
+			it.each { j -> 
+				classpath.deepJarFiles(j.parent);
+			}
+		}
+		importer.run(javaFiles, classpath);
+		importer.exportMSE(new File(projectDir, project.name + ".mse").path);
+		println "Famix import done"
+	}
+}
