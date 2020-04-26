@@ -8,7 +8,7 @@ and it requires Java 8.
 
 # Overview
 
-<img src="doc/jdt2famix-standalone.png"/>
+<img src="doc/jdt2famix.png"/>
 
 # Installation
 
