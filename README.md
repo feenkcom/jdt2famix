@@ -27,7 +27,7 @@ Suppose you have a `mysystem` root folder in which you have the sources and all 
 
 After having created the release, go to `mysystem`, and execute `/path/to/jdt2famix.sh` (`/path/to/jdt2famix.cmd` for Windows). This will result in an MSE file named like the folder of your target system (in our case `mysystem.mse`).
 
-You can now import the `mysystem.mse` file into [Moose](http://moosetechnology.org). 
+You can now import the `mysystem.mse` file into [Glamorous Toolkit](https://gtoolkit.com). 
 
 ## The importance of including external dependencies
 
