@@ -1,5 +1,6 @@
 package com.feenk.jdt2famix.injava.oneSample;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import org.junit.Test;
@@ -27,6 +28,7 @@ public class InnerClassWithMethod extends OneSampleTestCase {
 		for (Type type : importer.types().get()) {
 			assertNotEquals("", type.getName());
 		}
+		assertEquals(13, importer.types().size());
 	}
 
 }

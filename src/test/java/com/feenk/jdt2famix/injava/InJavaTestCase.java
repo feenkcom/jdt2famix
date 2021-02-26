@@ -1,6 +1,5 @@
 package com.feenk.jdt2famix.injava;
 
-import com.feenk.jdt2famix.injava.InJavaImporter;
 import com.feenk.jdt2famix.model.famix.Attribute;
 import com.feenk.jdt2famix.model.famix.Method;
 

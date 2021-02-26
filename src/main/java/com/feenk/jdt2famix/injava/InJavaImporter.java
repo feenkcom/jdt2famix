@@ -247,7 +247,7 @@ public class InJavaImporter extends Importer {
 	// TYPE
 
 	public Type ensureTypeFromTypeBinding(ITypeBinding binding) {
-		String qualifiedName = binding.getQualifiedName();
+		String qualifiedName = binding.isAnonymous() ? binding.getKey() : binding.getQualifiedName();
 		if (types.has(qualifiedName))
 			return types.named(qualifiedName);
 		Type type = createTypeFromTypeBinding(binding);
@@ -430,14 +430,19 @@ public class InJavaImporter extends Importer {
 		return type;
 	}
 
-	public Type ensureTypeFromAnonymousDeclaration(Type type, AnonymousClassDeclaration node) {
+	public Type ensureTypeFromAnonymousDeclaration(Type type, AnonymousClassDeclaration node, ITypeBinding binding) {
 		type.setContainer(topOfContainerStack());
 		type.setName("$" + topOfContainerStack().getTypes().size());
 		if (node.getParent() instanceof ClassInstanceCreation)
 			createInheritanceFromSubtypeToSuperDomType(type, ((ClassInstanceCreation) node.getParent()).getType());
 		if (node.getParent() instanceof EnumConstantDeclaration)
 			createInheritanceFromSubtypeToSuperType(type, topFromContainerStack(Enum.class));
-		types.add(Famix.qualifiedNameOf(type), type);
+		
+		if (binding != null) 
+			types.add(binding.getKey(), type);
+		else
+			types.add(Famix.qualifiedNameOf(type), type);
+
 		return type;
 	}
 
@@ -486,6 +491,7 @@ public class InJavaImporter extends Importer {
 		Arrays.stream(binding.getParameterTypes()).forEach(p -> signatureJoiner.add((String) p.getQualifiedName()));
 		String methodName = binding.getName();
 		String signature = methodName + signatureJoiner.toString();
+		if (binding.isConstructor() && methodName.equals("")) methodName = "<init>";
 		return ensureBasicMethod(methodName, signature, parentType, m -> setUpMethodFromMethodBinding(m, binding));
 	}
 

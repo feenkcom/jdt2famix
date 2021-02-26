@@ -200,7 +200,7 @@ public class AstVisitor extends ASTVisitor {
 			logNullBinding("anonymous type declaration", node.getParent().toString().replaceAll("\n", " "),
 					((CompilationUnit) node.getRoot()).getLineNumber(node.getStartPosition()));
 		}
-		importer.ensureTypeFromAnonymousDeclaration(type, node);
+		importer.ensureTypeFromAnonymousDeclaration(type, node, binding);
 		type.setIsStub(false);
 		importer.createSourceAnchor(type, node);
 		importer.pushOnContainerStack(type);
